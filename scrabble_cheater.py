@@ -42,7 +42,7 @@ def rack_has_all_letters(rack, word):
 
     Parameters:
     -----------
-    rack: string
+    rack: list of single-character strings
         The letters in the player's rack in any order.
     word: string
         Word from dictionary.
@@ -74,7 +74,7 @@ def find_words(rack, dictionary):
 
     Parameters:
     -----------
-    rack: string
+    rack: list of single-character strings
         The letters in the player's rack in any order.
     word_list: list of strings
         List of dictionary words
@@ -247,8 +247,8 @@ def find_words_including(square, directions = None):
     return word
 
 def print_scrabble_board(scrabble_board):
-    for row in scrabble_board:
-        print row
+    for index, row in enumerate(scrabble_board):
+        print index, row
     print
 
 def get_rack():
@@ -294,39 +294,58 @@ def find_playable_words(occupied_squares, rack):
         letters on the board and in the rack.
 
     """
-    playable_words = {}
-    left_most_square = min(occupied_squares, key=lambda x: x[0])
-    right_most_square = max(occupied_squares, key=lambda x: x[0])
-    top_square = min(occupied_squares, key=lambda x: x[1])
+    potential_words = {}
+    left_most_square = min(occupied_squares, key=lambda x: x[1])
+    right_most_square = max(occupied_squares, key=lambda x: x[1])
+    top_square = min(occupied_squares, key=lambda x: x[0])
     bottom_square = max(occupied_squares, key=lambda x: x[0])
 
-    left_boundary = left_most_square[0]
-    right_boundary = right_most_square[0]
+    left_boundary = left_most_square[1]
+    if left_boundary > 0:
+        left_boundary -= 1
+    right_boundary = right_most_square[1]
+    if right_boundary < BOARD_SIZE - 1:
+        right_boundary += 1
+
     for column in range(left_boundary, right_boundary+1):
         key = "c" + str(column)
-        playable_words[key] = []
+        potential_words[key] = []
         rack_copy = rack[:]
         for row in range(BOARD_SIZE):
             letter = scrabble_board[row][column]
             if letter:
                 rack_copy.append(letter)
         possible_words = find_words(rack_copy, dictionary)
-        playable_words[key].extend(possible_words)
+        potential_words[key].extend(possible_words)
 
-    top_boundary = top_square[1]
-    bottom_boundary = bottom_square[1]
+    top_boundary = top_square[0]
+    if top_boundary > 0:
+        top_boundary -= 1
+    bottom_boundary = bottom_square[0]
+    if bottom_boundary < BOARD_SIZE - 1:
+        bottom_boundary += 1
     for row in range(top_boundary, bottom_boundary+1):
         key = "r" + str(row)
-        playable_words[key] = []
+        potential_words[key] = []
         rack_copy = rack[:]
         for column in range(BOARD_SIZE):
             letter = scrabble_board[row][column]
             if letter:
                 rack_copy.append(letter)
         possible_words = find_words(rack_copy, dictionary)
-        playable_words[key].extend(possible_words)
+        potential_words[key].extend(possible_words)
+    playable_words = []
+    for vector, words in potential_words.iteritems():
+        for word in words:
+            r = []
+            result = fit_word(word, vector)
+            playable_words.extend(result)
+    playable_words = sort_by_score(playable_words)
+    return playable_words[:10]
 
-    return playable_words
+def sort_by_score(playable_words):
+    words_by_score = sorted(playable_words, key=lambda word: word['score'], reverse=True)
+    return words_by_score
 
 def get_indices_of_letters(location):
     """
@@ -625,17 +644,29 @@ def find_possible_locations(word, location, letters_and_indices):
         the word there.
 
     """
-    possible_locations = {'word': word, 'locations': []}
+    possible_locations = []
     vector = int(location[1:]) # column or row to attempt to fit word into
     start_locations = [] # squares where we have attempted to start the word
                         # by placing first letter, we won't try the same place
                         # more than once
     for letter, index in letters_and_indices:
         locations = fit_word_around_letter(word, letter, index, location, start_locations)
-        possible_locations['locations'].extend(locations)
+        r = []
+        for loc in locations:
+            score = loc['score']
+            l = loc['location']
+            result = {'word': word, 'score': score, 'location': l}
+            r.append(result)
+        possible_locations.extend(r)
     if not letters_and_indices:
         locations = fit_word_in_empty_vector(word, location)
-        possible_locations['locations'].extend(locations)
+        r = []
+        for loc in locations:
+            score = loc['score']
+            l = loc['location']
+            result = {'word': word, 'score': score, 'location': l}
+            r.append(result)
+        possible_locations.extend(r)
     return possible_locations
 
 def fit_word(word, location):
@@ -685,126 +716,29 @@ def find_all_indices(letter, word):
     indices = [index for index, char in enumerate(word) if char == letter]
     return indices
 
-import unittest
-
-class TestScrabble(unittest.TestCase):
-
-    def test_fit_word_on_empty_column(self):
-        """
-        Tests fit_word's performance on an empty column that will intersect
-        with two words.
-        """
-        # log = logging.getLogger( "Test")
-        global scrabble_board
-        scrabble_board = [[None for x in range(BOARD_SIZE)] for y in range(BOARD_SIZE)]
-        scrabble_board[5][1] = 'M'
-        scrabble_board[5][3] = 'N'
-        scrabble_board[7][1] = 'M'
-        scrabble_board[7][3] = 'N'
-        #import ipdb; ipdb.set_trace()
-        location = fit_word("CATASTROPHE", "c2")['locations'][0]
-        self.assertEqual(location['score'], 28)
-        self.assertEqual(location['location'], ((4, 2), (14, 2)))
-        scrabble_board = [[None for x in range(BOARD_SIZE)] for y in range(BOARD_SIZE)]
-
-    def test_fit_word_on_empty_row(self):
-        """
-        Tests fit_word's performance on an empty row that will intersect
-        with two words.
-        """
-        global scrabble_board
-        scrabble_board = [[None for x in range(BOARD_SIZE)] for y in range(BOARD_SIZE)]
-        scrabble_board[5][1] = 'M'
-        scrabble_board[5][3] = 'N'
-        scrabble_board[7][1] = 'M'
-        scrabble_board[7][3] = 'N'
-        location = fit_word("CATASTROPHE", "c2")['locations'][0]
-        self.assertEqual(location['score'], 28)
-        self.assertEqual(location['location'], ((4, 2), (14, 2)))
-        scrabble_board = [[None for x in range(BOARD_SIZE)] for y in range(BOARD_SIZE)]
-
-    def test_fit_word_on_occupied_column(self):
-        """
-        Tests fit_word's performance on a non-empty column that intersects
-        with two words.
-        """
-        global scrabble_board
-        scrabble_board = [[None for x in range(BOARD_SIZE)] for y in range(BOARD_SIZE)]
-        scrabble_board[5][1] = 'M'
-        scrabble_board[5][2] = 'A'
-        scrabble_board[5][3] = 'N'
-        scrabble_board[7][1] = 'M'
-        scrabble_board[7][2] = 'A'
-        scrabble_board[7][3] = 'N'
-        location = fit_word("CATASTROPHE", "c2")['locations'][0]
-        self.assertEqual(location['score'], 18)
-        self.assertEqual(location['location'], ((4, 2), (14, 2)))
-        scrabble_board = [[None for x in range(BOARD_SIZE)] for y in range(BOARD_SIZE)]
-        scrabble_board[5][1] = 'M'
-        scrabble_board[5][3] = 'N'
-        scrabble_board[7][1] = 'M'
-        scrabble_board[7][2] = 'A'
-        scrabble_board[7][3] = 'N'
-        location = fit_word("CATASTROPHE", "c2")['locations'][0]
-        self.assertEqual(location['score'], 23)
-        self.assertEqual(location['location'], ((4, 2), (14, 2)))
-        scrabble_board = [[None for x in range(BOARD_SIZE)] for y in range(BOARD_SIZE)]
-
-    def test_fit_word_on_occupied_row(self):
-        """
-        Tests fit_word's performance on a non-empty row that intersects
-        with two words.
-        """
-        global scrabble_board
-        scrabble_board = [[None for x in range(BOARD_SIZE)] for y in range(BOARD_SIZE)]
-        scrabble_board[1][5] = 'M'
-        scrabble_board[2][5] = 'A'
-        scrabble_board[3][5] = 'N'
-        scrabble_board[1][7] = 'M'
-        scrabble_board[2][7] = 'A'
-        scrabble_board[3][7] = 'N'
-        location = fit_word("CATASTROPHE", "r2")['locations'][0]
-        self.assertEqual(location['score'], 18)
-        self.assertEqual(location['location'], ((2, 4), (2, 14)))
-        scrabble_board = [[None for x in range(BOARD_SIZE)] for y in range(BOARD_SIZE)]
-        scrabble_board[1][5] = 'M'
-        scrabble_board[3][5] = 'N'
-        scrabble_board[1][7] = 'M'
-        scrabble_board[2][7] = 'A'
-        scrabble_board[3][7] = 'N'
-        location = fit_word("CATASTROPHE", "r2")['locations'][0]
-        self.assertEqual(location['score'], 23)
-        self.assertEqual(location['location'], ((2, 4), (2, 14)))
-        scrabble_board = [[None for x in range(BOARD_SIZE)] for y in range(BOARD_SIZE)]
-
-    def test_multiple_locations_in_column(self):
-        """
-        Tests fit_word's performance on a non-empty column where a word
-        can be placed in multiple locations.
-        """
-        global scrabble_board
-        scrabble_board = [[None for x in range(BOARD_SIZE)] for y in range(BOARD_SIZE)]
-        scrabble_board[5][2] = 'A'
-        location1, location2 = fit_word("CATASTROPHE", "c2")['locations']
-        self.assertEqual(location1['score'], 18)
-        self.assertEqual(location1['location'], ((4, 2), (14, 2)))
-        self.assertEqual(location2['score'], 18)
-        self.assertEqual(location2['location'], ((2, 2), (12, 2)))
-
-    def test_multiple_locations_in_row(self):
-        """
-        Tests fit_word's performance on a non-empty row where a word
-        can be placed in multiple locations.
-        """
-        global scrabble_board
-        scrabble_board = [[None for x in range(BOARD_SIZE)] for y in range(BOARD_SIZE)]
-        scrabble_board[2][5] = 'A'
-        location1, location2 = fit_word("CATASTROPHE", "r2")['locations']
-        self.assertEqual(location1['score'], 18)
-        self.assertEqual(location1['location'], ((2, 4), (2, 14)))
-        self.assertEqual(location2['score'], 18)
-        self.assertEqual(location2['location'], ((2, 2), (2, 12)))
-
 if __name__ == "__main__":
     init_dictionary(WORD_FILE)
-    unittest.main()
+    # # unittest.main()
+    scrabble_board[5][1] = 'M'
+    occupied_squares.append((5, 1))
+    scrabble_board[5][2] = 'A'
+    occupied_squares.append((5, 2))
+    scrabble_board[5][3] = 'N'
+    occupied_squares.append((5, 3))
+    scrabble_board[7][1] = 'M'
+    occupied_squares.append((7, 1))
+    scrabble_board[7][2] = 'A'
+    occupied_squares.append((7, 2))
+    scrabble_board[7][3] = 'N'
+    occupied_squares.append((7, 3))
+    print_scrabble_board(scrabble_board)
+    words = find_playable_words(occupied_squares, list("NEUMANN"))
+    for word in words:
+        print word
+    #print fit_word("CATASTROPHE", "c10")
+    # scrabble_board[5][1] = 'M'
+    # scrabble_board[5][3] = 'N'
+    # scrabble_board[7][1] = 'M'
+    # scrabble_board[7][3] = 'N'
+    # print_scrabble_board(scrabble_board)
+    # print fit_word("CATASTROPHE", "c13")
