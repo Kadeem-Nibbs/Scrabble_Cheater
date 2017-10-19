@@ -1,19 +1,81 @@
 import re
 from random import randrange
-from letters import LETTER_VALUES, SCRABBLE_TILES
+from scrabble_constants import LETTER_VALUES, BONUS_TILES, BONUS_TILE_COLORS
 import sys
 import random
+import Tkinter as tk
 
 BOARD_SIZE = 15
+BLANK_TILE = "_"
 occupied_squares = []
 scrabble_board = [[None for x in range(BOARD_SIZE)] for y in range(BOARD_SIZE)]
 dictionary = {}
-WORD_FILE = "words.txt"
+WORD_FILE = "ospd.txt"
 
 # Conventions:
 # Specific vectors (rows or columns) are referenced with strings of the form
 # "[r|c]x" where r or c specifies row or column and x specifies the index
 # of the vector.
+
+class ScrabbleCheater(object):
+
+    def __init__(self):
+        global init_dictionary
+        global WORD_FILE
+        init_dictionary(WORD_FILE)
+        self.BOARD_SIZE = 15
+        #self.board = [[None for x in range(BOARD_SIZE)] for y in range(BOARD_SIZE)]
+        self.occupied_squares = []
+        self.GUI = tk.Tk()
+
+    def initialize_GUI(self):
+        global BONUS_TILES
+        self.board = tk.Frame(self.GUI)
+        self.board.grid(row=1, column=1)
+        # l = tk.Label(self.GUI, text="Scrabble Cheater")
+        # l.pack()
+        # self.GUI.title('Scrabble Cheater')
+        self.GUI.geometry('600x600')
+        for r in range(self.BOARD_SIZE):
+            for c in range(self.BOARD_SIZE):
+                square = (r, c)
+                bonus = BONUS_TILES.get(square)
+                color = BONUS_TILE_COLORS[bonus]
+                e = tk.Entry(self.board, width=4, bg=color)
+                e.grid(row=r, column=c)
+        btn = tk.Button(self.GUI, text="Analyze", command=lambda: self.update_board(self.board, self.rack_entry))
+        tk.Label(self.GUI, text="Enter rack of letters: ").grid(row=r+2, column=1,sticky='W')
+        self.rack_entry = tk.Entry(self.GUI)
+        self.rack_entry.grid(row=r+2, column=1, sticky='E')
+
+        btn.grid(row=r+3)
+
+    def update_board(self, board, rack_entry):
+        global find_playable_words
+        global scrabble_board
+        global occupied_squares
+        for child in board.children.values():
+            r = int(child.grid_info()['row'])
+            c = int(child.grid_info()['column'])
+            val = child.get()
+            if len(val) == 1:
+                occupied_squares.append((r, c))
+                scrabble_board[r][c] = val
+        print_scrabble_board(scrabble_board)
+        rack_letters = rack_entry.get()
+        print rack_letters
+        rack = list(rack_letters.upper())
+        print rack
+        words = find_playable_words(occupied_squares, rack)
+        for word in words:
+            print word
+        print_scrabble_board(scrabble_board)
+        scrabble_board = [[None for x in range(BOARD_SIZE)] for y in range(BOARD_SIZE)]
+        occupied_squares = []
+
+    def run(self):
+        self.initialize_GUI()
+        self.GUI.mainloop()
 
 def init_dictionary(f):
     """
@@ -52,6 +114,8 @@ def rack_has_all_letters(rack, word):
     for letter in word:
         if letter in rack_copy:
             rack_copy.remove(letter)
+        elif BLANK_TILE in rack_copy:
+            rack_copy.remove(BLANK_TILE)
         else:
             return False
     return True
@@ -92,6 +156,8 @@ def find_words(rack, dictionary):
         for letter in key:
             if letter in rack_copy:
                 rack_copy.remove(letter)
+            elif BLANK_TILE in rack_copy:
+                rack_copy.remove(BLANK_TILE)
             else:
                 rack_has_all_letters = False
                 break
@@ -99,16 +165,24 @@ def find_words(rack, dictionary):
             playable_words.extend(dictionary[key])
     return playable_words
 
-def score_word(word):
+def score_word(word, rack=None, location=None):
     """
     Returns the cumulative Scrabble score of the letters in word.
     """
     score = 0
+    if rack and location:
+        inds = get_indices_of_letters(location)
+        letters = [x[0] for x in inds]
+        rack = rack + letters
     for letter in word:
-        score += LETTER_VALUES[letter]
+        if rack:
+            if letter in rack:
+                score += LETTER_VALUES[letter]
+        else:
+            score += LETTER_VALUES[letter]
     return score
 
-def sort_words_by_score(word_list):
+def sort_words_by_score(word_list, rack, location):
     """
     Sorts the words in the input list by their cumulative letter value in
     Scrabble.
@@ -128,9 +202,8 @@ def sort_words_by_score(word_list):
         list.
 
     """
-    word_scores = [{'word': word, 'score': score_word(word)} \
+    word_scores = [{'word': word, 'score': score_word(word, rack=rack, location=location)} \
                    for word in word_list]
-    # word_scores = [(word, score_word(word)) for word in word_list]
     word_scores = sorted(word_scores, key=lambda word: word['score'], reverse=True)
     return word_scores
 
@@ -190,6 +263,8 @@ def word_from_squares(squares):
         char = scrabble_board[x][y]
         if char:
             word += char
+        else:
+            return ""
     return word
 
 def find_words_including(square, directions = None):
@@ -212,37 +287,38 @@ def find_words_including(square, directions = None):
     """
     word = None
     x, y = square[0], square[1]
-    if 'horizontal' in directions:
-        # Check tiles in horizontal line including square
-        left_x = right_x = x
-        while on_board(left_x, y) and scrabble_board[left_x][y]:
-            left_x -= 1
-        left_x += 1 # increment to last valid value
-
-        while on_board(right_x, y) and scrabble_board[right_x][y]:
-            right_x += 1
-        right_x -= 1 # decrement to last valid value
-
-        leftmost_square = (left_x, y)
-        rightmost_square = (right_x, y)
-        horizontal_squares = get_squares_in_range(leftmost_square, rightmost_square)
-        word = word_from_squares(horizontal_squares)
-
-    elif 'vertical' in directions:
+    if 'horizontal' in directions: # if word is horizontal, find words
+                                   # crossing vertically
         # Check tiles in vertical line including square
-        top_y = bottom_y = y
-        while on_board(x, top_y) and scrabble_board[x][top_y]:
-            top_y -= 1
-        top_y += 1
+        top_x = bottom_x = x
+        while on_board(top_x, y) and scrabble_board[top_x][y]:
+            top_x -= 1
+        top_x += 1 # increment to last valid value
 
-        while on_board(x, bottom_y) and scrabble_board[x][bottom_y]:
-            bottom_y += 1
-        bottom_y -= 1
+        while on_board(bottom_x, y) and scrabble_board[bottom_x][y]:
+            bottom_x += 1
+        bottom_x -= 1 # decrement to last valid value
 
-        top_square = (x, top_y)
-        bottom_square = (x, bottom_y)
+        top_square = (top_x, y)
+        bottom_square = (bottom_x, y)
         vertical_squares = get_squares_in_range(top_square, bottom_square)
         word = word_from_squares(vertical_squares)
+
+    elif 'vertical' in directions:
+        # Check tiles in horizontal line including square
+        left_y = right_y = y
+        while on_board(x, left_y) and scrabble_board[x][left_y]:
+            left_y -= 1
+        left_y += 1
+
+        while on_board(x, right_y) and scrabble_board[x][right_y]:
+            right_y += 1
+        right_y -= 1
+
+        leftmost_square = (x, left_y)
+        rightmost_square = (x, right_y)
+        horizontal_squares = get_squares_in_range(leftmost_square, rightmost_square)
+        word = word_from_squares(horizontal_squares)
 
     return word
 
@@ -282,8 +358,8 @@ def find_playable_words(occupied_squares, rack):
     occupied_squares: list of 2-tuples
         (row, column) coordinates representing all of the squares on the board
         where letters are placed.
-    rack: string
-        The letters in the player's rack.
+    rack: list of single-character strings
+        The letters in the player's rack in any order.
 
     Returns:
     --------
@@ -338,7 +414,7 @@ def find_playable_words(occupied_squares, rack):
     for vector, words in potential_words.iteritems():
         for word in words:
             r = []
-            result = fit_word(word, vector)
+            result = fit_word(word, rack, vector)
             playable_words.extend(result)
     playable_words = sort_by_score(playable_words)
     return playable_words[:10]
@@ -380,7 +456,7 @@ def get_indices_of_letters(location):
                 letters_and_indices.append((letter, index))
     return letters_and_indices
 
-def letter_can_fit(letter, square, direction, crossing_words, squares_to_erase):
+def word_crossing_letter(letter, square, direction):
     """
     Determines if a letter can be placed on a square without clashing without
     surrounding squares.
@@ -407,15 +483,17 @@ def letter_can_fit(letter, square, direction, crossing_words, squares_to_erase):
     row, column = square
     crossing_word = find_words_including(square, directions=direction)
     if len(crossing_word) == 1:
-        return True
+        return crossing_word
     c_word_in_dict = word_in_dict(crossing_word, dictionary)
     if c_word_in_dict:
-        crossing_words.append(crossing_word)
-        return True
+        return crossing_word
     else:
-        return False
+        return None
 
-def can_fit(word, location, start, squares_to_erase, crossing_words):
+def find_bonus(square):
+    return BONUS_TILES.get(square)
+
+def calc_word_score(word, rack, location, start):
     """
     Determines if a word can legally be played on a vector on the scrabble
     board.
@@ -424,13 +502,10 @@ def can_fit(word, location, start, squares_to_erase, crossing_words):
     -----------
     word: string
     location
+    rack: list of single-character strings
+        The letters in the player's rack in any order.
     start: (row, column) tuple
         Square on the board to place first letter of word.
-    squares_to_erase: list of (row, column) tuples
-        Empty squares on the board that were filled in by hypothetical moves.
-        Will be erased when no longer needed.
-    crossing_words: list of strings
-        A list of words that the letter's containing word intersects with.
 
     Returns:
     --------
@@ -439,45 +514,105 @@ def can_fit(word, location, start, squares_to_erase, crossing_words):
 
     """
     word_can_fit = True
+    rack_copy = rack[:]
     word_ind = 0
     x = int(location[1:])
+    word_score = 0
+    score_multiplier = 1
+    crossing_words = []
+    crossing_word_scores = []
+    squares_to_erase = []
+    overlaps_letter = False
+    if location[0] == 'r': # fit word horizontally
+        start_square = (x, start)
+        direction = ['horizontal']
+    elif location[0] == 'c': # fit word vertically
+        start_square = (start, x)
+        direction = ['vertical']
     for y in range(start, start+len(word)):
         if location[0] == 'r': # fit word horizontally
             square = (x, y)
-            direction = ['horizontal']
         elif location[0] == 'c': # fit word vertically
             square = (y, x)
-            direction = ['vertical']
         row, column = square
         if on_board(row, column) and not scrabble_board[row][column]:
             letter = word[word_ind]
             scrabble_board[row][column] = letter
+            letter_value = LETTER_VALUES[letter]
             squares_to_erase.append(square)
-            l_can_fit = letter_can_fit(letter, square, direction, crossing_words, squares_to_erase)
-            if l_can_fit:
-                word_ind += 1
-                continue
-            else:
-                return False
-        elif scrabble_board[row][column] == word[word_ind]:
+            bonus = find_bonus(square)
+            crossing_word = word_crossing_letter(letter, square, direction)
+            if not crossing_word:
+                erase_squares(squares_to_erase)
+                return None
+            crossing_word_score = 0
+            if len(crossing_word) > 1:
+                crossing_word_score = score_word(crossing_word)
+                crossing_words.append(crossing_word)
+            if bonus:
+                multiplier = int(bonus[0])
+                if bonus[1] == 'W':
+                    crossing_word_score *= multiplier
+                    score_multiplier *= multiplier
+                elif bonus[1] == 'L':
+                    if len(crossing_word) > 1:
+                        crossing_word_score += letter_value * (multiplier - 1)
+                    letter_value *= multiplier
+            # if word == "PIVOTAL" and start_square == (0, 3):
+                # print "Letter:", letter, "Value:", letter_value, "Multiplier:", score_multiplier, "Crossing word:", crossing_word, "Crossing word score:", crossing_word_score
+            word_score += letter_value
+            crossing_word_scores.append(crossing_word_score)
+            try:
+                rack_copy.remove(letter)
+            except ValueError: # not enough letters to make word
+                if BLANK_TILE in rack_copy:
+                    rack_copy.remove(BLANK_TILE)
+                else:
+                    erase_squares(squares_to_erase)
+                    return None
+            word_ind += 1
+        elif on_board(row, column) and scrabble_board[row][column] == word[word_ind]:
+            overlaps_letter = True
+            letter = scrabble_board[row][column]
+            letter_value = LETTER_VALUES[letter]
+            word_score += letter_value
             word_ind += 1
             continue
         else:
-            word_can_fit = False
-            return word_can_fit
+            erase_squares(squares_to_erase)
+            return None
+    if not (crossing_words or overlaps_letter):
+        erase_squares(squares_to_erase)
+        return None
     # make sure completed word is in the dictionary
     if location[0] == 'r':
-        square = (x, y)
+        end_square = (x, y)
         direction = ['vertical']
     elif location[0] == 'c':
-        square = (y, x)
+        end_square = (y, x)
         direction = ['horizontal']
-    finished_word = find_words_including(square, directions=direction)
+    finished_word = find_words_including(end_square, directions=direction)
+    # if word == "PIVOTAL":
+    #     print "Finished word:", finished_word, "Location:", start_square, end_square
     if not word_in_dict(finished_word, dictionary):
-        word_can_fit = False
-    return word_can_fit
+        # if word == "PIVOTAL":
+        #     print "Finished word not in dict"
+        erase_squares(squares_to_erase)
+        return None
+    word_score *= score_multiplier
+    for score in crossing_word_scores:
+        word_score += score
+    # if word == "PIVOTAL":
+    #     print "Rack Length:", len(rack), "Rack Copy:", rack_copy
+    if (len(rack) == 7) and (not rack_copy):
+        word_score += 50
+    loc_and_score = {'word': word,
+                     'location':(start_square, end_square),
+                     'score': word_score}
+    erase_squares(squares_to_erase)
+    return loc_and_score
 
-def location_and_score(word, location, square, start, crossing_words):
+def location_and_score(word, rack, location, square, start, crossing_words):
     """
     Finds all the locations where a word can legally be played along the
     vector specified by location, along by the score from playing the word
@@ -511,10 +646,10 @@ def location_and_score(word, location, square, start, crossing_words):
         starting_square = (start, column)
         ending_square = (start+len(word)-1, column)
     squares = (starting_square, ending_square)
-    word_score = score_word(word)
+    word_score = score_word(word, rack=rack, location=location)
     for w in crossing_words:
         word_score += score_word(w)
-    crossing_words[:] = []
+    # crossing_words[:] = []
     loc = {'location': squares, 'score': word_score}
     return loc
 
@@ -532,98 +667,16 @@ def erase_squares(squares_to_erase):
         scrabble_board[x][y] = None
     squares_to_erase[:] = []
 
-def fit_word_around_letter(word, letter, index, location, start_locations):
-    """
-    Returns locations where word can be played around a letter in the vector
-    specified by location.
-
-    Parameters:
-    -----------
-    word: string
-    letter: single-character string
-    index: starting index in vector
-    location: string
-    start_locations: list of (row, column) 2-tuples
-        List of squares where we have started to place the word along the
-        vector specified by location.
-
-    Returns:
-    --------
-    locations: list of dictionaries
-        Each dictionary has the structure \{'location': (starting_square, ending_square),
-                                            'score': word_score}
-        Where starting_square and ending_square are the squares on which
-        the first and last letters of the word are played.
-
-    """
-    locations = []
-    vector = int(location[1:])
-    if location[0] == 'r':
-        square = (vector, index)
-    elif location[0] == 'c':
-        square = (index, vector)
-    row, column = square
-    crossing_words = []
-    letter_ind_in_word = find_all_indices(letter, word) # where letter
-                                    # occurs in word
-    if not letter_ind_in_word:
-        return locations
-    for ind in letter_ind_in_word:
-        start = index - ind
-        if start in start_locations:
-            continue
-        else:
-            start_locations.append(start)
-        if start < 0 or (start + len(word) - 1) > BOARD_SIZE:
-            continue
-        squares_to_erase = []
-        word_can_fit = can_fit(word, location, start, squares_to_erase, crossing_words)
-        if word_can_fit:
-            loc = location_and_score(word, location, square, start, crossing_words)
-            locations.append(loc)
-        erase_squares(squares_to_erase)
-    return locations
-
-def fit_word_in_empty_vector(word, location):
-    """
-    Returns locations where the word can be played in the empty vector
-    specified by location.
-
-    Parameters:
-    -----------
-    word: string
-    location: string
-
-    Returns:
-    --------
-    locations: list of dictionaries
-        Each dictionary has the structure \{'location': (starting_square, ending_square),
-                                            'score': word_score}
-        Where starting_square and ending_square are the squares on which
-        the first and last letters of the word are played.
-
-    """
+def fit_word_in_vector(word, rack, location):
     vector = int(location[1:])
     locations = []
     for start in range(BOARD_SIZE-len(word)+1):
-        if location[0] == 'r':
-            square = (vector, start)
-        elif location[0] == 'c':
-            square = (start, vector)
-        row, column = square
-        crossing_words = []
-        squares_to_erase = []
-        word_can_fit = can_fit(word, location, start, squares_to_erase, crossing_words)
-        if not crossing_words:
-            erase_squares(squares_to_erase)
-            continue
-        if word_can_fit:
-            loc = location_and_score(word, location, square, start, crossing_words)
-            locations.append(loc)
-        erase_squares(squares_to_erase)
+        loc_and_score = calc_word_score(word, rack, location, start)
+        if loc_and_score:
+            locations.append(loc_and_score)
     return locations
 
-def find_possible_locations(word, location, letters_and_indices):
+def find_possible_locations(word, rack, location, letters_and_indices):
     """
     Finds all of the possible locations where a word can be played along
     the vector specified by location.
@@ -631,6 +684,8 @@ def find_possible_locations(word, location, letters_and_indices):
     Parameters:
     -----------
     word: string
+    rack: list of single-character strings
+        The letters in the player's rack in any order.
     location: string
     letters_and_indices: list of tuples
         Each tuple has the form (character, index) where character is a letter
@@ -649,27 +704,17 @@ def find_possible_locations(word, location, letters_and_indices):
     start_locations = [] # squares where we have attempted to start the word
                         # by placing first letter, we won't try the same place
                         # more than once
-    for letter, index in letters_and_indices:
-        locations = fit_word_around_letter(word, letter, index, location, start_locations)
-        r = []
-        for loc in locations:
-            score = loc['score']
-            l = loc['location']
-            result = {'word': word, 'score': score, 'location': l}
-            r.append(result)
-        possible_locations.extend(r)
-    if not letters_and_indices:
-        locations = fit_word_in_empty_vector(word, location)
-        r = []
-        for loc in locations:
-            score = loc['score']
-            l = loc['location']
-            result = {'word': word, 'score': score, 'location': l}
-            r.append(result)
-        possible_locations.extend(r)
+    locations = fit_word_in_vector(word, rack, location)
+    r = []
+    for loc in locations:
+        score = loc['score']
+        l = loc['location']
+        result = {'word': word, 'score': score, 'location': l}
+        r.append(result)
+    possible_locations.extend(locations)
     return possible_locations
 
-def fit_word(word, location):
+def fit_word(word, rack, location):
     """
     Attempts to fit word into a location (particular row or column) on the
     scrabble_board, returns the word, and the squares in which its letters
@@ -679,7 +724,8 @@ def fit_word(word, location):
     -----------
     word: string
         A dictionary word
-
+    rack: list of single-character strings
+        The letters in the player's rack in any order.
     location: string
         First letter (either "r" or "c") determines whether the location is a
         row or a column, the next digits determine which row or column to work
@@ -695,7 +741,7 @@ def fit_word(word, location):
     """
     letters_and_indices = get_indices_of_letters(location) # indices of
                             # letter in row
-    possible_locations = find_possible_locations(word, location, letters_and_indices)
+    possible_locations = find_possible_locations(word, rack, location, letters_and_indices)
     return possible_locations
 
 
@@ -717,28 +763,5 @@ def find_all_indices(letter, word):
     return indices
 
 if __name__ == "__main__":
-    init_dictionary(WORD_FILE)
-    # # unittest.main()
-    scrabble_board[5][1] = 'M'
-    occupied_squares.append((5, 1))
-    scrabble_board[5][2] = 'A'
-    occupied_squares.append((5, 2))
-    scrabble_board[5][3] = 'N'
-    occupied_squares.append((5, 3))
-    scrabble_board[7][1] = 'M'
-    occupied_squares.append((7, 1))
-    scrabble_board[7][2] = 'A'
-    occupied_squares.append((7, 2))
-    scrabble_board[7][3] = 'N'
-    occupied_squares.append((7, 3))
-    print_scrabble_board(scrabble_board)
-    words = find_playable_words(occupied_squares, list("NEUMANN"))
-    for word in words:
-        print word
-    #print fit_word("CATASTROPHE", "c10")
-    # scrabble_board[5][1] = 'M'
-    # scrabble_board[5][3] = 'N'
-    # scrabble_board[7][1] = 'M'
-    # scrabble_board[7][3] = 'N'
-    # print_scrabble_board(scrabble_board)
-    # print fit_word("CATASTROPHE", "c13")
+    sc = ScrabbleCheater()
+    sc.run()
