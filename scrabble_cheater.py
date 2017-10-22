@@ -1,6 +1,6 @@
 import re
 from random import randrange
-from scrabble_constants import LETTER_VALUES, BONUS_TILES, BONUS_TILE_COLORS
+from scrabble_constants import WWF_LET_VALUES, WWF_BONUS_TILES, BONUS_TILE_COLORS
 import sys
 import random
 import Tkinter as tk
@@ -29,7 +29,7 @@ class ScrabbleCheater(object):
         self.GUI = tk.Tk()
 
     def initialize_GUI(self):
-        global BONUS_TILES
+        global WWF_BONUS_TILES
         self.board = tk.Frame(self.GUI)
         self.board.grid(row=1, column=1)
         # l = tk.Label(self.GUI, text="Scrabble Cheater")
@@ -39,7 +39,7 @@ class ScrabbleCheater(object):
         for r in range(self.BOARD_SIZE):
             for c in range(self.BOARD_SIZE):
                 square = (r, c)
-                bonus = BONUS_TILES.get(square)
+                bonus = WWF_BONUS_TILES.get(square)
                 color = BONUS_TILE_COLORS[bonus]
                 e = tk.Entry(self.board, width=4, bg=color)
                 e.grid(row=r, column=c)
@@ -177,9 +177,9 @@ def score_word(word, rack=None, location=None):
     for letter in word:
         if rack:
             if letter in rack:
-                score += LETTER_VALUES[letter]
+                score += WWF_LET_VALUES[letter]
         else:
-            score += LETTER_VALUES[letter]
+            score += WWF_LET_VALUES[letter]
     return score
 
 def sort_words_by_score(word_list, rack, location):
@@ -491,7 +491,7 @@ def word_crossing_letter(letter, square, direction):
         return None
 
 def find_bonus(square):
-    return BONUS_TILES.get(square)
+    return WWF_BONUS_TILES.get(square)
 
 def calc_word_score(word, rack, location, start):
     """
@@ -538,7 +538,7 @@ def calc_word_score(word, rack, location, start):
         if on_board(row, column) and not scrabble_board[row][column]:
             letter = word[word_ind]
             scrabble_board[row][column] = letter
-            letter_value = LETTER_VALUES[letter]
+            letter_value = WWF_LET_VALUES[letter]
             squares_to_erase.append(square)
             bonus = find_bonus(square)
             crossing_word = word_crossing_letter(letter, square, direction)
@@ -574,7 +574,7 @@ def calc_word_score(word, rack, location, start):
         elif on_board(row, column) and scrabble_board[row][column] == word[word_ind]:
             overlaps_letter = True
             letter = scrabble_board[row][column]
-            letter_value = LETTER_VALUES[letter]
+            letter_value = WWF_LET_VALUES[letter]
             word_score += letter_value
             word_ind += 1
             continue
