@@ -4,13 +4,20 @@ from scrabble_constants import WWF_LET_VALUES, WWF_BONUS_TILES, BONUS_TILE_COLOR
 import sys
 import random
 import Tkinter as tk
+import pickle
+import unittest
+from collections import Counter
+from profilehooks import profile
 
 BOARD_SIZE = 15
 BLANK_TILE = "_"
 occupied_squares = []
 scrabble_board = [[None for x in range(BOARD_SIZE)] for y in range(BOARD_SIZE)]
 dictionary = {}
+trie = {}
+TERMINAL = '$'
 WORD_FILE = "ospd.txt"
+STORED_BOARD = "stored_board.pickle"
 
 # Conventions:
 # Specific vectors (rows or columns) are referenced with strings of the form
@@ -22,7 +29,9 @@ class ScrabbleCheater(object):
     def __init__(self):
         global init_dictionary
         global WORD_FILE
+        global init_trie
         init_dictionary(WORD_FILE)
+        init_trie(WORD_FILE)
         self.BOARD_SIZE = 15
         #self.board = [[None for x in range(BOARD_SIZE)] for y in range(BOARD_SIZE)]
         self.occupied_squares = []
@@ -30,19 +39,29 @@ class ScrabbleCheater(object):
 
     def initialize_GUI(self):
         global WWF_BONUS_TILES
+        global occupied_squares
+        global scrabble_board
         self.board = tk.Frame(self.GUI)
         self.board.grid(row=1, column=1)
         # l = tk.Label(self.GUI, text="Scrabble Cheater")
         # l.pack()
         # self.GUI.title('Scrabble Cheater')
         self.GUI.geometry('600x600')
+        with open(STORED_BOARD, 'rb') as f:
+            scrabble_board = pickle.load(f)
         for r in range(self.BOARD_SIZE):
             for c in range(self.BOARD_SIZE):
                 square = (r, c)
                 bonus = WWF_BONUS_TILES.get(square)
                 color = BONUS_TILE_COLORS[bonus]
-                e = tk.Entry(self.board, width=4, bg=color)
+                content = tk.StringVar()
+                if scrabble_board[r][c]:
+                    letter = scrabble_board[r][c]
+                    occupied_squares.append((r,c))
+                    content.set(letter)
+                e = tk.Entry(self.board, width=4, bg=color, textvariable=content)
                 e.grid(row=r, column=c)
+
         btn = tk.Button(self.GUI, text="Analyze", command=lambda: self.update_board(self.board, self.rack_entry))
         tk.Label(self.GUI, text="Enter rack of letters: ").grid(row=r+2, column=1,sticky='W')
         self.rack_entry = tk.Entry(self.GUI)
@@ -50,6 +69,7 @@ class ScrabbleCheater(object):
 
         btn.grid(row=r+3)
 
+    @profile
     def update_board(self, board, rack_entry):
         global find_playable_words
         global scrabble_board
@@ -60,7 +80,9 @@ class ScrabbleCheater(object):
             val = child.get()
             if len(val) == 1:
                 occupied_squares.append((r, c))
-                scrabble_board[r][c] = val
+                scrabble_board[r][c] = val.upper()
+        with open(STORED_BOARD, 'wb') as f:
+            pickle.dump(scrabble_board, f)
         print_scrabble_board(scrabble_board)
         rack_letters = rack_entry.get()
         print rack_letters
@@ -72,6 +94,7 @@ class ScrabbleCheater(object):
         print_scrabble_board(scrabble_board)
         scrabble_board = [[None for x in range(BOARD_SIZE)] for y in range(BOARD_SIZE)]
         occupied_squares = []
+        print rack
 
     def run(self):
         self.initialize_GUI()
@@ -96,6 +119,62 @@ def init_dictionary(f):
                 dictionary[key].append(word)
             else:
                 dictionary[key] = [word]
+
+def find_creatable_words(trie, rack):
+    rack = Counter(rack)
+    return words_from_rack(trie, rack)
+
+def words_from_rack(node, rack):
+    """
+    Find all words that can be created using only letters in the rack. Return
+    as list.
+
+    Parameters:
+    -----------
+    node: nested dictionaries
+
+    """
+    words = []
+    if TERMINAL in node:
+        words.append(node[TERMINAL])
+    for c in rack:
+        if c == BLANK_TILE:
+            for k in node.iterkeys():
+                if k == TERMINAL:
+                    continue
+                words.extend(words_from_rack(node[k], rack - Counter(BLANK_TILE)))
+            continue
+        if not (c in node):
+            continue
+        # print "c:", c, type(c)
+        # print "Node:", node, type(node)
+        words.extend(words_from_rack(node[c], rack - Counter(c)))
+    return words
+
+class TrieTest(unittest.TestCase):
+
+    # def test_trie_contains(self):
+    #     trie = {'d': {'o': {'g': {'$': 'dog'}, '$': 'do'}}}
+    #     self.assertTrue(trie_contains(trie, 'dog'))
+
+    def test_find_creatable_words(self):
+        trie = {'d': {'o': {'g': {'$': 'dog'}, '$': 'do'}}}
+        rack = 'doge'
+        self.assertEqual(sorted(find_creatable_words(trie, rack)), ['do', 'dog'])
+
+def init_trie(f):
+    global trie
+    with open(f, 'r') as dictionary:
+        for word in dictionary:
+            word = word.strip().upper()
+            node = trie
+            for c in word:
+                if node.get(c):
+                    node = node[c]
+                else:
+                    node[c] = {}
+                    node = node[c]
+            node[TERMINAL] = word
 
 def rack_has_all_letters(rack, word):
     """
@@ -327,27 +406,6 @@ def print_scrabble_board(scrabble_board):
         print index, row
     print
 
-def get_rack():
-    """
-    Prompts the user to input their rack of letters.  Returns the rack in
-    string form.
-
-    """
-    while True:
-            letters = raw_input("Please enter the letters in the rack: ")
-            if letters == "":
-                break
-            elif (len(letters) > 7):
-                print "You entered an invalid number of characters."
-                print "Please try again."
-            elif not letters.isalpha():
-                print "Some of the characters you entered arent valid Scrabble tiles."
-                print "Please try again."
-            else:
-                break
-    rack = list(letters.upper())
-    return rack
-
 def find_playable_words(occupied_squares, rack):
     """
     Finds all words that may, and many that may not, be played with a current
@@ -370,6 +428,7 @@ def find_playable_words(occupied_squares, rack):
         letters on the board and in the rack.
 
     """
+    global trie
     potential_words = {}
     left_most_square = min(occupied_squares, key=lambda x: x[1])
     right_most_square = max(occupied_squares, key=lambda x: x[1])
@@ -391,7 +450,8 @@ def find_playable_words(occupied_squares, rack):
             letter = scrabble_board[row][column]
             if letter:
                 rack_copy.append(letter)
-        possible_words = find_words(rack_copy, dictionary)
+        possible_words = find_creatable_words(trie, rack_copy)
+        possible_words = list(set(possible_words))
         potential_words[key].extend(possible_words)
 
     top_boundary = top_square[0]
@@ -408,7 +468,8 @@ def find_playable_words(occupied_squares, rack):
             letter = scrabble_board[row][column]
             if letter:
                 rack_copy.append(letter)
-        possible_words = find_words(rack_copy, dictionary)
+        possible_words = find_creatable_words(trie, rack_copy)
+        possible_words = list(set(possible_words))
         potential_words[key].extend(possible_words)
     playable_words = []
     for vector, words in potential_words.iteritems():
@@ -417,7 +478,10 @@ def find_playable_words(occupied_squares, rack):
             result = fit_word(word, rack, vector)
             playable_words.extend(result)
     playable_words = sort_by_score(playable_words)
-    return playable_words[:10]
+    if len(playable_words) >= 10:
+        return playable_words[:10]
+    else:
+        return playable_words
 
 def sort_by_score(playable_words):
     words_by_score = sorted(playable_words, key=lambda word: word['score'], reverse=True)
@@ -546,6 +610,7 @@ def calc_word_score(word, rack, location, start):
                 erase_squares(squares_to_erase)
                 return None
             crossing_word_score = 0
+            multiplier = 1
             if len(crossing_word) > 1:
                 crossing_word_score = score_word(crossing_word)
                 crossing_words.append(crossing_word)
@@ -558,18 +623,24 @@ def calc_word_score(word, rack, location, start):
                     if len(crossing_word) > 1:
                         crossing_word_score += letter_value * (multiplier - 1)
                     letter_value *= multiplier
-            # if word == "PIVOTAL" and start_square == (0, 3):
-                # print "Letter:", letter, "Value:", letter_value, "Multiplier:", score_multiplier, "Crossing word:", crossing_word, "Crossing word score:", crossing_word_score
-            word_score += letter_value
-            crossing_word_scores.append(crossing_word_score)
             try:
                 rack_copy.remove(letter)
+                word_score += letter_value
             except ValueError: # not enough letters to make word
                 if BLANK_TILE in rack_copy:
                     rack_copy.remove(BLANK_TILE)
+                    if len(crossing_word) > 1:
+                        if bonus:
+                            if bonus[1] == 'W':
+                                crossing_word_score -= multiplier * letter_value
+                            elif bonus[1] == 'L':
+                                crossing_word_score -= letter_value
+                        else:
+                            crossing_word_score -= letter_value
                 else:
                     erase_squares(squares_to_erase)
                     return None
+            crossing_word_scores.append(crossing_word_score)
             word_ind += 1
         elif on_board(row, column) and scrabble_board[row][column] == word[word_ind]:
             overlaps_letter = True
@@ -584,6 +655,9 @@ def calc_word_score(word, rack, location, start):
     if not (crossing_words or overlaps_letter):
         erase_squares(squares_to_erase)
         return None
+    if rack_copy == rack: # No letters were put down
+        erase_squares(squares_to_erase)
+        return None
     # make sure completed word is in the dictionary
     if location[0] == 'r':
         end_square = (x, y)
@@ -592,66 +666,19 @@ def calc_word_score(word, rack, location, start):
         end_square = (y, x)
         direction = ['horizontal']
     finished_word = find_words_including(end_square, directions=direction)
-    # if word == "PIVOTAL":
-    #     print "Finished word:", finished_word, "Location:", start_square, end_square
     if not word_in_dict(finished_word, dictionary):
-        # if word == "PIVOTAL":
-        #     print "Finished word not in dict"
         erase_squares(squares_to_erase)
         return None
     word_score *= score_multiplier
     for score in crossing_word_scores:
         word_score += score
-    # if word == "PIVOTAL":
-    #     print "Rack Length:", len(rack), "Rack Copy:", rack_copy
     if (len(rack) == 7) and (not rack_copy):
-        word_score += 50
+        word_score += 35
     loc_and_score = {'word': word,
                      'location':(start_square, end_square),
                      'score': word_score}
     erase_squares(squares_to_erase)
     return loc_and_score
-
-def location_and_score(word, rack, location, square, start, crossing_words):
-    """
-    Finds all the locations where a word can legally be played along the
-    vector specified by location, along by the score from playing the word
-    there.
-
-    Parameters:
-    -----------
-    word: string
-    location: string
-    square: (row, column) tuple
-    start: int
-        Index of first letter of word in vector.
-    crossing_words: list of strings
-        A list of words that the letter's containing word intersects with.
-
-    Returns:
-    --------
-    loc: dictionary with string keys
-        The 'location' key has a corresponding 2-tuple of
-        (starting_square, ending_square) where starting_square and
-        ending_square are the squares on which the first and last letters
-        of the word are played respectively.
-        The 'score' key holds the points gained by playing the word.
-
-    """
-    row, column = square
-    if location[0] == 'r':
-        starting_square = (row, start)
-        ending_square = (row, start+len(word)-1)
-    elif location[0] == 'c':
-        starting_square = (start, column)
-        ending_square = (start+len(word)-1, column)
-    squares = (starting_square, ending_square)
-    word_score = score_word(word, rack=rack, location=location)
-    for w in crossing_words:
-        word_score += score_word(w)
-    # crossing_words[:] = []
-    loc = {'location': squares, 'score': word_score}
-    return loc
 
 def erase_squares(squares_to_erase):
     """
@@ -762,6 +789,9 @@ def find_all_indices(letter, word):
     indices = [index for index, char in enumerate(word) if char == letter]
     return indices
 
-if __name__ == "__main__":
+def main():
     sc = ScrabbleCheater()
     sc.run()
+
+if __name__ == "__main__":
+    main()
