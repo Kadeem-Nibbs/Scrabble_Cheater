@@ -1,28 +1,25 @@
-import re
-from random import randrange
-from scrabble_constants import WWF_LET_VALUES, WWF_BONUS_TILES, BONUS_TILE_COLORS
-import sys
-import random
 import Tkinter as tk
 import pickle
-import unittest
+from scrabble_constants import WWF_LET_VALUES, WWF_BONUS_TILES, BONUS_TILE_COLORS
 from collections import Counter
 from profilehooks import profile
+from pprint import PrettyPrinter
+pp = PrettyPrinter()
 
 BOARD_SIZE = 15
 BLANK_TILE = "_"
+ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+TERMINAL = '$' # denotes the end of a word in trie
+WORD_FILE = "ENABLE.txt" # Enhanced North American Benchmark Lexicon with
+                         # with a few hundred additions of more modern words
+                         # and about 100 deletions of offensive words made by
+                         # Zynga
+EMPTY_BOARD = [[None for x in range(BOARD_SIZE)] for y in range(BOARD_SIZE)]
+board = [[None for x in range(BOARD_SIZE)] for y in range(BOARD_SIZE)]
+score_board = [[None for x in range(BOARD_SIZE)] for y in range(BOARD_SIZE)]
 occupied_squares = []
-scrabble_board = [[None for x in range(BOARD_SIZE)] for y in range(BOARD_SIZE)]
-dictionary = {}
-trie = {}
-TERMINAL = '$'
-WORD_FILE = "ospd.txt"
-STORED_BOARD = "stored_board.pickle"
-
-# Conventions:
-# Specific vectors (rows or columns) are referenced with strings of the form
-# "[r|c]x" where r or c specifies row or column and x specifies the index
-# of the vector.
+dictionary = {} # for checking if a word is in dictionary
+trie = {} # for seeing what words can be made on the board with rack
 
 class ScrabbleCheater(object):
 
@@ -31,72 +28,94 @@ class ScrabbleCheater(object):
         global WORD_FILE
         global init_trie
         init_dictionary(WORD_FILE)
-        init_trie(WORD_FILE)
+        init_trie()
         self.BOARD_SIZE = 15
-        #self.board = [[None for x in range(BOARD_SIZE)] for y in range(BOARD_SIZE)]
         self.occupied_squares = []
         self.GUI = tk.Tk()
 
     def initialize_GUI(self):
+        """
+        Initialize displayed board to showed letters from board variable.  Set
+        the colors of each square according to the bonus it contains.
+
+        """
         global WWF_BONUS_TILES
+        global WWF_LET_VALUES
         global occupied_squares
-        global scrabble_board
+        global board
         self.board = tk.Frame(self.GUI)
         self.board.grid(row=1, column=1)
-        # l = tk.Label(self.GUI, text="Scrabble Cheater")
-        # l.pack()
-        # self.GUI.title('Scrabble Cheater')
         self.GUI.geometry('600x600')
-        with open(STORED_BOARD, 'rb') as f:
-            scrabble_board = pickle.load(f)
         for r in range(self.BOARD_SIZE):
             for c in range(self.BOARD_SIZE):
                 square = (r, c)
                 bonus = WWF_BONUS_TILES.get(square)
                 color = BONUS_TILE_COLORS[bonus]
                 content = tk.StringVar()
-                if scrabble_board[r][c]:
-                    letter = scrabble_board[r][c]
+                if board[r][c]:
+                    letter = board[r][c]
                     occupied_squares.append((r,c))
+                    score_board[r][c] = WWF_LET_VALUES[letter]
                     content.set(letter)
                 e = tk.Entry(self.board, width=4, bg=color, textvariable=content)
                 e.grid(row=r, column=c)
 
-        btn = tk.Button(self.GUI, text="Analyze", command=lambda: self.update_board(self.board, self.rack_entry))
+        btn = tk.Button(self.GUI, text="Analyze", command=lambda: self.display_words(self.rack_entry))
         tk.Label(self.GUI, text="Enter rack of letters: ").grid(row=r+2, column=1,sticky='W')
         self.rack_entry = tk.Entry(self.GUI)
         self.rack_entry.grid(row=r+2, column=1, sticky='E')
 
         btn.grid(row=r+3)
 
-    @profile
-    def update_board(self, board, rack_entry):
+    def display_words(self, rack_entry):
+        """
+        Sets board and rack using values from the respective entry slots.  Uses
+        these to find and display the highest scoring words that can be played.
+        Resets the board to the empty state after every run.
+
+        Parameters:
+        -----------
+        rack_entry: tk.Entry
+            The tk widget where the rack letters are entered.
+
+        """
         global find_playable_words
-        global scrabble_board
+        global board
         global occupied_squares
-        for child in board.children.values():
+        global compute_cross_checks
+        occupied_squares = []
+        for child in self.board.children.values():
             r = int(child.grid_info()['row'])
             c = int(child.grid_info()['column'])
             val = child.get()
             if len(val) == 1:
                 occupied_squares.append((r, c))
-                scrabble_board[r][c] = val.upper()
-        with open(STORED_BOARD, 'wb') as f:
-            pickle.dump(scrabble_board, f)
-        print_scrabble_board(scrabble_board)
+                letter = val.upper()
+                board[r][c] = letter
+                score_board[r][c] = WWF_LET_VALUES[letter]
+            elif len(val) == 2:
+                if val[1] == '*':
+                    occupied_squares.append((r, c))
+                    letter = val[0].upper()
+                    board[r][c] = letter
+                    score_board[r][c] = 0
+        print_board(board)
         rack_letters = rack_entry.get()
-        print rack_letters
         rack = list(rack_letters.upper())
-        print rack
-        words = find_playable_words(occupied_squares, rack)
+        words = find_highest_scoring_words(board, rack)[:50]
         for word in words:
             print word
-        print_scrabble_board(scrabble_board)
-        scrabble_board = [[None for x in range(BOARD_SIZE)] for y in range(BOARD_SIZE)]
+        print
+        board = [[None for x in range(BOARD_SIZE)] for y in range(BOARD_SIZE)]
         occupied_squares = []
-        print rack
 
     def run(self):
+        """
+        Wait for input board states and racks from the user.  Respond to
+        pressed Analyze button with top 50 highest scoring words that can be
+        played in the scenario.
+
+        """
         self.initialize_GUI()
         self.GUI.mainloop()
 
@@ -120,53 +139,16 @@ def init_dictionary(f):
             else:
                 dictionary[key] = [word]
 
-def find_creatable_words(trie, rack):
-    rack = Counter(rack)
-    return words_from_rack(trie, rack)
-
-def words_from_rack(node, rack):
+def init_trie():
     """
-    Find all words that can be created using only letters in the rack. Return
-    as list.
-
-    Parameters:
-    -----------
-    node: nested dictionaries
+    Initializes the trie global variable as a dictionary-based trie.  Reads
+    the dictionary global variable to construct the trie.
 
     """
-    words = []
-    if TERMINAL in node:
-        words.append(node[TERMINAL])
-    for c in rack:
-        if c == BLANK_TILE:
-            for k in node.iterkeys():
-                if k == TERMINAL:
-                    continue
-                words.extend(words_from_rack(node[k], rack - Counter(BLANK_TILE)))
-            continue
-        if not (c in node):
-            continue
-        # print "c:", c, type(c)
-        # print "Node:", node, type(node)
-        words.extend(words_from_rack(node[c], rack - Counter(c)))
-    return words
-
-class TrieTest(unittest.TestCase):
-
-    # def test_trie_contains(self):
-    #     trie = {'d': {'o': {'g': {'$': 'dog'}, '$': 'do'}}}
-    #     self.assertTrue(trie_contains(trie, 'dog'))
-
-    def test_find_creatable_words(self):
-        trie = {'d': {'o': {'g': {'$': 'dog'}, '$': 'do'}}}
-        rack = 'doge'
-        self.assertEqual(sorted(find_creatable_words(trie, rack)), ['do', 'dog'])
-
-def init_trie(f):
+    global dictionary
     global trie
-    with open(f, 'r') as dictionary:
-        for word in dictionary:
-            word = word.strip().upper()
+    for key in dictionary:
+        for word in dictionary[key]:
             node = trie
             for c in word:
                 if node.get(c):
@@ -176,33 +158,664 @@ def init_trie(f):
                     node = node[c]
             node[TERMINAL] = word
 
-def rack_has_all_letters(rack, word):
+def empty_and_not_preceded_by_letter(board, row, column):
     """
-    Returns True if the word contains all the letters in the rack. Returns
-    False otherwise.
+    Returns True if board[row][column] contains None (a letter has not been
+    played there) and is not preceded by a square, board[row][column-1], which
+    holds a letter.  Returns False otherwise.
+
+    """
+    if not on_board(row, column):
+        return False
+    if board[row][column]:
+        return False
+    if not on_board(row, column-1):
+        return True
+    if not board[row][column-1]:
+        return True
+    else:
+        return False
+
+def find_anchor_squares_near(board, row, column):
+    """
+    Anchor squares are the squares by which new words may be connected to
+    existing words on the board.  I defined the set of anchor squares to be
+    squares that are either hold a letter, or that are empty and one row above
+    or below an occupied square.  In either case, the square must not be
+    directly preceded in its row by an occupied square.
+
+    This function returns a list of all occupied squares one index or less away
+    from board[row][column].
+
+    """
+    anchor_squares = []
+    # if not (on_board(row, column-1)):
+    #     anchor_squares.append((row, column))
+    candidate_squares = [(row, column), (row-1, column), (row+1, column)]
+    for square in candidate_squares:
+        if square == (row, column):
+            if on_board(row, column-1) and not board[row][column-1]:
+                anchor_squares.append(square)
+        if empty_and_not_preceded_by_letter(board, *square):
+            anchor_squares.append(square)
+    return anchor_squares
+
+def get_anchor_squares(board):
+    """
+    Returns a list of all of the anchor squares on the board.
+
+    """
+    anchor_squares = []
+    for square in occupied_squares:
+        adjacent_anchor_squares = find_anchor_squares_near(board, *square)
+        anchor_squares.extend(adjacent_anchor_squares)
+    return anchor_squares
+
+def make_counter(rack):
+    """
+    Parameters:
+    -----------
+    rack: string
+        A string containing the letters in the rack.
+
+    Returns:
+    --------
+    counter: dictionary
+        A dictionary with string keys corresponding to letters in the rack.
+        The corresponding value is the count of that letter.
+
+    """
+    counter = {}
+    for c in rack:
+        if counter.get(c):
+            counter[c] += 1
+        else:
+            counter[c] = 1
+    return counter
+
+def decremented_counter(counter, l):
+    """
+    Parameters:
+    -----------
+    counter: dictionary
+        A dictionary with string keys corresponding to letters remaining in the
+        rack and values corresponding to the count of each letter remaining.
+    l: single-character string
+        A letter being placed on the board and removed from the rack.
+
+    Returns:
+    --------
+    c: dictionary
+        A copy of the dictionary described above with 1 subtracted from l's
+        count. If l's count drops to 0, it is popped from the dictionary.
+
+    """
+    c = counter.copy()
+    c[l] -= 1
+    if c[l] <= 0:
+        c.pop(l, None)
+    return c
+
+def make_prefixes(node, row, column, rack, spaces_left, pref, tiles_played):
+    """
+    A prefix in this application is a valid beginning to a word that can be
+    played in the squares to the left of an anchor square.
+    Returns a list of all of the prefixes that can be continued from a node in
+    the trie, given the number of spaces remaining to the left of
+    the anchor square board[row][column].
 
     Parameters:
     -----------
-    rack: list of single-character strings
-        The letters in the player's rack in any order.
-    word: string
-        Word from dictionary.
+    node: dictionary
+        Each key is a letter l that can be played to continue a prefix, the
+        corresponding value of each is a dictionary containing letters that can
+        be played after l to continue the prefix further.
+    row, column: integer indices of 2d list
+    rack: dictionary used as makeshift counter for letters remaining in rack
+    spaces_left: int
+        Number of letters remaining to continue prefixes.
+    pref: string
+        The letters in the prefix already, in order played.
+    tiles_played: list of strings
+        The tiles put down to construct the prefix, in order played.
+
+    Returns:
+    --------
+    prefixes: list of tuples
+        The 0th index of each tuple is a dictionary like node described
+        above, but will later be used to complete words not just form prefixes.
+        The 1st index is a dictionary with the counts of letters remaining
+        in the rack.  The 2nd index is a list of the tiles played to form the
+        prefix in order.
 
     """
-    rack_copy = rack[:]
-    for letter in word:
-        if letter in rack_copy:
-            rack_copy.remove(letter)
-        elif BLANK_TILE in rack_copy:
-            rack_copy.remove(BLANK_TILE)
-        else:
+    prefixes = []
+    if is_valid_prefix(board, pref, row, column):
+        prefixes.append((node, rack, tiles_played))
+    if spaces_left < 1:
+        return prefixes
+    for l in node.keys():
+        if l == TERMINAL: # We can't always us complete words as prefixes, if
+                          # the corresponding anchor square is empty,they may
+                          # not touch a letter already on the board.
+            continue
+        if l in rack:
+            next_node = node[l]
+            new_rack = decremented_counter(rack, l)
+            prefixes.extend(make_prefixes(next_node, row, column, new_rack, spaces_left-1, pref+l, tiles_played+tuple(l)))
+        if BLANK_TILE in rack:
+            next_node = node[l]
+            new_rack = decremented_counter(rack, BLANK_TILE)
+            prefixes.extend(make_prefixes(next_node, row, column, new_rack, spaces_left-1, pref+l, tiles_played+tuple(BLANK_TILE)))
+    return prefixes
+
+def is_valid_prefix(board, prefix, row, column):
+    """
+    Returns True if the letters in the proposed prefix, with the last letter
+    at board[row][column-1] would not form illegal vertical words with letters
+    already on the board. Returns False otherwise.
+
+    Parameters:
+    -----------
+    board: 2d list, the game board
+    prefix: string
+        The beginnings of a word that may be playable on the board.
+    row, column: integer indices of board
+
+    """
+    size = len(prefix)
+    for i in range(size):
+        if not can_play_letter(board, row, column-(size-i), prefix[i]):
             return False
     return True
+
+def get_all_prefixes(board, row, column, rack):
+    """
+    Parameters:
+    -----------
+    board: 2d list, the scrabble_board
+    row, column: integer indices of 2d list
+    rack: string, the letters in the rack
+
+    Returns:
+    --------
+    prefixes: list of tuples, beginnings to all words that can be played
+              through board[row][column]
+        The 0th index of each tuple is a dictionary with different iterable
+        paths, each '$' key encountered denotes and contains a complete word as
+        a value. The 1st index is a dictionary with the counts of letters
+        remaining in the rack.  The 2nd index is a list of the tiles played to
+        form the prefix in order.
+
+    """
+    rack_length = len(rack)
+    rack = make_counter(rack)
+    free_spaces_to_left = 0
+    r, c = row, column
+    while on_board(r, c): # count empty squares to the left of board[row][column]
+                          # to determine how long prefixes can be
+        if not on_board(r, c-1):
+            break
+        if not board[r][c-1]:
+            c -= 1
+            free_spaces_to_left += 1
+        else: # found a letter on the board, go back one space
+            free_spaces_to_left -= 1
+            break
+    free_spaces_to_left = min(free_spaces_to_left, rack_length)
+    prefixes = make_prefixes(trie, row, column, rack, free_spaces_to_left, "", ())
+    return prefixes
+
+def find_across_words(board, rack):
+    """
+    Returns a list of all of the across words that can be played on the board
+    with the letters in the rack.
+
+    Parameters:
+    -----------
+    board: 2-d list, the game board
+    rack: dictionary with the counts of each letter in the rack
+
+    """
+    words = []
+    anchor_squares = get_anchor_squares(board)
+    for sq in anchor_squares:
+        row, column = sq
+        prefixes = get_all_prefixes(board, row, column, rack)
+        for p in prefixes: # try to extend prefixes into full words
+            prefix, _rack, tiles_played = p
+            words.extend(build_words(board, prefix, row, column, _rack, sq, tiles_played))
+    return words
+
+def find_down_words(board_t, rack):
+    """
+    Returns a list of all of the down words that can be played on the board
+    with the letters in the rack.
+
+    Parameters:
+    -----------
+    board_t: 2-d list, the game board transposed
+    rack: dictionary with the counts of each letter in the rack
+
+    """
+    words = []
+    anchor_squares = get_anchor_squares(board_t)
+    for sq in anchor_squares:
+        row, column = sq
+        prefixes = get_all_prefixes(board_t, row, column, rack)
+        for p in prefixes:
+            prefix, _rack, tiles_played = p
+            words.extend(build_words(board_t, prefix, row, column, _rack, sq, tiles_played))
+    words = [transpose_word(word) for word in words]
+    return words
+
+@profile
+def find_highest_scoring_words(board, rack):
+    """
+    Returns a list of tuples describing the highest scoring words that can be
+    played given a board and a rack. Each tuple has the form
+    (word, (start_square, end_square), tiles_played, score).
+
+    Parameters:
+    -----------
+    board: 2d list, the game board
+    rack: string, the letters in the rack
+
+    """
+    global score_board
+    global cross_checks
+    global occupied_squares
+    compute_cross_checks(board)
+    words = []
+    across_words = find_across_words(board, rack)
+    words.extend(across_words)
+    # transpose the board, repeat process to find down words
+    board_t = transposed_board(board)
+    score_board = transposed_board(score_board)
+    occupied_squares = []
+    for i in range(BOARD_SIZE):
+        for j in range(BOARD_SIZE):
+            if letter:
+                occupied_squares.append((i, j))
+    compute_cross_checks(board_t) # recompute cross checks for transposed board
+    down_words = find_down_words(board_t, rack)
+    words.extend(down_words)
+    return sorted(list(set(words)), key=lambda w: w[3], reverse=True)
+
+def transpose_word(word_info):
+    """
+    Returns word_info with the position changed to what it would be if the
+    board was transposed.
+
+    Parameters:
+    -----------
+    word_info: tuple
+        0th index is word in string form, 1st index is a 2-tuple
+        ((start_row, start_column), (end_row, end_column)). 2nd index is a
+        list of the tiles played to form the word, in order.  The 3rd index is
+        the score from playing the word as prescribed.
+
+    """
+    word, location, tiles_played, score = word_info
+    start_column, start_row = location[0]
+    end_column, end_row = location[1]
+    start = (start_row, start_column)
+    end = (end_row, end_column)
+    return (word, (start, end), tiles_played, score)
+
+def build_words_around_tile(board, node, row, column, rack, start_square, tiles_played):
+    """
+    Finds words that can be continued from the input node in the trie using the
+    letter at board[row][column].
+
+    Parameters:
+    -----------
+    board: 2-d list, the game board
+    node: dictionary
+        Represents current node in the trie
+    row, column: ints, indices of board
+    rack: dictionary
+        The letters in the rack and the counts of each
+    start_square: 2-tuple of ints
+        The anchor square by which the created words are attached to
+        the board
+    tiles_played: list of single character strings
+        The tiles played from the rack to reach the current node in the trie
+
+    Returns:
+    --------
+    List of tuples describing words that can be played using letter at
+    board[row][column], each tuple has the form
+    (word, (start_square, end_square), tiles_played, score)
+
+    """
+    letter = board[row][column]
+    words = []
+    if letter in node.keys():
+        words.extend(build_words(board, node[letter], row, column+1, rack,\
+                     start_square, tiles_played))
+    return words
+
+def build_words_through_empty_square(board, node, row, column, rack, start_square, tiles_played):
+    """
+    Finds words that can be continued from the input node in the trie by
+    playing a letter from the rack at board[row][column].
+
+    Parameters:
+    -----------
+    board: 2-d list, the game board
+    node: dictionary
+        Represents current node in the trie
+    row, column: ints, indices of board
+    rack: dictionary
+        The letters in the rack and the counts of each
+    start_square: 2-tuple of ints
+        The anchor square by which the created words are attached to
+        the board
+    tiles_played: list of single character strings
+        The tiles played from the rack to reach the current node in the trie
+
+    Returns:
+    --------
+    List of tuples describing words that can be formed by playing aletter at
+    board[row][column], each tuple has the form
+    (word, (start_square, end_square), tiles_played, score)
+
+    """
+    words = []
+    for letter in node.keys():
+        if letter == TERMINAL:
+            if tiles_played and (row, column) != start_square:
+                word = node[TERMINAL]
+                start, end = (row, column-len(word)), (row, column-1)
+                score = score_word(board, tiles_played, start, end)
+                words.append((word, (start, end), tiles_played, score))
+            continue
+        if not can_play_letter(board, row, column, letter):
+            continue
+        if letter in rack:
+            words.extend(build_words(board, node[letter], row, column+1,\
+                        decremented_counter(rack, letter), start_square, tiles_played+tuple(letter)))
+        if BLANK_TILE in rack:
+            words.extend(build_words(board, node[letter], row, column+1,\
+                        decremented_counter(rack, BLANK_TILE), start_square, tiles_played+tuple(BLANK_TILE)))
+    return words
+
+def square_has_no_vertical_neighbors(board, x, y):
+    """
+    Returns True if neither board[x-1][y] nor board[x+1][y] holds a letter.
+    Returns False otherwise.
+
+    """
+    if not on_board(x-1, y):
+        if not board[x+1][y]:
+            return True
+    elif not on_board(x+1, y):
+        if not board[x-1][y]:
+            return True
+    else:
+        if not (board[x+1][y] or board[x-1][y]):
+            return True
+
+def get_adjacent_empty_squares(board, row, column):
+    """Returns all empty squares adjacent to board[row][column] in a list."""
+    adjacent_squares = []
+    for r, c in ((row+1, column), (row-1, column), \
+                        (row, column+1), (row, column-1)):
+        if on_board(r, c) and not board[r][c]:
+            adjacent_squares.append((r, c))
+    return adjacent_squares
+
+def compute_cross_checks(board):
+    """
+    Computes all of the letters that can be played on each square on the board
+    without creating an illegal vertical word, places them in the global
+    "cross_checks" dictionary.  If a square isn't in the dictionary, then any
+    letter can be played at that square.
+
+    """
+    global cross_checks
+    cross_checks = {}
+    cross_check_squares = []
+    for square in occupied_squares:
+        cross_check_squares.extend(get_adjacent_empty_squares(board, *square))
+    cross_check_squares = list(set(cross_check_squares))
+    for square in cross_check_squares:
+        row, column = square
+        upper_part = lower_part = ""
+        upper_r = row - 1
+        lower_r = row + 1
+        while on_board(upper_r, column) and board[upper_r][column]:
+            upper_part = board[upper_r][column] + upper_part
+            upper_r -= 1
+        while on_board(lower_r, column) and board[lower_r][column]:
+            lower_part = lower_part + board[lower_r][column]
+            lower_r += 1
+        if not (lower_part or upper_part):
+            continue
+        check_string = upper_part + "%s" + lower_part
+        cross_checks[square] = set()
+        for c in ALPHABET:
+            possible_word = check_string % c
+            if word_in_dict(possible_word, dictionary):
+                cross_checks[square] |= set(c)
+
+def can_play_letter(board, x, y, letter):
+    """
+    Returns True if the letter can be played on square without creating an
+    illegal crossing word, returns False otherwise.
+
+    Parameters:
+    -----------
+    board: 2-d list, the game board
+    x, y: ints, indices of empty square on board
+    letter: string of length 1
+        Letter to attempt to place
+
+    """
+    if not (x, y) in cross_checks:
+        return True
+    possible_letters = cross_checks.get((x, y))
+    return letter in possible_letters
+
+def finish_word_on_board_edge(board, node, row, column, rack, start_square, tiles_played):
+    """
+    Finds words that can be finished on the edge of the board from node's
+    parent in the trie.
+
+    Parameters:
+    -----------
+    board: 2-d list, the game board
+    node: dictionary
+        Represents current node in the trie
+    row, column: ints, indices of board
+    rack: dictionary
+        The letters in the rack and the counts of each
+    start_square: 2-tuple of ints
+        The anchor square by which the created words are attached to
+        the board
+    tiles_played: list of single character strings
+        The tiles played from the rack to reach the current node in the trie
+
+    Returns:
+    --------
+    List of tuples describing words that could be finished on the edge of the
+    board from node's parent.  Each tuple has the form
+    (word, (start_square, end_square), tiles_played, score).
+
+    """
+    words = []
+    if TERMINAL in node.keys():
+        if tiles_played:
+            word = node[TERMINAL]
+            start, end = (row, column-len(word)), (row, column-1)
+            score = score_word(board, tiles_played, start, end)
+            words.append((word, (start, end), tiles_played, score))
+    return words
+
+def build_words(board, node, row, column, rack, start_square, tiles_played):
+    """
+    Finds words that be built through board[row][column].
+
+    Parameters:
+    -----------
+    board: 2-d list, the game board
+    node: dictionary
+        Represents current node in the trie
+    row, column: ints, indices of board
+    rack: dictionary
+        The letters in the rack and the counts of each
+    start_square: 2-tuple of ints
+        The anchor square by which the created words are attached to
+        the board
+    tiles_played: list of single character strings
+        The tiles played from the rack to reach the current node in the trie
+
+    Returns:
+    --------
+    List of tuples describing words that can be formed through
+    board[row][column]. Each tuple has the form
+    (word, (start_square, end_square), tiles_played, score).
+
+    """
+    words = []
+    if not on_board(row, column):
+        return finish_word_on_board_edge(board, node, row, column, rack, start_square, tiles_played)
+    letter = board[row][column]
+    if letter:
+        words.extend(build_words_around_tile(board, node, row, column, rack,\
+                     start_square, tiles_played))
+    else:
+        words.extend(build_words_through_empty_square(board, node, row, column, rack,\
+                     start_square, tiles_played))
+    return words
+
+def crossing_word_score(board, row, column, letter, score_board, bonus):
+    """
+    Calculates the score of the vertical word that intersects with
+    board[row][column].
+
+    Parameters:
+    -----------
+    board: 2-d list, the game board
+    row, column: ints, indices on game board
+    letter: single-character string
+        Letter of the vertical word that intersects with the across word we
+        found
+    score_board: 2-d list, the value of the tile at each index of board
+    bonus: string or None
+        The bonus attached to board[row][column], one of: "2W", "2L", "3W",
+        "3L".
+
+    Returns:
+    --------
+    score: int
+        The extra points gained from the crossing word.
+
+    """
+    if bonus:
+        if bonus[1] == 'L':
+            score = (int(bonus[0]) * WWF_LET_VALUES[letter])
+            multiplier = 1
+        elif bonus[1] == 'W':
+            score = WWF_LET_VALUES[letter]
+            multiplier = int(bonus[0])
+    else:
+        score = WWF_LET_VALUES[letter]
+        multiplier = 1
+    top_row = row - 1
+    bottom_row = row + 1
+    while on_board(top_row, column) and board[top_row][column]:
+        score += score_board[top_row][column]
+        top_row -= 1
+
+    while on_board(bottom_row, column) and board[bottom_row][column]:
+        score += score_board[bottom_row][column]
+        bottom_row += 1
+    score *= multiplier
+    return score
+
+def part_of_vertical_word(board, row, column):
+    """
+    Returns True if either of board[x-1][y] and board[x+1][y] holds a letter.
+    Returns False otherwise.
+
+    """
+    if on_board(row+1, column) and board[row+1][column]:
+        return True
+    elif on_board(row-1, column) and board[row-1][column]:
+        return True
+    else:
+        return False
+
+def score_word(board, tiles_played, start_square, end_square):
+    """
+    Returns the score from playing the tiles in tiles_played between
+    start_square and end_square (inclusive).
+
+    Parameters:
+    -----------
+    board: 2-d list, the game board
+    tiles_played: list of single-character strings
+        The tiles to play on the board, in order.
+    start_square, end_square: 2-tuples of ints
+        The locations on the board of the first and last letter, respectively,
+        of the word being formed.
+
+    """
+    score = 0
+    multiplier = 1
+    tiles_played_index = 0
+    crossing_word_scores = []
+    for row, column in get_squares_in_range(start_square, end_square):
+        letter = board[row][column]
+        if letter:
+            score += WWF_LET_VALUES[letter]
+            continue
+        letter = tiles_played[tiles_played_index]
+        tiles_played_index += 1
+        bonus = find_bonus((row, column))
+        if bonus:
+            if part_of_vertical_word(board, row, column):
+                cw_score = crossing_word_score(board, row, column, letter, score_board, bonus)
+                crossing_word_scores.append(cw_score)
+            if bonus[1] == 'L':
+                score += WWF_LET_VALUES[letter] * int(bonus[0])
+            elif bonus[1] == 'W':
+                score += WWF_LET_VALUES[letter]
+                multiplier *= int(bonus[0])
+        else:
+            score += WWF_LET_VALUES[letter]
+            if part_of_vertical_word(board, row, column):
+                cw_score = crossing_word_score(board, row, column, letter, score_board, bonus)
+                crossing_word_scores.append(cw_score)
+    score *= multiplier
+    score += sum(crossing_word_scores)
+    if len(tiles_played) == 7:
+        score += 30
+    return score
+
+def find_creatable_words(trie, rack):
+    """
+    Returns a list of all of the words that can be made only using the letters
+    in the rack.
+
+    Parameters:
+    -----------
+    trie: dictionary
+        Represents a trie made from all of the words in the dictionary
+    rack: Counter
+        The letters in the rack
+
+    """
+    rack = Counter(rack)
+    return words_from_rack(trie, rack)
 
 def word_in_dict(word, dictionary):
     """
     Looks up word in dictionary by using the word's sorted string form as a
     key.
+
     """
     key = "".join(sorted(word))
     if dictionary.get(key):
@@ -210,81 +823,6 @@ def word_in_dict(word, dictionary):
         return word in words
     else:
         return False
-
-def find_words(rack, dictionary):
-    """
-    Find words that can be played with the letters in the rack.
-
-    Parameters:
-    -----------
-    rack: list of single-character strings
-        The letters in the player's rack in any order.
-    word_list: list of strings
-        List of dictionary words
-
-    Returns:
-    --------
-    playable_words: list of strings
-        Words that can be played with the letters in the rack.
-
-    """
-    playable_words = []
-    for key in dictionary:
-        rack_copy = rack[:]
-        rack_has_all_letters = True
-        for letter in key:
-            if letter in rack_copy:
-                rack_copy.remove(letter)
-            elif BLANK_TILE in rack_copy:
-                rack_copy.remove(BLANK_TILE)
-            else:
-                rack_has_all_letters = False
-                break
-        if rack_has_all_letters:
-            playable_words.extend(dictionary[key])
-    return playable_words
-
-def score_word(word, rack=None, location=None):
-    """
-    Returns the cumulative Scrabble score of the letters in word.
-    """
-    score = 0
-    if rack and location:
-        inds = get_indices_of_letters(location)
-        letters = [x[0] for x in inds]
-        rack = rack + letters
-    for letter in word:
-        if rack:
-            if letter in rack:
-                score += WWF_LET_VALUES[letter]
-        else:
-            score += WWF_LET_VALUES[letter]
-    return score
-
-def sort_words_by_score(word_list, rack, location):
-    """
-    Sorts the words in the input list by their cumulative letter value in
-    Scrabble.
-
-    Parameters:
-    -----------
-    word_list:
-        List of dictionary words, likely the only the ones that can be played
-        with a certain rack of letters.
-
-    Returns:
-    --------
-    word_scores: list of tuples
-        Each tuple has the form (word, word_score), where word is a word from
-        the input word_list and word_score is the word's cumulative letter
-        value in Scrabble.  There is one tuple for each word in the input
-        list.
-
-    """
-    word_scores = [{'word': word, 'score': score_word(word, rack=rack, location=location)} \
-                   for word in word_list]
-    word_scores = sorted(word_scores, key=lambda word: word['score'], reverse=True)
-    return word_scores
 
 def on_board(x, y):
     """
@@ -326,472 +864,84 @@ def get_squares_in_range(start, end):
         return None
     return squares
 
-def word_from_squares(squares):
-    """
-    Returns the word formed by concatenating the letters on each square in
-    squares.
-
-    Parameters:
-    -----------
-    squares: list of 2-tuple x,y coordinates
-
-    """
-    word = ""
-    for square in squares:
-        x, y = square[0], square[1]
-        char = scrabble_board[x][y]
-        if char:
-            word += char
-        else:
-            return ""
-    return word
-
-def find_words_including(square, directions = None):
-    """
-    Finds words that include the input square, if any exist.
-
-    Parameters:
-    -----------
-    square: tuple of ints representing coordinates
-    directions: list of strings
-        If 'horizontal' is in directions, looks for a word containing square
-        in square's row.  If 'vertical' is in directions, looks for a word
-        containing square in square's column.
-    Returns:
-    --------
-    word: string or None
-        A word on the scrabble board with a letter on square, or None, if a
-        word was not found.
-
-    """
-    word = None
-    x, y = square[0], square[1]
-    if 'horizontal' in directions: # if word is horizontal, find words
-                                   # crossing vertically
-        # Check tiles in vertical line including square
-        top_x = bottom_x = x
-        while on_board(top_x, y) and scrabble_board[top_x][y]:
-            top_x -= 1
-        top_x += 1 # increment to last valid value
-
-        while on_board(bottom_x, y) and scrabble_board[bottom_x][y]:
-            bottom_x += 1
-        bottom_x -= 1 # decrement to last valid value
-
-        top_square = (top_x, y)
-        bottom_square = (bottom_x, y)
-        vertical_squares = get_squares_in_range(top_square, bottom_square)
-        word = word_from_squares(vertical_squares)
-
-    elif 'vertical' in directions:
-        # Check tiles in horizontal line including square
-        left_y = right_y = y
-        while on_board(x, left_y) and scrabble_board[x][left_y]:
-            left_y -= 1
-        left_y += 1
-
-        while on_board(x, right_y) and scrabble_board[x][right_y]:
-            right_y += 1
-        right_y -= 1
-
-        leftmost_square = (x, left_y)
-        rightmost_square = (x, right_y)
-        horizontal_squares = get_squares_in_range(leftmost_square, rightmost_square)
-        word = word_from_squares(horizontal_squares)
-
-    return word
-
-def print_scrabble_board(scrabble_board):
-    for index, row in enumerate(scrabble_board):
+def print_board(board):
+    for index, row in enumerate(board):
         print index, row
     print
 
-def find_playable_words(occupied_squares, rack):
-    """
-    Finds all words that may, and many that may not, be played with a current
-    board state and a rack of letters.
-
-    Parameters:
-    -----------
-    occupied_squares: list of 2-tuples
-        (row, column) coordinates representing all of the squares on the board
-        where letters are placed.
-    rack: list of single-character strings
-        The letters in the player's rack in any order.
-
-    Returns:
-    --------
-    playable_words: dictionary with string keys and list values
-        Each key string starts with 'r' or 'c' for row or column respectively
-        and which is followed by a number specifing the row or column index.
-        The list contains all of the words that can be played with the
-        letters on the board and in the rack.
-
-    """
-    global trie
-    potential_words = {}
-    left_most_square = min(occupied_squares, key=lambda x: x[1])
-    right_most_square = max(occupied_squares, key=lambda x: x[1])
-    top_square = min(occupied_squares, key=lambda x: x[0])
-    bottom_square = max(occupied_squares, key=lambda x: x[0])
-
-    left_boundary = left_most_square[1]
-    if left_boundary > 0:
-        left_boundary -= 1
-    right_boundary = right_most_square[1]
-    if right_boundary < BOARD_SIZE - 1:
-        right_boundary += 1
-
-    for column in range(left_boundary, right_boundary+1):
-        key = "c" + str(column)
-        potential_words[key] = []
-        rack_copy = rack[:]
-        for row in range(BOARD_SIZE):
-            letter = scrabble_board[row][column]
-            if letter:
-                rack_copy.append(letter)
-        possible_words = find_creatable_words(trie, rack_copy)
-        possible_words = list(set(possible_words))
-        potential_words[key].extend(possible_words)
-
-    top_boundary = top_square[0]
-    if top_boundary > 0:
-        top_boundary -= 1
-    bottom_boundary = bottom_square[0]
-    if bottom_boundary < BOARD_SIZE - 1:
-        bottom_boundary += 1
-    for row in range(top_boundary, bottom_boundary+1):
-        key = "r" + str(row)
-        potential_words[key] = []
-        rack_copy = rack[:]
-        for column in range(BOARD_SIZE):
-            letter = scrabble_board[row][column]
-            if letter:
-                rack_copy.append(letter)
-        possible_words = find_creatable_words(trie, rack_copy)
-        possible_words = list(set(possible_words))
-        potential_words[key].extend(possible_words)
-    playable_words = []
-    for vector, words in potential_words.iteritems():
-        for word in words:
-            r = []
-            result = fit_word(word, rack, vector)
-            playable_words.extend(result)
-    playable_words = sort_by_score(playable_words)
-    if len(playable_words) >= 10:
-        return playable_words[:10]
-    else:
-        return playable_words
-
-def sort_by_score(playable_words):
-    words_by_score = sorted(playable_words, key=lambda word: word['score'], reverse=True)
-    return words_by_score
-
-def get_indices_of_letters(location):
-    """
-    Returns all of the letters in the vector (row or column) specified by
-    location along with their indices.
-
-    Parameters:
-    -----------
-    location: string
-
-    Returns:
-    --------
-    letters_and_indices: list of tuples
-        Each tuple has the form (character, index) where character is a letter
-        in the alphabet and index is its position in the vector.
-
-    """
-    letters_and_indices = []
-    if location[0] == 'r':
-        row = int(location[1:])
-        for column in range(BOARD_SIZE):
-            letter = scrabble_board[row][column]
-            if letter:
-                index = column
-                letters_and_indices.append((letter, index))
-    elif location[0] == 'c':
-        column = int(location[1:])
-        for row in range(BOARD_SIZE):
-            letter = scrabble_board[row][column]
-            if letter:
-                index = row
-                letters_and_indices.append((letter, index))
-    return letters_and_indices
-
-def word_crossing_letter(letter, square, direction):
-    """
-    Determines if a letter can be placed on a square without clashing without
-    surrounding squares.
-
-    Parameters:
-    -----------
-    letter: string
-        Alphabet letter.
-    square: (row, column) tuple
-    direction: string
-        'vertical' to check if the letter clashes with tiles in its column.
-        'horizontal' to check if the letter clashes with tiles in its row.
-    crossing_words: list of strings
-        A list of words that the letter's containing word intersects with.
-    squares_to_erase: list of (row, column) tuples
-        Empty squares on the board that were filled in by hypothetical moves.
-        Will be erased when no longer needed.
-
-    Returns:
-    --------
-    True if the letter can legally be placed on the square, False otherwise.
-
-    """
-    row, column = square
-    crossing_word = find_words_including(square, directions=direction)
-    if len(crossing_word) == 1:
-        return crossing_word
-    c_word_in_dict = word_in_dict(crossing_word, dictionary)
-    if c_word_in_dict:
-        return crossing_word
-    else:
-        return None
-
 def find_bonus(square):
+    """
+    Returns a string detailing the bonus attached to a square on the game
+    board. Returns None if the square does not have a bonus.
+    
+    """
     return WWF_BONUS_TILES.get(square)
 
-def calc_word_score(word, rack, location, start):
-    """
-    Determines if a word can legally be played on a vector on the scrabble
-    board.
+def transposed_board(board):
+    return zip(*board)
 
-    Parameters:
-    -----------
-    word: string
-    location
-    rack: list of single-character strings
-        The letters in the player's rack in any order.
-    start: (row, column) tuple
-        Square on the board to place first letter of word.
+def place_word(word, start_square, direction=None):
+    """Place word on board starting on start and going in direction."""
+    row, column = start_square
+    if direction == 'horizontal':
+        if column + len(word) - 1 >= BOARD_SIZE: # word can't fit on board
+            print "word", start_square, len(word)
+            print "Word can't fit"
+            return
+        for c in word:
+            if not board[row][column]:
+                board[row][column] = c
+                occupied_squares.append((row, column))
+                score_board[row][column] = WWF_LET_VALUES[c]
+                column += 1
+                continue
+            if board[row][column] != c:
+                print "Word can't fit"
+                return
+            else:
+                column += 1
 
-    Returns:
-    --------
-    True if the word can legally be played along the vector specified by
-    location, starting at the start square, False otherwise.
-
-    """
-    word_can_fit = True
-    rack_copy = rack[:]
-    word_ind = 0
-    x = int(location[1:])
-    word_score = 0
-    score_multiplier = 1
-    crossing_words = []
-    crossing_word_scores = []
-    squares_to_erase = []
-    overlaps_letter = False
-    if location[0] == 'r': # fit word horizontally
-        start_square = (x, start)
-        direction = ['horizontal']
-    elif location[0] == 'c': # fit word vertically
-        start_square = (start, x)
-        direction = ['vertical']
-    for y in range(start, start+len(word)):
-        if location[0] == 'r': # fit word horizontally
-            square = (x, y)
-        elif location[0] == 'c': # fit word vertically
-            square = (y, x)
-        row, column = square
-        if on_board(row, column) and not scrabble_board[row][column]:
-            letter = word[word_ind]
-            scrabble_board[row][column] = letter
-            letter_value = WWF_LET_VALUES[letter]
-            squares_to_erase.append(square)
-            bonus = find_bonus(square)
-            crossing_word = word_crossing_letter(letter, square, direction)
-            if not crossing_word:
-                erase_squares(squares_to_erase)
-                return None
-            crossing_word_score = 0
-            multiplier = 1
-            if len(crossing_word) > 1:
-                crossing_word_score = score_word(crossing_word)
-                crossing_words.append(crossing_word)
-            if bonus:
-                multiplier = int(bonus[0])
-                if bonus[1] == 'W':
-                    crossing_word_score *= multiplier
-                    score_multiplier *= multiplier
-                elif bonus[1] == 'L':
-                    if len(crossing_word) > 1:
-                        crossing_word_score += letter_value * (multiplier - 1)
-                    letter_value *= multiplier
-            try:
-                rack_copy.remove(letter)
-                word_score += letter_value
-            except ValueError: # not enough letters to make word
-                if BLANK_TILE in rack_copy:
-                    rack_copy.remove(BLANK_TILE)
-                    if len(crossing_word) > 1:
-                        if bonus:
-                            if bonus[1] == 'W':
-                                crossing_word_score -= multiplier * letter_value
-                            elif bonus[1] == 'L':
-                                crossing_word_score -= letter_value
-                        else:
-                            crossing_word_score -= letter_value
-                else:
-                    erase_squares(squares_to_erase)
-                    return None
-            crossing_word_scores.append(crossing_word_score)
-            word_ind += 1
-        elif on_board(row, column) and scrabble_board[row][column] == word[word_ind]:
-            overlaps_letter = True
-            letter = scrabble_board[row][column]
-            letter_value = WWF_LET_VALUES[letter]
-            word_score += letter_value
-            word_ind += 1
-            continue
-        else:
-            erase_squares(squares_to_erase)
-            return None
-    if not (crossing_words or overlaps_letter):
-        erase_squares(squares_to_erase)
-        return None
-    if rack_copy == rack: # No letters were put down
-        erase_squares(squares_to_erase)
-        return None
-    # make sure completed word is in the dictionary
-    if location[0] == 'r':
-        end_square = (x, y)
-        direction = ['vertical']
-    elif location[0] == 'c':
-        end_square = (y, x)
-        direction = ['horizontal']
-    finished_word = find_words_including(end_square, directions=direction)
-    if not word_in_dict(finished_word, dictionary):
-        erase_squares(squares_to_erase)
-        return None
-    word_score *= score_multiplier
-    for score in crossing_word_scores:
-        word_score += score
-    if (len(rack) == 7) and (not rack_copy):
-        word_score += 35
-    loc_and_score = {'word': word,
-                     'location':(start_square, end_square),
-                     'score': word_score}
-    erase_squares(squares_to_erase)
-    return loc_and_score
-
-def erase_squares(squares_to_erase):
-    """
-    Overwrites value of each square in squares_to_erase with None.
-
-    Parameters:
-    -----------
-    squares_to_erase: list of (row, column) 2-tuples
-
-    """
-    for tile in squares_to_erase:
-        x, y = tile
-        scrabble_board[x][y] = None
-    squares_to_erase[:] = []
-
-def fit_word_in_vector(word, rack, location):
-    vector = int(location[1:])
-    locations = []
-    for start in range(BOARD_SIZE-len(word)+1):
-        loc_and_score = calc_word_score(word, rack, location, start)
-        if loc_and_score:
-            locations.append(loc_and_score)
-    return locations
-
-def find_possible_locations(word, rack, location, letters_and_indices):
-    """
-    Finds all of the possible locations where a word can be played along
-    the vector specified by location.
-
-    Parameters:
-    -----------
-    word: string
-    rack: list of single-character strings
-        The letters in the player's rack in any order.
-    location: string
-    letters_and_indices: list of tuples
-        Each tuple has the form (character, index) where character is a letter
-        in the alphabet and index is its position in the vector.
-
-    Returns:
-    --------
-    possible_locations: dictionary
-        Contains word and all of the locations where word can be played along
-        the vector specified by location, along with the scores from playing
-        the word there.
-
-    """
-    possible_locations = []
-    vector = int(location[1:]) # column or row to attempt to fit word into
-    start_locations = [] # squares where we have attempted to start the word
-                        # by placing first letter, we won't try the same place
-                        # more than once
-    locations = fit_word_in_vector(word, rack, location)
-    r = []
-    for loc in locations:
-        score = loc['score']
-        l = loc['location']
-        result = {'word': word, 'score': score, 'location': l}
-        r.append(result)
-    possible_locations.extend(locations)
-    return possible_locations
-
-def fit_word(word, rack, location):
-    """
-    Attempts to fit word into a location (particular row or column) on the
-    scrabble_board, returns the word, and the squares in which its letters
-    will be placed if it can fit, returns None otherwise
-
-    Parameters:
-    -----------
-    word: string
-        A dictionary word
-    rack: list of single-character strings
-        The letters in the player's rack in any order.
-    location: string
-        First letter (either "r" or "c") determines whether the location is a
-        row or a column, the next digits determine which row or column to work
-        with.
-
-    Returns:
-    --------
-    possible_locations: dictionary
-        Contains word and all of the locations where word can be played along
-        the vector specified by location, along with the scores from playing
-        the word there.
-
-    """
-    letters_and_indices = get_indices_of_letters(location) # indices of
-                            # letter in row
-    possible_locations = find_possible_locations(word, rack, location, letters_and_indices)
-    return possible_locations
-
-
-def find_all_indices(letter, word):
-    """
-    Parameters:
-    -----------
-    letter: single-character string
-    word: string
-        Dictionary word
-
-    Returns:
-    --------
-    indices: list of ints
-        A list of all the indices where letter occurs in word
-
-    """
-    indices = [index for index, char in enumerate(word) if char == letter]
-    return indices
+    elif direction == 'vertical':
+        if row + len(word) - 1 >= BOARD_SIZE: # word can't fit on board
+            print word, start_square, len(word)
+            print "Word can't fit, too long"
+            return
+        for c in word:
+            if not board[row][column]:
+                board[row][column] = c
+                occupied_squares.append((row, column))
+                score_board[row][column] = WWF_LET_VALUES[c]
+                row += 1
+                continue
+            if board[row][column] != c:
+                print word, board[row][column], c, (row, column)
+                print "Word can't fit, mismatched letter"
+                return
+            else:
+                row += 1
 
 def main():
     sc = ScrabbleCheater()
     sc.run()
 
 if __name__ == "__main__":
+    # rack = "VIIOUSD"
+    # # place_word("TRIOL", (7, 3), direction='horizontal')
+    # # place_word("INDIGO", (7, 5), direction='vertical')
+    # # place_word("LINTERS", (7, 7), direction='vertical')
+    # # place_word("WIFED", (8, 6), direction='horizontal')
+    # place_word("DURAL", (7, 3), direction='horizontal')
+    # place_word("ROMAINES", (7, 5), direction='vertical')
+    # place_word("MODICA", (9, 5), direction='horizontal')
+    # place_word("MESH", (14, 3), direction='horizontal')
+    # place_word("PAIL", (4, 7), direction='vertical')
+    # # print crossing_word_score(board, 3, 7, 'S', score_board, '2W')
+    # print_board(board)
+    # init_dictionary(WORD_FILE)
+    # init_trie()
+    # words = find_highest_scoring_words(board, rack)
+    # pp.pprint(words[:50])
+    # print "Num words:", len(words)
+    # print_board(board)
+
     main()
