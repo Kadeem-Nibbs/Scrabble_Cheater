@@ -1,3 +1,6 @@
+.DS_Store
+DO_THIS_FIRST.md
+node_modules
 *.pyc
 __pycache__/
 *.pickle
