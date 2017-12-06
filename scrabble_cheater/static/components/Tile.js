@@ -11,9 +11,10 @@ class Tile extends Component {
     }
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate() {
     if(this.inputRef) {
-      this.inputRef.focus() 
+      this.inputRef.focus()
+
     }
   }
 
@@ -77,9 +78,21 @@ class Tile extends Component {
         <Table.Cell>
           <Form onSubmit={ this.props.tileValueChanged.bind(this, this.state.newTileValue, this.props.cellNumber, tileNumber ) }>
             <Input 
+              pattern='[A-Za-z]'
+              onInvalid={ (event) => { event.target.setCustomValidity('Please enter a letter')} }
+              onInput={ (event) => { event.target.setCustomValidity('')} }
               value={ this.state.newTileValue } 
               onChange={ this.handleChangeTileValue } 
               ref={ (ref) => { this.inputRef = ref }}
+              onFocus={(event) => {
+                // rediculous: you have to do this
+                // to get cursor to be at the end of the
+                // text in the input when you re-click it
+                const { target } = event
+                const { value }= target
+                event.target.value = ''
+                event.target.value = value
+              }}
             />
             <Button className="btn-tile-submit" type='submit'>+</Button>
           </Form>

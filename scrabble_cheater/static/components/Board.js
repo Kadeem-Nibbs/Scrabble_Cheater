@@ -62,6 +62,7 @@ class Board extends Component {
     this.state = { ...initialState }
   }
 
+  // Highlight word logic
   getCellsToHighlightArray = (lowEnd, highEnd, horizontal)  => {
     let list = []
     if(horizontal) {
@@ -104,7 +105,11 @@ class Board extends Component {
   }
 
   handleWordOut = () => {
-    // this.setState({ ...initialState })
+    this.setState({
+      cellsToHighlight: [],
+      wordHoveredKey: null, 
+
+    })
   }
 
   showWordList = () => {
@@ -129,6 +134,8 @@ class Board extends Component {
     return wordList
   }
 
+  // Edit tile logic
+
   handleTileClick = (tileNumber) => {
     this.setState({ editableTile: tileNumber })
   }
@@ -142,7 +149,7 @@ class Board extends Component {
     const row = Math.floor(tileNumber / 15) + 1
     const newRowState = this.state.tableData[row].slice(0)
 
-    newRowState[cellNumberParsed] = newTileValue
+    newRowState[cellNumberParsed] = newTileValue.toUpperCase()
 
     const newState = Object.assign({}, this.state.tableData )
 
@@ -150,9 +157,12 @@ class Board extends Component {
 
     this.setState({
       editableTile: null,
-      tableData: newState
+      tableData: newState,
+      wordChars: ''
     })
   }
+
+  // Build board logic
 
   buildBoard = () => {
     const board = []
