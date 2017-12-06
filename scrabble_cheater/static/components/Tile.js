@@ -1,15 +1,29 @@
 import React, { Component } from 'react'
-import { Table } from 'semantic-ui-react'
+import { Table, Form, Input } from 'semantic-ui-react'
 
 import classNames from 'classnames'
 
 class Tile extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      newTileValue: ''
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if(this.inputRef) {
+      this.inputRef.focus() 
+    }
+  }
+
   shouldComponentUpdate(nextProps) {
+    // If this Tile is marked as editable
     if(nextProps.makeTileEditable || nextProps.makeTileEditable !== this.props.makeTileEditable) {
       return true
     }
 
-    // So we don't re-render every single cell on hover over
+    // Only update tiles that are being highlighted because of Word Hover
     const oldTile = this.shouldUpdateCell(this.props)
     const newTile = this.shouldUpdateCell(nextProps)
 
@@ -27,7 +41,16 @@ class Tile extends Component {
   }
 
   handleClick = () => {
-    this.props.handleTileClick(this.props.tileNumber) 
+    this.props.handleTileClick(this.props.tileNumber, this.inputRef) 
+  }
+
+  handleChangeTileValue = (event, data) => {
+    const { value } = data
+    if(value.length > 1) {
+      return 
+    } else {
+      this.setState({ newTileValue: value })
+    }
   }
 
   render() {
@@ -58,12 +81,22 @@ class Tile extends Component {
 
       char = this.props.cellData
     } 
-    
-      console.log('this.props.makeTileEditable', this.props.makeTileEditable);
-    if(this.props.makeTileEditable) {
 
-      return (<input type="text" />)
+    if(this.props.makeTileEditable) {
+      return (
+        <Table.Cell>
+          <Form onSubmit={ this.props.tileValueChanged.bind( this.state.newTileValue, tileNumber ) }>
+            <Input 
+              value={ this.state.newTileValue } 
+              onChange={ this.handleChangeTileValue } 
+              ref={ (ref) => { this.inputRef = ref }}
+            />
+          </Form>
+        </Table.Cell>
+      )
+
     } else {
+
       return (
         <Table.Cell
           selectable
@@ -74,6 +107,7 @@ class Tile extends Component {
           { char }
         </Table.Cell>
       )
+
     }
   } 
 }

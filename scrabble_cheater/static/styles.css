@@ -29,3 +29,8 @@
   background: yellow !important;
   color: blue !important;
 }
+
+.ui.form input[type=text] {
+  padding: 3px 0;
+  text-align: center;
+}

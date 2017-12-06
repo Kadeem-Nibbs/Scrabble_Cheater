@@ -73,10 +73,6 @@ class Board extends Component {
     return list
   }
 
-  handleTileClick = () => {
-
-  }
-
   handleWordOver = (wordInfo, i) => {
     // [[3, 5]
     const startOfWord = wordInfo[1][0]
@@ -130,8 +126,14 @@ class Board extends Component {
     return wordList
   }
 
-  handleTileClick = (tileNumber) => {
+  handleTileClick = (tileNumber, ref) => {
     this.setState({ editableTile: tileNumber })
+  }
+
+  tileValueChanged = (tileNumber) => {
+    console.log('event', event);
+    console.log('value', event);
+    console.log('tileNumber', tileNumber);
   }
 
   buildBoard = () => {
@@ -141,15 +143,13 @@ class Board extends Component {
     let rowNumber = 1
     let cellNumber = 1
 
-    console.log('this.state.makeTileEditable', this.state.makeTileEditable);
-
-
     for(let i = 0; i < totalTiles; i++) {   
       const tileNumber = i
       const endRow = (tileNumber + 1) % 15 === 0 ? true : false
 
       row.push(
         <Tile
+          tileValueChanged={ this.tileValueChanged }
           makeTileEditable={ this.state.editableTile === tileNumber }
           key={ i }
           handleTileClick={ this.handleTileClick }
