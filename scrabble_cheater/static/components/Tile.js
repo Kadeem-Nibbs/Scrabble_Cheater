@@ -60,16 +60,6 @@ class Tile extends Component {
       cellsToHighlight
     } = this.props
 
-
-    const tileInner = {
-      margin: '3px',
-      color: '#333',
-      backgroundColor: 'white',
-      height: '30px',
-      width: '30px',
-      display: 'inline-block'
-    }
-
     const highlightCell = this.shouldUpdateCell(this.props)
     let char = ' '
     let indexOfChar = null
