@@ -5,6 +5,10 @@ import classNames from 'classnames'
 
 class Tile extends Component {
   shouldComponentUpdate(nextProps) {
+    if(nextProps.makeTileEditable || nextProps.makeTileEditable !== this.props.makeTileEditable) {
+      return true
+    }
+
     // So we don't re-render every single cell on hover over
     const oldTile = this.shouldUpdateCell(this.props)
     const newTile = this.shouldUpdateCell(nextProps)
@@ -22,11 +26,9 @@ class Tile extends Component {
     return cellsToHighlight.includes(tileNumber)
   }
 
-  handleTileClick = () => {
-    console.log('handleTileOver', this.props);
-
+  handleClick = () => {
+    this.props.handleTileClick(this.props.tileNumber) 
   }
-
 
   render() {
     const { 
@@ -56,17 +58,23 @@ class Tile extends Component {
 
       char = this.props.cellData
     } 
-  
-    return (
-      <Table.Cell
-        selectable
-        textAlign='center'
-        className={ classNames({ 'highlight-word-location': highlightCell }) }
-        onClick={ this.handleTileClick }
-      >
-        { char }
-      </Table.Cell>
-    )
+    
+      console.log('this.props.makeTileEditable', this.props.makeTileEditable);
+    if(this.props.makeTileEditable) {
+
+      return (<input type="text" />)
+    } else {
+      return (
+        <Table.Cell
+          selectable
+          textAlign='center'
+          className={ classNames({ 'highlight-word-location': highlightCell }) }
+          onClick={ this.handleClick }
+        >
+          { char }
+        </Table.Cell>
+      )
+    }
   } 
 }
 

@@ -3,6 +3,10 @@
   font-size: 1em;
 }
 
+.hover-word {
+  background: yellow;
+}
+
 .ui .selectable {
   cursor: pointer;
 }

@@ -32,6 +32,7 @@ const initialState = {
   wordHoveredKey: null,
   cellsToHighlight: [],
   wordChars: '',
+  makeTileEditable: null,
   // Server expects data in this format
   tableData: {
     1:  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
@@ -72,6 +73,10 @@ class Board extends Component {
     return list
   }
 
+  handleTileClick = () => {
+
+  }
+
   handleWordOver = (wordInfo, i) => {
     // [[3, 5]
     const startOfWord = wordInfo[1][0]
@@ -100,7 +105,7 @@ class Board extends Component {
   }
 
   handleWordOut = () => {
-    this.setState({ ...initialState })
+    // this.setState({ ...initialState })
   }
 
   showWordList = () => {
@@ -125,12 +130,18 @@ class Board extends Component {
     return wordList
   }
 
+  handleTileClick = (tileNumber) => {
+    this.setState({ editableTile: tileNumber })
+  }
+
   buildBoard = () => {
     const board = []
     // These three vars get altered when endRow is true
     let row =[] 
     let rowNumber = 1
     let cellNumber = 1
+
+    console.log('this.state.makeTileEditable', this.state.makeTileEditable);
 
 
     for(let i = 0; i < totalTiles; i++) {   
@@ -139,7 +150,9 @@ class Board extends Component {
 
       row.push(
         <Tile
+          makeTileEditable={ this.state.editableTile === tileNumber }
           key={ i }
+          handleTileClick={ this.handleTileClick }
           tileNumber={ tileNumber } 
           cellsToHighlight={ this.state.cellsToHighlight }
           wordChars={ this.state.wordChars }
