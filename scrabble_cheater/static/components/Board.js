@@ -59,7 +59,7 @@ class Board extends Component {
 
     this.state = { ...initialState }
 
-    this.socket.on('receiveTableData', (data) => {
+    this.socket.on('tableData', (data) => {
       console.log('Data back from server: ', data);
     })
   }
