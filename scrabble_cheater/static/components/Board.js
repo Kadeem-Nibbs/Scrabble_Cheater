@@ -49,7 +49,8 @@ const initialState = {
   cellsToHighlight: [],
   wordChars: '',
   editableTile: null,
-  tableData: initialTableData 
+  tableData: initialTableData,
+  receivedData: null
 }
 
 class Board extends Component {
@@ -60,8 +61,13 @@ class Board extends Component {
     this.state = { ...initialState }
 
     this.socket.on('tableData', (data) => {
+      this.receiveData(data)
       console.log('Data back from server: ', data);
     })
+  }
+
+  receiveData = (data) => {
+    this.setState({ receivedData: data })
   }
 
   // Highlight word logic
@@ -225,6 +231,9 @@ class Board extends Component {
             { this.buildBoard() }
           </Table.Body>
         </Table>
+        <div>
+          { this.state.receivedData }
+        </div>
         <Button onClick={ this.sendTableData }>
           Get Words
         </Button>
