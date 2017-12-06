@@ -23,7 +23,7 @@ class Tile extends Component {
       return true
     }
 
-    // Only update tiles that are being highlighted because of Word Hover
+    // Only update tiles that are being highlighted because of handleWordOver() (in Board component)
     const oldTile = this.shouldUpdateCell(this.props)
     const newTile = this.shouldUpdateCell(nextProps)
 
@@ -46,6 +46,7 @@ class Tile extends Component {
 
   handleChangeTileValue = (event, data) => {
     const { value } = data
+    console.log('value', value);
     if(value.length > 1) {
       return 
     } else {
@@ -74,7 +75,7 @@ class Tile extends Component {
     if(this.props.tileIsEditable) {
       return (
         <Table.Cell>
-          <Form onSubmit={ this.props.tileValueChanged.bind(this, this.state.newTileValue, this.props.cellNumber, tileNumber) }>
+          <Form onSubmit={ this.props.handleTileValueChanged.bind(this, this.state.newTileValue, this.props.cellNumber, tileNumber) }>
             <Input 
               pattern='[A-Za-z]'
               onInvalid={ (event) => { event.target.setCustomValidity('Please enter a Letter')} }
@@ -98,7 +99,6 @@ class Tile extends Component {
       )
 
     } else {
-
       return (
         <Table.Cell
           selectable
@@ -109,7 +109,6 @@ class Tile extends Component {
           { char }
         </Table.Cell>
       )
-
     }
   } 
 }

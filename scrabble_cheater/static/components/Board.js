@@ -73,9 +73,9 @@ class Board extends Component {
   }
 
   handleWordOver = (wordInfo, i) => {
-    // [[3, 5]
+    // eg [[3, 5]
     const startOfWord = wordInfo[1][0]
-    //  [3, 12]]
+    // eg [3, 12]]
     const endOfWord   = wordInfo[1][1]
 
     // Note: 
@@ -133,7 +133,7 @@ class Board extends Component {
     this.setState({ editableTile: tileNumber })
   }
 
-  tileValueChanged = (newTileValue, cellNumber, tileNumber) => {
+  handleTileValueChanged = (newTileValue, cellNumber, tileNumber) => {
 
     console.log('newTileValue, cellNumber, tileNumber', newTileValue, cellNumber, tileNumber);
     const cellNumberParsed = parseInt(cellNumber)
@@ -141,11 +141,9 @@ class Board extends Component {
     // Calculate row 
     const row = Math.floor(tileNumber / 15) + 1
     const newRowState = this.state.tableData[row].slice(0)
-
-    newRowState[cellNumberParsed] = newTileValue.toUpperCase()
-
     const newState = Object.assign({}, this.state.tableData )
 
+    newRowState[cellNumberParsed] = newTileValue.toUpperCase()
     newState[row] = newRowState
 
     this.setState({
@@ -170,7 +168,7 @@ class Board extends Component {
       row.push(
         <Tile
           cellNumber={ cellNumber }
-          tileValueChanged={ this.tileValueChanged }
+          handleTileValueChanged={ this.handleTileValueChanged }
           tileIsEditable={ this.state.editableTile === tileNumber }
           key={ tileNumber }
           handleTileClick={ this.handleTileClick }
@@ -191,7 +189,8 @@ class Board extends Component {
           />
         )
 
-        row = [] // reset row / head to next row / and reset cell we are at
+        // reset row after its pushed / increment rowNumber to next row / and reset cell we are at
+        row = [] 
         rowNumber += 1
         cellNumber = 1
       }
