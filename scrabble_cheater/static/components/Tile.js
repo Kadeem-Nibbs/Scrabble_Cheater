@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Table, Form, Input } from 'semantic-ui-react'
+import { Table, Form, Input, Button } from 'semantic-ui-react'
 
 import classNames from 'classnames'
 
@@ -75,12 +75,13 @@ class Tile extends Component {
     if(this.props.makeTileEditable) {
       return (
         <Table.Cell>
-          <Form onSubmit={ this.props.tileValueChanged.bind( this.state.newTileValue, tileNumber ) }>
+          <Form onSubmit={ this.props.tileValueChanged.bind(this, this.state.newTileValue, this.props.cellNumber, tileNumber ) }>
             <Input 
               value={ this.state.newTileValue } 
               onChange={ this.handleChangeTileValue } 
               ref={ (ref) => { this.inputRef = ref }}
             />
+            <Button className="btn-tile-submit" type='submit'>+</Button>
           </Form>
         </Table.Cell>
       )

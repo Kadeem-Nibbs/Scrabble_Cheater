@@ -28,29 +28,32 @@ const mockWordData = [
   ["MISLIKED", [[5, 6], [12, 6]], ["M", "I", "_", ":L:", "I", "K", "E", "D"], 55]
 ]
 
+// Server expects data in this format
+const initialTableData = {
+  1:  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
+  2:  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
+  3:  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
+  4:  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
+  5:  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
+  6:  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
+  7:  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
+  8:  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
+  9:  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
+  10: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
+  11: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
+  12: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
+  13: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
+  14: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
+  15: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ]
+}
+
 const initialState = {
   wordHoveredKey: null,
   cellsToHighlight: [],
   wordChars: '',
-  makeTileEditable: null,
-  // Server expects data in this format
-  tableData: {
-    1:  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
-    2:  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
-    3:  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
-    4:  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
-    5:  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
-    6:  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
-    7:  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
-    8:  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
-    9:  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
-    10: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
-    11: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
-    12: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
-    13: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
-    14: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
-    15: [null, null, null, null, 'A', null, null, null, null, null, null, null, null, null, null ]
-  }
+  editableTile: null,
+  tableData: initialTableData
+  
 }
 
 class Board extends Component {
@@ -126,14 +129,29 @@ class Board extends Component {
     return wordList
   }
 
-  handleTileClick = (tileNumber, ref) => {
+  handleTileClick = (tileNumber) => {
     this.setState({ editableTile: tileNumber })
   }
 
-  tileValueChanged = (tileNumber) => {
-    console.log('event', event);
-    console.log('value', event);
-    console.log('tileNumber', tileNumber);
+  tileValueChanged = (newTileValue, cellNumber, tileNumber) => {
+
+    console.log('newTileValue, cellNumber, tileNumber', newTileValue, cellNumber, tileNumber);
+    const cellNumberParsed = parseInt(cellNumber)
+
+    // Calculate row 
+    const row = Math.floor(tileNumber / 15) + 1
+    const newRowState = this.state.tableData[row].slice(0)
+
+    newRowState[cellNumberParsed] = newTileValue
+
+    const newState = Object.assign({}, this.state.tableData )
+
+    newState[row] = newRowState
+
+    this.setState({
+      editableTile: null,
+      tableData: newState
+    })
   }
 
   buildBoard = () => {
@@ -149,9 +167,10 @@ class Board extends Component {
 
       row.push(
         <Tile
+          cellNumber={ cellNumber }
           tileValueChanged={ this.tileValueChanged }
           makeTileEditable={ this.state.editableTile === tileNumber }
-          key={ i }
+          key={ tileNumber }
           handleTileClick={ this.handleTileClick }
           tileNumber={ tileNumber } 
           cellsToHighlight={ this.state.cellsToHighlight }

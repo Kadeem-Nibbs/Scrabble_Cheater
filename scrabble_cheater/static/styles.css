@@ -1,3 +1,5 @@
+/* who needs SASS 💪 */
+
 .scrabble-container {
   width: 900px;
   font-size: 1em;
@@ -33,4 +35,13 @@
 .ui.form input[type=text] {
   padding: 3px 0;
   text-align: center;
+}
+
+.ui.button.btn-tile-submit {
+  position: absolute;
+  top: 0;
+  left: 30px;
+  height: 25px;
+  width: 25px;
+  padding: 0;
 }
