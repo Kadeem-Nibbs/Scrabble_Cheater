@@ -1,0 +1,27 @@
+.scrabble-container {
+  width: 900px;
+  font-size: 1em;
+}
+
+.ui .selectable {
+  cursor: pointer;
+}
+
+.ui.table {
+  table-layout: fixed;
+  width: 750px; /* 40 * 15 */
+}
+.ui.table td {
+  height: 50px;
+  width: 50px;
+}
+
+.ui.table tr.highlight-word-location,
+.ui.table td.highlight-word-location {
+  box-shadow: 0px 0px 0px red inset;
+}
+.ui.table tr.highlight-word-location,
+.ui.table td.highlight-word-location {
+  background: yellow !important;
+  color: blue !important;
+}

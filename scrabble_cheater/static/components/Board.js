@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
+// import { Fragment } from 'react-dom'
 import classNames from 'classnames'
+import { Table } from 'semantic-ui-react'
 
 import Tile from './Tile'
 
@@ -29,7 +31,25 @@ const mockWordData = [
 const initialState = {
   wordHoveredKey: null,
   cellsToHighlight: [],
-  wordChars: ''
+  wordChars: '',
+  // Server expects data in this format
+  tableData: {
+    1:  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
+    2:  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
+    3:  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
+    4:  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
+    5:  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
+    6:  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
+    7:  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
+    8:  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
+    9:  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
+    10: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
+    11: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
+    12: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
+    13: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
+    14: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
+    15: [null, null, null, null, 'A', null, null, null, null, null, null, null, null, null, null ]
+  }
 }
 
 class Board extends Component {
@@ -53,8 +73,6 @@ class Board extends Component {
   }
 
   handleWordOver = (wordInfo, i) => {
-
-
     // [[3, 5]
     const startOfWord = wordInfo[1][0]
     //  [3, 12]]
@@ -77,7 +95,7 @@ class Board extends Component {
     this.setState({ 
       cellsToHighlight,
       wordHoveredKey: i,
-      wordChars: wordInfo[2]
+      wordChars: wordInfo[2],
     })
   }
 
@@ -109,35 +127,58 @@ class Board extends Component {
 
   buildBoard = () => {
     const board = []
+    // These three vars get altered when endRow is true
+    let row =[] 
+    let rowNumber = 1
+    let cellNumber = 1
 
-    for(let i = 0; i < totalTiles; i++) {
-      board.push(
+
+    for(let i = 0; i < totalTiles; i++) {   
+      const tileNumber = i
+      const endRow = (tileNumber + 1) % 15 === 0 ? true : false
+
+      row.push(
         <Tile
           key={ i }
-          tileNumber={ i } 
+          tileNumber={ tileNumber } 
           cellsToHighlight={ this.state.cellsToHighlight }
           wordChars={ this.state.wordChars }
+          cellData={ this.state.tableData[rowNumber][cellNumber ] }
         />
       )
+
+      cellNumber ++
+
+      if(endRow) {
+        board.push(
+          <Table.Row 
+            key={ rowNumber } 
+            children={row} 
+          />
+        )
+
+        row = [] // reset row / head to next row / and reset cell we are at
+        rowNumber += 1
+        cellNumber = 1
+      }
     }
 
     return board
   }
 
   render() {
-    const boardStyle = {
-      width: '1600px'
-    }
-
     return (
       <div className="scrabble-container">
         <div>
           Word List
           { this.showWordList()  }
         </div>
-        <div style={ boardStyle }>
-          { this.buildBoard() }
-        </div>
+
+        <Table celled>
+          <Table.Body>
+            { this.buildBoard() }
+          </Table.Body>
+        </Table>
       </div>
     )
   } 
