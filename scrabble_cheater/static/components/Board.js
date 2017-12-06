@@ -207,8 +207,11 @@ class Board extends Component {
   }
 
   sendTableData = () => {
-    
-    this.socket.emit('tableData', JSON.stringify(this.state.tableData))
+    const flatArray = []
+    for(let key in this.state.tableData) {
+      flatArray.push(this.state.tableData[key]) 
+    }
+    this.socket.emit('tableData', JSON.stringify(flatArray))
   }
 
   render() {
