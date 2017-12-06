@@ -13,7 +13,7 @@ socketio = SocketIO(app)
 def index():
     return render_template("index.html")
 
-@socketio.on('my event')
+@socketio.on('tableData')
 def handle_my_custom_event(json):
     print 'received json:', str(json)
 
