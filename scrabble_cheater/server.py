@@ -1,5 +1,5 @@
 from flask import Flask, request, render_template, redirect
-from flask_socketio import SocketIO
+from flask_socketio import SocketIO, emit
 import json
 
 app = Flask(__name__)
@@ -15,7 +15,7 @@ def index():
     return render_template("index.html")
 
 @socketio.on('tableData')
-def handle_my_custom_event(data):
+def table_data(data):
     print 'received json:', json.loads(data)
     emit('tableData', 'Message received!!!')
 

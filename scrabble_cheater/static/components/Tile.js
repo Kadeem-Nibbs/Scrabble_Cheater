@@ -46,7 +46,6 @@ class Tile extends Component {
 
   handleChangeTileValue = (event, data) => {
     const { value } = data
-    console.log('value', value);
     if(value.length > 1) {
       return 
     } else {

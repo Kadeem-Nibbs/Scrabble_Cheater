@@ -141,8 +141,6 @@ class Board extends Component {
   }
 
   handleTileValueChanged = (newTileValue, cellNumber, tileNumber) => {
-
-    console.log('newTileValue, cellNumber, tileNumber', newTileValue, cellNumber, tileNumber);
     const cellNumberParsed = parseInt(cellNumber)
 
     // Calculate row 
