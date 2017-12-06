@@ -17,6 +17,7 @@ def index():
 @socketio.on('tableData')
 def handle_my_custom_event(data):
     print 'received json:', json.loads(data)
+    emit('tableData', 'Message received!!!')
 
 if __name__ == "__main__":
     socketio.run(app)
