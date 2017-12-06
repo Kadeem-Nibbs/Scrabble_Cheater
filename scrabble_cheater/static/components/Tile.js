@@ -14,13 +14,12 @@ class Tile extends Component {
   componentDidUpdate() {
     if(this.inputRef) {
       this.inputRef.focus()
-
     }
   }
 
   shouldComponentUpdate(nextProps) {
-    // If this Tile is marked as editable
-    if(nextProps.makeTileEditable || nextProps.makeTileEditable !== this.props.makeTileEditable) {
+    // Update if this Tile is marked as editable or remove from being editable
+    if(nextProps.tileIsEditable || nextProps.tileIsEditable !== this.props.tileIsEditable) {
       return true
     }
 
@@ -42,7 +41,7 @@ class Tile extends Component {
   }
 
   handleClick = () => {
-    this.props.handleTileClick(this.props.tileNumber, this.inputRef) 
+    this.props.handleTileClick(this.props.tileNumber) 
   }
 
   handleChangeTileValue = (event, data) => {
@@ -62,30 +61,29 @@ class Tile extends Component {
     } = this.props
 
     const highlightCell = this.shouldUpdateCell(this.props)
-    let char = ' '
+    let char = ''
     let indexOfChar = null
 
     if(highlightCell) {
       indexOfChar = cellsToHighlight.indexOf(tileNumber)
       char =  wordChars[indexOfChar]
     } else {
-
       char = this.props.cellData
     } 
 
-    if(this.props.makeTileEditable) {
+    if(this.props.tileIsEditable) {
       return (
         <Table.Cell>
-          <Form onSubmit={ this.props.tileValueChanged.bind(this, this.state.newTileValue, this.props.cellNumber, tileNumber ) }>
+          <Form onSubmit={ this.props.tileValueChanged.bind(this, this.state.newTileValue, this.props.cellNumber, tileNumber) }>
             <Input 
               pattern='[A-Za-z]'
-              onInvalid={ (event) => { event.target.setCustomValidity('Please enter a letter')} }
+              onInvalid={ (event) => { event.target.setCustomValidity('Please enter a Letter')} }
               onInput={ (event) => { event.target.setCustomValidity('')} }
               value={ this.state.newTileValue } 
               onChange={ this.handleChangeTileValue } 
               ref={ (ref) => { this.inputRef = ref }}
               onFocus={(event) => {
-                // rediculous: you have to do this
+                // ridiculous: you have to do this
                 // to get cursor to be at the end of the
                 // text in the input when you re-click it
                 const { target } = event

@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-// import { Fragment } from 'react-dom'
 import classNames from 'classnames'
 import { Table } from 'semantic-ui-react'
 
@@ -9,15 +8,12 @@ const tilesAcross = 15
 const tilesDown = 15
 const totalTiles = tilesAcross * tilesDown
 
-
 // Some missing data
  
 // json.dumps( ('MIMICKED', ((3, 5), (3, 12)), ('M', 'I', '_', 'I', 'K', 'E', 'D'), 75) )
 // json.dumps( ('MIMICKED', ((3, 5), (3, 12)), ('_', 'I', 'M', 'I', 'K', 'E', 'D'), 75) )
 // json.dumps( ('MISLIKED', ((5, 6), (5, 13)), ('M', 'I', '_', 'I', 'K', 'E', 'D'), 67) )
 // json.dumps( ('MISLIKED', ((5, 6), (12, 6)), ('M', 'I', '_', 'I', 'K', 'E', 'D'), 55) )
-
-
 
 const mockWordData = [
               // row column
@@ -52,8 +48,7 @@ const initialState = {
   cellsToHighlight: [],
   wordChars: '',
   editableTile: null,
-  tableData: initialTableData
-  
+  tableData: initialTableData 
 }
 
 class Board extends Component {
@@ -108,7 +103,6 @@ class Board extends Component {
     this.setState({
       cellsToHighlight: [],
       wordHoveredKey: null, 
-
     })
   }
 
@@ -135,7 +129,6 @@ class Board extends Component {
   }
 
   // Edit tile logic
-
   handleTileClick = (tileNumber) => {
     this.setState({ editableTile: tileNumber })
   }
@@ -163,7 +156,6 @@ class Board extends Component {
   }
 
   // Build board logic
-
   buildBoard = () => {
     const board = []
     // These three vars get altered when endRow is true
@@ -179,7 +171,7 @@ class Board extends Component {
         <Tile
           cellNumber={ cellNumber }
           tileValueChanged={ this.tileValueChanged }
-          makeTileEditable={ this.state.editableTile === tileNumber }
+          tileIsEditable={ this.state.editableTile === tileNumber }
           key={ tileNumber }
           handleTileClick={ this.handleTileClick }
           tileNumber={ tileNumber } 
