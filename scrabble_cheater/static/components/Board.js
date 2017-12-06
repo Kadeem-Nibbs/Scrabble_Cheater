@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import classNames from 'classnames'
-import { Table } from 'semantic-ui-react'
+import { Table, Button } from 'semantic-ui-react'
+import io from 'socket.io-client'
 
 import Tile from './Tile'
 
@@ -54,7 +55,13 @@ const initialState = {
 class Board extends Component {
   constructor(props) {
     super(props)
+    this.socket = io()
+
     this.state = { ...initialState }
+
+    this.socket.on('receiveTableData', (data) => {
+      this.setState({ tableData: data })
+    })
   }
 
   // Highlight word logic
@@ -199,6 +206,11 @@ class Board extends Component {
     return board
   }
 
+  sendTableData = () => {
+    
+    this.socket.emit('tableData', JSON.stringify(this.state.tableData))
+  }
+
   render() {
     return (
       <div className="scrabble-container">
@@ -212,6 +224,9 @@ class Board extends Component {
             { this.buildBoard() }
           </Table.Body>
         </Table>
+        <Button onClick={ this.sendTableData }>
+          Get Words
+        </Button>
       </div>
     )
   } 
