@@ -41,7 +41,7 @@ class Tile extends Component {
   }
 
   handleClick = () => {
-    this.props.handleTileClick(this.props.tileNumber) 
+    this.props.handleTileClick(this.props.tileCoordinates) 
   }
 
   handleChangeTileValue = (event, data) => {
@@ -71,10 +71,12 @@ class Tile extends Component {
       char = this.props.cellData
     } 
 
+    const colorClass = ''
+
     if(this.props.tileIsEditable) {
       return (
         <Table.Cell>
-          <Form onSubmit={ this.props.handleTileValueChanged.bind(this, this.state.newTileValue, this.props.cellNumber, tileNumber) }>
+          <Form onSubmit={ this.props.handleTileValueChanged.bind(this, this.state.newTileValue, this.props.tileCoordinates) }>
             <Input 
               pattern='[A-Za-z]'
               onInvalid={ (event) => { event.target.setCustomValidity('Please enter a Letter')} }

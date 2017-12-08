@@ -17,7 +17,9 @@ def index():
 @socketio.on('tableData')
 def table_data(data):
     print 'received json:', json.loads(data)
-    emit('tableData', 'Message received!!!')
+    emit('dataReceived', true)
+    # call algorithm 
+    
 
 if __name__ == "__main__":
     socketio.run(app)

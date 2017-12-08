@@ -3,30 +3,25 @@ import classNames from 'classnames'
 import { Table, Button } from 'semantic-ui-react'
 import io from 'socket.io-client'
 
+import WordList from './WordList'
 import Tile from './Tile'
 
 const tilesAcross = 15
 const tilesDown = 15
 const totalTiles = tilesAcross * tilesDown
 
-// Some missing data
- 
-// json.dumps( ('MIMICKED', ((3, 5), (3, 12)), ('M', 'I', '_', 'I', 'K', 'E', 'D'), 75) )
-// json.dumps( ('MIMICKED', ((3, 5), (3, 12)), ('_', 'I', 'M', 'I', 'K', 'E', 'D'), 75) )
-// json.dumps( ('MISLIKED', ((5, 6), (5, 13)), ('M', 'I', '_', 'I', 'K', 'E', 'D'), 67) )
-// json.dumps( ('MISLIKED', ((5, 6), (12, 6)), ('M', 'I', '_', 'I', 'K', 'E', 'D'), 55) )
-
 const mockWordData = [
               // row column
               // y start   / x start
-  ["MIMICKED", [[3, 5], [3, 12]], ["M", "I", "_", "I", ":C:", "K", "E", "D"], 75],
-  ["MIMICKED", [[3, 5], [3, 12]], ["_", "I", "M", "I", ":C:", "K", "E", "D"], 75],
-  ["MISLIKED", [[5, 6], [5, 13]], ["M", "I", "_", ":L:", "I","K", "E", "D"], 67],
-  ["MISLIKED", [[5, 6], [12, 6]], ["M", "I", "_", ":L:", "I", "K", "E", "D"], 55]
+  ["MIMICKED", [[3, 5], [3, 12]], ["M", "I", "_", "I", "$C", "K", "E", "D"], 75],
+  ["MIMICKED", [[3, 5], [3, 12]], ["_", "I", "M", "I", "$C", "K", "E", "D"], 75],
+  ["MISLIKED", [[5, 6], [5, 13]], ["M", "I", "_", "$L", "I","K", "E", "D"], 67],
+  ["MISLIKED", [[5, 6], [12, 6]], ["M", "I", "_", "$L", "I", "K", "E", "D"], 55]
 ]
 
 // Server expects data in this format
 const initialTableData = {
+  0:  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
   1:  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
   2:  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
   3:  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
@@ -40,15 +35,18 @@ const initialTableData = {
   11: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
   12: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
   13: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
-  14: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
-  15: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ]
+  14: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ]
 }
 
+// MAKE X / Y ZERO BASED
+
 const initialState = {
-  wordHoveredKey: null,
   cellsToHighlight: [],
   wordChars: '',
-  editableTile: null,
+  editableTileCoordinates: {
+    x: null,
+    y: null
+  },
   tableData: initialTableData,
   receivedData: null
 }
@@ -62,7 +60,6 @@ class Board extends Component {
 
     this.socket.on('tableData', (data) => {
       this.receiveData(data)
-      console.log('Data back from server: ', data);
     })
   }
 
@@ -71,96 +68,42 @@ class Board extends Component {
   }
 
   // Highlight word logic
-  getCellsToHighlightArray = (lowEnd, highEnd, horizontal)  => {
-    let list = []
-    if(horizontal) {
-      for (let i = lowEnd; i <= highEnd; i++) {
-        list.push(i)
-      }
-    } else {
-      for (let i = lowEnd; i <= highEnd; i += 15) {
-        list.push(i)
-      }
-    }
-    return list
-  }
-
-  handleWordOver = (wordInfo, i) => {
-    // eg [[3, 5]
-    const startOfWord = wordInfo[1][0]
-    // eg [3, 12]]
-    const endOfWord   = wordInfo[1][1]
-
-    // Note: 
-    // startOfWord[0] === y / row
-    // startOfWord[1] === x / col
-
-    const rowStart = (startOfWord[0] * 15) - 15
-    const startCell = rowStart + startOfWord[1] - 1
-
-    const rowEnd = (endOfWord[0] * 15)  - 15
-    const endCell = rowEnd + endOfWord[1] - 1
-
-    const horizontal = startOfWord[0] === endOfWord[0] // if start of word Y is the same as end of word Y its horizontal
-
-    const cellsToHighlight = this.getCellsToHighlightArray(startCell, endCell, horizontal)
-
-    this.setState({ 
-      cellsToHighlight,
-      wordHoveredKey: i,
-      wordChars: wordInfo[2],
-    })
-  }
-
-  handleWordOut = () => {
-    this.setState({
-      cellsToHighlight: [],
-      wordHoveredKey: null, 
-    })
-  }
-
-  showWordList = () => {
-    const wordList = []
-
-    mockWordData.forEach((wordInfo, i) => {
-      const word = wordInfo[0]
-      const points = wordInfo[3]
-
-      wordList.push(
-        <div
-          className={ classNames({ 'hover-word': this.state.wordHoveredKey === i }) }
-          key={ i }
-          onMouseEnter={ this.handleWordOver.bind(this, wordInfo, i) }
-          onMouseOut={ this.handleWordOut.bind(this, wordInfo, i) }
-        >
-          {`${ word } is worth ${points} points`}
-        </div>
-      )
-    })
-
-    return wordList
-  }
+  // getCellsToHighlightArray = (lowEnd, highEnd, horizontal)  => {
+  //   let list = []
+  //   if(horizontal) {
+  //     for (let i = lowEnd; i <= highEnd; i++) {
+  //       list.push(i)
+  //     }
+  //   } else {
+  //     for (let i = lowEnd; i <= highEnd; i += 15) {
+  //       list.push(i)
+  //     }
+  //   }
+  //   return list
+  // }
 
   // Edit tile logic
-  handleTileClick = (tileNumber) => {
-    this.setState({ editableTile: tileNumber })
+  handleTileClick = (tileCoordinates) => {
+    this.setState({ editableTileCoordinates: tileCoordinates})
   }
 
-  handleTileValueChanged = (newTileValue, cellNumber, tileNumber) => {
-    const cellNumberParsed = parseInt(cellNumber)
-
+  handleTileValueChanged = (newTileValue, tileCoordinates) => {
     // Calculate row 
-    const row = Math.floor(tileNumber / 15) + 1
+    const row = tileCoordinates.y
     const newRowState = this.state.tableData[row].slice(0)
     const newState = Object.assign({}, this.state.tableData )
 
-    newRowState[cellNumberParsed] = newTileValue.toUpperCase()
+    newRowState[tileCoordinates.x] = newTileValue.toUpperCase()
     newState[row] = newRowState
 
     this.setState({
-      editableTile: null,
+      editableTileCoordinates: {
+        x: null,
+        y: null
+      },
       tableData: newState,
-      wordChars: ''
+      wordChars: '',
+      initialRack: ''
     })
   }
 
@@ -169,28 +112,35 @@ class Board extends Component {
     const board = []
     // These three vars get altered when endRow is true
     let row =[] 
-    let rowNumber = 1
-    let cellNumber = 1
+    let rowNumber = 0
+    let cellNumber = 0
 
-    for(let i = 0; i < totalTiles; i++) {   
-      const tileNumber = i
-      const endRow = (tileNumber + 1) % 15 === 0 ? true : false
+    for(let i = 0; i < totalTiles - 1; i++) {   
+
+      const tileCoordinates = { x: cellNumber, y: rowNumber }
+      const endRow = (cellNumber === 14) ? true : false
+
+      const tileIsEditable = (
+        this.state.editableTileCoordinates.x === cellNumber
+      ) && (
+        this.state.editableTileCoordinates.y === rowNumber
+      ) ? true : false
 
       row.push(
         <Tile
+          key={ i }
           cellNumber={ cellNumber }
           handleTileValueChanged={ this.handleTileValueChanged }
-          tileIsEditable={ this.state.editableTile === tileNumber }
-          key={ tileNumber }
+          tileIsEditable={ tileIsEditable }
           handleTileClick={ this.handleTileClick }
-          tileNumber={ tileNumber } 
+          tileCoordinates={ tileCoordinates } 
           cellsToHighlight={ this.state.cellsToHighlight }
           wordChars={ this.state.wordChars }
-          cellData={ this.state.tableData[rowNumber][cellNumber ] }
+          cellData={ this.state.tableData[rowNumber][cellNumber] }
         />
       )
 
-      cellNumber ++
+      cellNumber++
 
       if(endRow) {
         board.push(
@@ -202,8 +152,8 @@ class Board extends Component {
 
         // reset row after its pushed / increment rowNumber to next row / and reset cell we are at
         row = [] 
-        rowNumber += 1
-        cellNumber = 1
+        rowNumber = rowNumber + 1
+        cellNumber = 0
       }
     }
 
@@ -223,7 +173,7 @@ class Board extends Component {
       <div className="scrabble-container">
         <div>
           Word List
-          { this.showWordList()  }
+          <WordList words={ mockWordData } />
         </div>
 
         <Table celled>
