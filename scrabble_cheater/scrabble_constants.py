@@ -1,3 +1,8 @@
+BOARD_SIZE = 15
+MAX_RACK_LENGTH = 7
+WWF_FULL_RACK_BONUS = 35
+SCRABBLE_FULL_RACK_BONUS = 50
+
 LETTER_VALUES = {'A': 1,
                  'B': 3,
                  'C': 3,
@@ -23,7 +28,8 @@ LETTER_VALUES = {'A': 1,
                  'W': 4,
                  'X': 8,
                  'Y': 4,
-                 'Z': 10}
+                 'Z': 10,
+                 '_': 0}
 
 WWF_LET_VALUES = {'A': 1,
                  'B': 4,
@@ -50,7 +56,8 @@ WWF_LET_VALUES = {'A': 1,
                  'W': 4,
                  'X': 8,
                  'Y': 3,
-                 'Z': 10}
+                 'Z': 10,
+                 '_': 0}
 
 SCRABBLE_TILES = {'A': 9,
                  'B': 2,
