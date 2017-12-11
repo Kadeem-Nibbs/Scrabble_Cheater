@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "prop-types": "^15.6.0",
+    "uuid": "^3.1.0"
+  }
+}

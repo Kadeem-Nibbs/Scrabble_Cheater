@@ -73,6 +73,8 @@ class Tile extends Component {
 
     const colorClass = ''
 
+    console.log('render');
+
     if(this.props.tileIsEditable) {
       return (
         <Table.Cell>
