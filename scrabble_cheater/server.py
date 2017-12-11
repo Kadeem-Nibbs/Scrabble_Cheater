@@ -27,8 +27,7 @@ def display_highest_scoring_words(game_data_json):
     rack = game_data['rack']
     board = Board(game_board)
     wf = WordFinder(board, rack)
-    for play in wf.find_highest_scoring_words()[:50]:
-        emit('play', json.dumps(play)+"\n")
+    emit('play', json.dumps(wf.find_highest_scoring_words()[:50]))
 
 if __name__ == "__main__":
     init_dictionary(WORD_FILE)

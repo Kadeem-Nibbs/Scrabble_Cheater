@@ -40,7 +40,7 @@ const initialTableData = [
 ]
 
 const initialState = {
-  cellsToHighlight: [],
+  coordinatesToHighlight: [],
   wordChars: '',
   rack: '',
   editableTileCoordinates: {
@@ -49,7 +49,8 @@ const initialState = {
   },
   gameType:'wordWithFriends',
   moveDirection: 'right',
-  tableData: initialTableData
+  tableData: initialTableData,
+  wordHoveredKey: null
 }
 
 class Board extends Component {
@@ -65,6 +66,7 @@ class Board extends Component {
     }
   }
 
+  // For clicking outside of tile area
   componentDidMount() {
     document.addEventListener('mousedown', this.handleClickOutside);
   }
@@ -75,7 +77,6 @@ class Board extends Component {
 
   handleClickOutside = (e) => {
     if (this.wrapperRef && !this.wrapperRef.contains(e.target)) {
-      // User clicked outside of the tiles
       this.setState({
         editableTileCoordinates: {
           x: null,
@@ -85,15 +86,13 @@ class Board extends Component {
     }
   }
 
+  // handle table data
   handleSendTableData = () => {
-
     const tableData =  {
       gameType: this.state.gameType,
       board: this.state.tableData,
       rack: this.state.rack
     }
-
-    console.log(JSON.stringify(tableData));
 
     this.props.socket.emit('analyze_board', JSON.stringify(tableData))
   }
@@ -101,16 +100,6 @@ class Board extends Component {
   // Edit tile logic
   handleTileClick = (tileCoordinates) => {
     this.setState({ editableTileCoordinates: tileCoordinates})
-  }
-
-  handleClickOutsideOfTiles = () => {
-    console.log('hello');
-    // this.setState({ 
-    //   editableTileCoordinates: {
-    //     x: null,
-    //     y: null
-    //   }
-    // })
   }
 
   handleTileValueChanged = (newTileValue, tileCoordinates) => {
@@ -152,6 +141,13 @@ class Board extends Component {
     })
   }
 
+  handleHighlightWordOnHover = (coordinatesToHighlight, i) => {
+    this.setState({ 
+      coordinatesToHighlight: coordinatesToHighlight,
+      wordHoveredKey: i
+    })
+  }
+
   // Build board logic
   buildBoard = () => {
     const board = []
@@ -163,7 +159,6 @@ class Board extends Component {
     for(let i = 0; i < totalTiles - 1; i++) {   
 
       const tileCoordinates = { x: cellNumber, y: rowNumber }
-
       const endRow = (cellNumber === 14) ? true : false
 
       const tileIsEditable = (
@@ -175,15 +170,14 @@ class Board extends Component {
       row.push(
         <Tile
           key={ i }
-          cellNumber={ cellNumber }
-          handleTileValueChanged={ this.handleTileValueChanged }
-          handleClickOutsideOfTiles={ this.handleClickOutsideOfTiles }
           tileIsEditable={ tileIsEditable }
-          handleTileClick={ this.handleTileClick }
           tileCoordinates={ tileCoordinates } 
-          cellsToHighlight={ this.state.cellsToHighlight }
-          wordChars={ this.state.wordChars }
-          cellData={ this.state.tableData[rowNumber][cellNumber] }
+
+          handleTileValueChanged={ this.handleTileValueChanged }
+          handleTileClick={ this.handleTileClick }
+
+          coordinatesToHighlight={ this.state.coordinatesToHighlight }
+          cellChar={ this.state.tableData[rowNumber][cellNumber] }
         />
       )
 
@@ -216,11 +210,16 @@ class Board extends Component {
   }
 
   render() {
+    console.log('this.props.suggestedWords', this.props.suggestedWords);
     return (
       <div className="scrabble-container">
         <div>
           Word List
-          <WordList words={ mockWordData } />
+          <WordList 
+            words={ this.props.suggestedWords } 
+            wordHoveredKey={ this.state.wordHoveredKey }
+            handleHighlightWordOnHover={ this.handleHighlightWordOnHover }
+          />
         </div>
         <div>
           <Input value={ this.state.rack } onChange={ this.handleRackChange } />

@@ -18,28 +18,34 @@ class Tile extends Component {
 
   shouldComponentUpdate(nextProps) {
     // Update if this Tile is marked as editable or remove from being editable
-    // console.log('nextProps.tileIsEditable', nextProps.tileIsEditable);
-    // console.log('this.props.tileIsEditable', this.props.tileIsEditable);
     if(nextProps.tileIsEditable || nextProps.tileIsEditable !== this.props.tileIsEditable) {
       return true
     }
+    
+    // This seems super expensive to have in shouldComponentUpdate
+    const oldTile = this.shouldCellUpdate(this.props)
+    const newTile = this.shouldCellUpdate(nextProps)
 
-    // Only update tiles that are being highlighted because of handleWordOver() (in Board component)
-    const oldTile = this.shouldUpdateCell(this.props)
-    const newTile = this.shouldUpdateCell(nextProps)
+    if(oldTile || newTile) {
+      return true
+    } else {
+      return false
+    }
 
-    // if(oldTile || newTile) {
-    //   console.log('???');
-    //   return true
-    // }
-
-    return false
   }
 
-  shouldUpdateCell = (props) => {
-    const { cellsToHighlight, tileNumber } = props
+  shouldCellUpdate = (props) => {
+    // This is super expensive. Need to make this way better. 
+    // Maybe go back to using the cell# instead of x/y coords for faster lookup
 
-    return cellsToHighlight.includes(tileNumber)
+    let update = false
+    props.coordinatesToHighlight.forEach((coordinate) => {
+      if((coordinate.x === this.props.tileCoordinates.x) && (coordinate.y === this.props.tileCoordinates.y)) {
+        update = true
+      }
+    })
+
+    return update
   }
 
   handleClick = () => {
@@ -55,34 +61,18 @@ class Tile extends Component {
     }
   }
 
-  handleClickOutside = (e) => {
-    e.preventDefault()
-    this.props.
-    console.log('outside click');
-    this.props.handleClickOutsideOfTiles(e)
-  }
-
   render() {
-    const { 
-      tileNumber,
-      wordChars,
-      cellsToHighlight
-    } = this.props
-
-    const highlightCell = this.shouldUpdateCell(this.props)
-    let char = ''
-    let indexOfChar = null
-
-    if(highlightCell) {
-      indexOfChar = cellsToHighlight.indexOf(tileNumber)
-      char =  wordChars[indexOfChar]
-    } else {
-      char = this.props.cellData
-    } 
-
+    let char = this.props.cellChar || ''
+    let highlightCell = false
     const colorClass = ''
 
-    console.log('render');
+    this.props.coordinatesToHighlight.filter((coordinates) => {
+      if(coordinates.x === this.props.tileCoordinates.x && coordinates.y === this.props.tileCoordinates.y) {
+        // Set char 
+        char = coordinates.char
+        highlightCell = true
+      }
+    })
 
     if(this.props.tileIsEditable) {
       return (

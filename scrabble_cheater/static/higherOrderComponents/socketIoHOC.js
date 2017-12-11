@@ -8,13 +8,12 @@ export default (WrappedComponent) => {
       this.socket = io()
 
       this.state = {
-        tableData: null
+        suggestedWords: null
       }
 
-      this.socket.on('play', (tableData) => {
-        console.log('tableData', tableData);
-
-        this.setState({ tableData })
+      this.socket.on('play', (suggestedWords) => {
+        const parsedWords = JSON.parse(suggestedWords)
+        this.setState({ suggestedWords: parsedWords })
       })
     }
 
@@ -23,7 +22,7 @@ export default (WrappedComponent) => {
         <WrappedComponent 
           { ...this.props }
           sendData={ this.sendData }
-          tableData={ this.state.tableData }
+          suggestedWords={ this.state.suggestedWords }
           socket={ this.socket }
         />
       )

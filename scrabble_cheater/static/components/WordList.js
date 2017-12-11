@@ -10,58 +10,64 @@ class WordList extends Component {
     }
   }
 
-  getCellsToHighlightArray = (lowEnd, highEnd, horizontal)  => {
-    let list = []
+  getCoordinatesToHighlight = (wordInfo)  => {
+    const startOfWord = wordInfo[1][0]
+    const endOfWord   = wordInfo[1][1]
+    const wordArray = wordInfo[2]
+
+    const horizontal = startOfWord[0] === endOfWord[0]
+
+    let coordinates = []
     if(horizontal) {
-      for (let i = lowEnd; i <= highEnd; i++) {
-        list.push(i)
+      const wordLength =  endOfWord[1] - startOfWord[1]
+      const y = startOfWord[0]
+      let xCoordinate = startOfWord[1]
+
+      for (let i = 0; i <= wordLength; i++) {
+        coordinates.push({
+          x: xCoordinate++, 
+          y: y,
+          char: wordArray[i]
+        })
       }
     } else {
-      for (let i = lowEnd; i <= highEnd; i += 15) {
-        list.push(i)
+      const wordLength = endOfWord[0] - startOfWord[0]
+      const x = startOfWord[1]
+      let yCoordinate = startOfWord[0]
+
+      for (let i = 0; i <= wordLength; i++) {
+        coordinates.push({
+          x: x, 
+          y: yCoordinate++,
+          char: wordArray[i]
+        })
       }
     }
 
-    return list
+    return coordinates
   }
 
   handleWordOver = (wordInfo, i) => {
-    // eg [[3, 5]
-    const startOfWord = wordInfo[1][0]
-    // eg [3, 12]]
-    const endOfWord   = wordInfo[1][1]
+    // y x coordinates 
+    const coordinatesToHighlight = this.getCoordinatesToHighlight(wordInfo)
 
-    // Note: 
-    // startOfWord[0] === y / row
-    // startOfWord[1] === x / col
+    let wordHoveredKey = i
 
-    const rowStart = (startOfWord[0] * 15) - 15
-    const startCell = rowStart + startOfWord[1]
-
-    const rowEnd = (endOfWord[0] * 15)  - 15
-    const endCell = rowEnd + endOfWord[1]
-
-    const horizontal = startOfWord[0] === endOfWord[0] // if start of word Y is the same as end of word Y its horizontal
-
-    const cellsToHighlight = this.getCellsToHighlightArray(startCell, endCell, horizontal)
-
-    this.setState({ 
-      cellsToHighlight,
-      wordHoveredKey: i,
-      wordChars: wordInfo[2],
-    })
+    // need to pass this up on props
+    this.props.handleHighlightWordOnHover(coordinatesToHighlight, wordHoveredKey)
   }
 
   handleWordOut = () => {
-    this.setState({
-      cellsToHighlight: [],
-      wordHoveredKey: null, 
-    })
+    this.props.handleHighlightWordOnHover([], null)
   }
 
 
   buildList = () => {
     const wordList = []
+
+    if(!this.props.words) {
+      return null
+    }
 
     this.props.words.forEach((wordInfo, i) => {
       const word = wordInfo[0]
@@ -69,7 +75,7 @@ class WordList extends Component {
 
       wordList.push(
         <div
-          className={ classNames({ 'hover-word': this.state.wordHoveredKey === i }) }
+          className={ classNames({ 'hover-word': this.props.wordHoveredKey === i }) }
           key={ i }
           onMouseEnter={ this.handleWordOver.bind(this, wordInfo, i) }
           onMouseOut={ this.handleWordOut.bind(this, wordInfo, i) }
