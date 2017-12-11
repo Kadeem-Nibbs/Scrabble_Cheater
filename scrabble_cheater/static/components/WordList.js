@@ -10,6 +10,21 @@ class WordList extends Component {
     }
   }
 
+  getCellsToHighlightArray = (lowEnd, highEnd, horizontal)  => {
+    let list = []
+    if(horizontal) {
+      for (let i = lowEnd; i <= highEnd; i++) {
+        list.push(i)
+      }
+    } else {
+      for (let i = lowEnd; i <= highEnd; i += 15) {
+        list.push(i)
+      }
+    }
+
+    return list
+  }
+
   handleWordOver = (wordInfo, i) => {
     // eg [[3, 5]
     const startOfWord = wordInfo[1][0]

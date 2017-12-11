@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import classNames from 'classnames'
 import { Table, Button } from 'semantic-ui-react'
-import io from 'socket.io-client'
+import socketIoHOC from '../higherOrderComponents/socketIoHOC'
 
 import WordList from './WordList'
 import Tile from './Tile'
@@ -38,8 +38,6 @@ const initialTableData = {
   14: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ]
 }
 
-// MAKE X / Y ZERO BASED
-
 const initialState = {
   cellsToHighlight: [],
   wordChars: '',
@@ -47,40 +45,28 @@ const initialState = {
     x: null,
     y: null
   },
-  tableData: initialTableData,
-  receivedData: null
+  gameType:'wordWithFriends',
+  tableData: initialTableData
 }
 
 class Board extends Component {
   constructor(props) {
     super(props)
-    this.socket = io()
-
     this.state = { ...initialState }
 
-    this.socket.on('tableData', (data) => {
-      this.receiveData(data)
-    })
+    const gameType = localStorage.getItem('gameType')
+    if(gameType) {
+      this.setState({ gameType })
+    }
   }
 
-  receiveData = (data) => {
-    this.setState({ receivedData: data })
+  sendTableData = () => {
+    const flatArray = []
+    for(let key in this.state.tableData) {
+      flatArray.push(this.state.tableData[key]) 
+    }
+    this.props.socket.emit('tableData', JSON.stringify(flatArray))
   }
-
-  // Highlight word logic
-  // getCellsToHighlightArray = (lowEnd, highEnd, horizontal)  => {
-  //   let list = []
-  //   if(horizontal) {
-  //     for (let i = lowEnd; i <= highEnd; i++) {
-  //       list.push(i)
-  //     }
-  //   } else {
-  //     for (let i = lowEnd; i <= highEnd; i += 15) {
-  //       list.push(i)
-  //     }
-  //   }
-  //   return list
-  // }
 
   // Edit tile logic
   handleTileClick = (tileCoordinates) => {
@@ -104,6 +90,11 @@ class Board extends Component {
       tableData: newState,
       wordChars: '',
       initialRack: ''
+    }, () => {
+      const newTileCoordinates = Object.assign({}, tileCoordinates)
+      // If horizontal
+      newTileCoordinates.x = tileCoordinates.x + 1
+      this.handleTileClick(newTileCoordinates)
     })
   }
 
@@ -118,6 +109,8 @@ class Board extends Component {
     for(let i = 0; i < totalTiles - 1; i++) {   
 
       const tileCoordinates = { x: cellNumber, y: rowNumber }
+
+
       const endRow = (cellNumber === 14) ? true : false
 
       const tileIsEditable = (
@@ -160,13 +153,6 @@ class Board extends Component {
     return board
   }
 
-  sendTableData = () => {
-    const flatArray = []
-    for(let key in this.state.tableData) {
-      flatArray.push(this.state.tableData[key]) 
-    }
-    this.socket.emit('tableData', JSON.stringify(flatArray))
-  }
 
   render() {
     return (
@@ -182,7 +168,7 @@ class Board extends Component {
           </Table.Body>
         </Table>
         <div>
-          { this.state.receivedData }
+          { this.props.tableData }
         </div>
         <Button onClick={ this.sendTableData }>
           Get Words
@@ -192,4 +178,4 @@ class Board extends Component {
   } 
 }
 
-export default Board
+export default socketIoHOC(Board)
