@@ -1,9 +1,12 @@
 from flask import Flask, request, render_template, redirect
-from flask_socketio import SocketIO, emit
+
+from flask_socketio import SocketIO, emit, send
+from scrabble_cheater import Board, WordFinder, init_dictionary, init_trie, WORD_FILE, dictionary, trie
+
 import json
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'secret!'
+app.config['SECRET_KEY'] = 'jfldaur3892309jlksf'
 socketio = SocketIO(app)
 
 # @app.before_request
@@ -14,12 +17,18 @@ socketio = SocketIO(app)
 def index():
     return render_template("index.html")
 
-@socketio.on('tableData')
-def table_data(data):
-    print 'received json:', json.loads(data)
-    emit('tableData', 'We gotchu ')
-    # call algorithm 
-    
+@socketio.on('analyze_board')
+def display_highest_scoring_words(game_data):
+    print "fn called"
+    print game_data
+    rack = game_data['rack']
+    game_board = game_data['board']
+    board = Board(game_board)
+    wf = WordFinder(board, rack)
+    for play in wf.find_highest_scoring_words()[:50]:
+        emit('play', json.dumps(play)+"\n")
 
 if __name__ == "__main__":
-    socketio.run(app)
+    init_dictionary(WORD_FILE)
+    init_trie()
+    socketio.run(app, debug=True)
