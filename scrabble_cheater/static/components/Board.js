@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import classNames from 'classnames'
-import { Table, Button } from 'semantic-ui-react'
+import { Table, Button, Input } from 'semantic-ui-react'
+import shortid from 'shortid'
 import socketIoHOC from '../higherOrderComponents/socketIoHOC'
 
 import WordList from './WordList'
@@ -41,11 +42,13 @@ const initialTableData = [
 const initialState = {
   cellsToHighlight: [],
   wordChars: '',
+  rack: '',
   editableTileCoordinates: {
     x: null,
     y: null
   },
   gameType:'wordWithFriends',
+  moveDirection: 'right',
   tableData: initialTableData
 }
 
@@ -54,23 +57,59 @@ class Board extends Component {
     super(props)
     this.state = { ...initialState }
 
+    this.wrapperRef = null
+
     const gameType = localStorage.getItem('gameType')
     if(gameType) {
       this.setState({ gameType })
     }
   }
 
-  sendTableData = () => {
-    const flatArray = []
-    for(let key in this.state.tableData) {
-      flatArray.push(this.state.tableData[key]) 
+  componentDidMount() {
+    document.addEventListener('mousedown', this.handleClickOutside);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('mousedown', this.handleClickOutside);
+  }
+
+  handleClickOutside = (e) => {
+    if (this.wrapperRef && !this.wrapperRef.contains(e.target)) {
+      // User clicked outside of the tiles
+      this.setState({
+        editableTileCoordinates: {
+          x: null,
+          y: null
+        }
+      })
     }
-    this.props.socket.emit('tableData', JSON.stringify(flatArray))
+  }
+
+
+
+  handleSendTableData = () => {
+    const tableData =  {
+      gameType: this.state.gameType,
+      board: this.state.tableData,
+      rack: this.state.rack
+    }
+
+    this.props.sendData(JSON.stringify(tableData))
   }
 
   // Edit tile logic
   handleTileClick = (tileCoordinates) => {
     this.setState({ editableTileCoordinates: tileCoordinates})
+  }
+
+  handleClickOutsideOfTiles = () => {
+    console.log('hello');
+    // this.setState({ 
+    //   editableTileCoordinates: {
+    //     x: null,
+    //     y: null
+    //   }
+    // })
   }
 
   handleTileValueChanged = (newTileValue, tileCoordinates) => {
@@ -91,9 +130,23 @@ class Board extends Component {
       wordChars: '',
       initialRack: ''
     }, () => {
+
       const newTileCoordinates = Object.assign({}, tileCoordinates)
       // If horizontal
-      newTileCoordinates.x = tileCoordinates.x + 1
+      if(this.state.moveDirection === 'right') {
+        if(tileCoordinates.x === 14) {
+          return
+        } else {
+          newTileCoordinates.x = tileCoordinates.x + 1
+        }
+      } else if(this.state.moveDirection === 'down') {
+        if(tileCoordinates.y === 14) {
+          return 
+        } else {
+          newTileCoordinates.x = tileCoordinates.y + 1
+        }
+      }
+
       this.handleTileClick(newTileCoordinates)
     })
   }
@@ -110,7 +163,6 @@ class Board extends Component {
 
       const tileCoordinates = { x: cellNumber, y: rowNumber }
 
-
       const endRow = (cellNumber === 14) ? true : false
 
       const tileIsEditable = (
@@ -124,6 +176,7 @@ class Board extends Component {
           key={ i }
           cellNumber={ cellNumber }
           handleTileValueChanged={ this.handleTileValueChanged }
+          handleClickOutsideOfTiles={ this.handleClickOutsideOfTiles }
           tileIsEditable={ tileIsEditable }
           handleTileClick={ this.handleTileClick }
           tileCoordinates={ tileCoordinates } 
@@ -153,7 +206,6 @@ class Board extends Component {
     return board
   }
 
-
   render() {
     return (
       <div className="scrabble-container">
@@ -162,15 +214,20 @@ class Board extends Component {
           <WordList words={ mockWordData } />
         </div>
 
-        <Table celled>
-          <Table.Body>
-            { this.buildBoard() }
-          </Table.Body>
-        </Table>
+        <div>
+          <Input onChange={ (e, data) => { this.setState({ rack: data.value }) } } />
+        </div>
+        <div ref={ (ref) => { this.wrapperRef = ref  }}>
+          <Table celled>
+            <Table.Body>
+              { this.buildBoard() }
+            </Table.Body>
+          </Table>
+        </div>
         <div>
           { this.props.tableData }
         </div>
-        <Button onClick={ this.sendTableData }>
+        <Button onClick={ this.handleSendTableData }>
           Get Words
         </Button>
       </div>

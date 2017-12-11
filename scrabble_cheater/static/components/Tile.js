@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { Table, Form, Input, Button } from 'semantic-ui-react'
-
 import classNames from 'classnames'
 
 class Tile extends Component {
@@ -19,6 +18,8 @@ class Tile extends Component {
 
   shouldComponentUpdate(nextProps) {
     // Update if this Tile is marked as editable or remove from being editable
+    // console.log('nextProps.tileIsEditable', nextProps.tileIsEditable);
+    // console.log('this.props.tileIsEditable', this.props.tileIsEditable);
     if(nextProps.tileIsEditable || nextProps.tileIsEditable !== this.props.tileIsEditable) {
       return true
     }
@@ -27,9 +28,10 @@ class Tile extends Component {
     const oldTile = this.shouldUpdateCell(this.props)
     const newTile = this.shouldUpdateCell(nextProps)
 
-    if(oldTile || newTile) {
-      return true
-    }
+    // if(oldTile || newTile) {
+    //   console.log('???');
+    //   return true
+    // }
 
     return false
   }
@@ -51,6 +53,13 @@ class Tile extends Component {
     } else {
       this.setState({ newTileValue: value })
     }
+  }
+
+  handleClickOutside = (e) => {
+    e.preventDefault()
+    this.props.
+    console.log('outside click');
+    this.props.handleClickOutsideOfTiles(e)
   }
 
   render() {

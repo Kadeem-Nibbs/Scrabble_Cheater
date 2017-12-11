@@ -18,8 +18,9 @@ def index():
     return render_template("index.html")
 
 @socketio.on('analyze_board')
-def display_highest_scoring_words(game_data):
+def display_highest_scoring_words(game_data_json):
     print "fn called"
+    game_data = json.loads(game_data_json)
     print game_data
     rack = game_data['rack']
     game_board = game_data['board']

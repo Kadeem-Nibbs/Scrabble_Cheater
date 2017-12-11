@@ -11,15 +11,21 @@ export default (WrappedComponent) => {
         tableData: null
       }
 
-      this.socket.on('tableData', (tableData) => {
+      this.socket.on('analyze_board', (tableData) => {
+        console.log('tableData', tableData);
         this.setState({ tableData })
       })
+    }
+
+    sendData = (tableData) => {
+      this.socket.emit('analyze_board', JSON.stringify(tableData))
     }
 
     render() {
       return (
         <WrappedComponent 
           { ...this.props }
+          sendData={ this.sendData }
           tableData={ this.state.tableData }
           socket={ this.socket }
         />
