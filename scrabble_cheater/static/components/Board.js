@@ -85,16 +85,17 @@ class Board extends Component {
     }
   }
 
-
-
   handleSendTableData = () => {
+
     const tableData =  {
       gameType: this.state.gameType,
       board: this.state.tableData,
       rack: this.state.rack
     }
 
-    this.props.sendData(JSON.stringify(tableData))
+    console.log(JSON.stringify(tableData));
+
+    this.props.socket.emit('analyze_board', JSON.stringify(tableData))
   }
 
   // Edit tile logic
@@ -115,8 +116,8 @@ class Board extends Component {
   handleTileValueChanged = (newTileValue, tileCoordinates) => {
     // Calculate row 
     const row = tileCoordinates.y
-    const newRowState = this.state.tableData[row].slice(0)
-    const newState = Object.assign({}, this.state.tableData )
+    const newRowState = this.state.tableData[row]
+    const newState = this.state.tableData
 
     newRowState[tileCoordinates.x] = newTileValue.toUpperCase()
     newState[row] = newRowState
@@ -206,6 +207,14 @@ class Board extends Component {
     return board
   }
 
+  handleRackChange = (e, data) => {
+    if(data && data.value) {
+      this.setState({ 
+        rack: data.value.toUpperCase() 
+      })
+    }
+  }
+
   render() {
     return (
       <div className="scrabble-container">
@@ -213,9 +222,11 @@ class Board extends Component {
           Word List
           <WordList words={ mockWordData } />
         </div>
-
         <div>
-          <Input onChange={ (e, data) => { this.setState({ rack: data.value }) } } />
+          <Input value={ this.state.rack } onChange={ this.handleRackChange } />
+          <Button onClick={ this.handleSendTableData }>
+            Get Words
+          </Button>
         </div>
         <div ref={ (ref) => { this.wrapperRef = ref  }}>
           <Table celled>
@@ -227,9 +238,6 @@ class Board extends Component {
         <div>
           { this.props.tableData }
         </div>
-        <Button onClick={ this.handleSendTableData }>
-          Get Words
-        </Button>
       </div>
     )
   } 

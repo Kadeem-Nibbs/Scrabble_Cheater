@@ -11,14 +11,11 @@ export default (WrappedComponent) => {
         tableData: null
       }
 
-      this.socket.on('analyze_board', (tableData) => {
+      this.socket.on('play', (tableData) => {
         console.log('tableData', tableData);
+
         this.setState({ tableData })
       })
-    }
-
-    sendData = (tableData) => {
-      this.socket.emit('analyze_board', JSON.stringify(tableData))
     }
 
     render() {

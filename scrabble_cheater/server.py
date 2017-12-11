@@ -20,10 +20,11 @@ def index():
 @socketio.on('analyze_board')
 def display_highest_scoring_words(game_data_json):
     print "fn called"
+    print game_data_json
     game_data = json.loads(game_data_json)
-    print game_data
-    rack = game_data['rack']
+    print type(game_data)
     game_board = game_data['board']
+    rack = game_data['rack']
     board = Board(game_board)
     wf = WordFinder(board, rack)
     for play in wf.find_highest_scoring_words()[:50]:
