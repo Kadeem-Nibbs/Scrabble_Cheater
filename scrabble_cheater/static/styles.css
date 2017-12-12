@@ -1,8 +1,26 @@
-/* who needs SASS 💪 */
+/* do we need Sass ? */
 
+.mt-100px {
+  margin-top: 40px;
+}
 .scrabble-container {
-  width: 900px;
+  /* Set fixed min width so table doesn't get crumpled - can fix for mobile later */
+  min-width: 756px;
+  padding-left: 0;
   font-size: 1em;
+}
+
+.middle-tile {
+  background: red;
+  
+}
+
+.ui.vertical.scroll.menu.scrollable {
+  display: block;
+  height: 680px;
+  width: 20.6rem;
+  overflow-y: scroll;
+  scroll-behavior: smooth;
 }
 
 .hover-word {

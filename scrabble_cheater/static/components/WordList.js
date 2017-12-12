@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import classNames from 'classnames'
 
+import { Menu } from 'semantic-ui-react'
+
 class WordList extends Component {
   constructor(props) {
     super(props) 
@@ -65,23 +67,19 @@ class WordList extends Component {
   buildList = () => {
     const wordList = []
 
-    if(!this.props.words) {
-      return null
-    }
-
     this.props.words.forEach((wordInfo, i) => {
       const word = wordInfo[0]
       const points = wordInfo[3]
 
       wordList.push(
-        <div
-          className={ classNames({ 'hover-word': this.props.wordHoveredKey === i }) }
+        <Menu.Item
+          className={ classNames({ 'hover-word': this.props.wordHoveredKey === i}) }
           key={ i }
           onMouseEnter={ this.handleWordOver.bind(this, wordInfo, i) }
           onMouseOut={ this.handleWordOut.bind(this, wordInfo, i) }
         >
           {`${ word } is worth ${points} points`} | {}
-        </div>
+        </Menu.Item>
       )
     })
 
@@ -89,10 +87,14 @@ class WordList extends Component {
   }
 
   render() {
+    if(!this.props.words) {
+      return null
+    }
+
     return(
-      <span>
+      <Menu vertical className="scrollable">
         { this.buildList() }
-      </span>
+      </Menu>
     )
   }
 }

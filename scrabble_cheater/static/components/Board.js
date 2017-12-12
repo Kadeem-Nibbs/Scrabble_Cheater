@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import classNames from 'classnames'
-import { Table, Button, Input } from 'semantic-ui-react'
+import { Container, Grid, Table, Button, Input, Loader } from 'semantic-ui-react'
 import shortid from 'shortid'
 import socketIoHOC from '../higherOrderComponents/socketIoHOC'
 
@@ -10,15 +10,6 @@ import Tile from './Tile'
 const tilesAcross = 15
 const tilesDown = 15
 const totalTiles = tilesAcross * tilesDown
-
-const mockWordData = [
-              // row column
-              // y start   / x start
-  ["MIMICKED", [[3, 5], [3, 12]], ["M", "I", "_", "I", "$C", "K", "E", "D"], 75],
-  ["MIMICKED", [[3, 5], [3, 12]], ["_", "I", "M", "I", "$C", "K", "E", "D"], 75],
-  ["MISLIKED", [[5, 6], [5, 13]], ["M", "I", "_", "$L", "I","K", "E", "D"], 67],
-  ["MISLIKED", [[5, 6], [12, 6]], ["M", "I", "_", "$L", "I", "K", "E", "D"], 55]
-]
 
 // Server expects data in this format
 const initialTableData = [
@@ -50,7 +41,8 @@ const initialState = {
   gameType:'wordWithFriends',
   moveDirection: 'right',
   tableData: initialTableData,
-  wordHoveredKey: null
+  wordHoveredKey: null,
+  loading: false
 }
 
 class Board extends Component {
@@ -63,6 +55,14 @@ class Board extends Component {
     const gameType = localStorage.getItem('gameType')
     if(gameType) {
       this.setState({ gameType })
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if(nextProps.loading !== this.props.loading) {
+      this.setState({ 
+        loading: nextProps.loading 
+      })
     }
   }
 
@@ -94,7 +94,9 @@ class Board extends Component {
       rack: this.state.rack
     }
 
-    this.props.socket.emit('analyze_board', JSON.stringify(tableData))
+    this.props.socket.emit('analyze_board', JSON.stringify(tableData), () => {
+      this.props.toggleLoadingState()
+    })
   }
 
   // Edit tile logic
@@ -210,34 +212,39 @@ class Board extends Component {
   }
 
   render() {
-    console.log('this.props.suggestedWords', this.props.suggestedWords);
     return (
-      <div className="scrabble-container">
-        <div>
-          Word List
-          <WordList 
-            words={ this.props.suggestedWords } 
-            wordHoveredKey={ this.state.wordHoveredKey }
-            handleHighlightWordOnHover={ this.handleHighlightWordOnHover }
-          />
-        </div>
-        <div>
-          <Input value={ this.state.rack } onChange={ this.handleRackChange } />
-          <Button onClick={ this.handleSendTableData }>
-            Get Words
-          </Button>
-        </div>
-        <div ref={ (ref) => { this.wrapperRef = ref  }}>
-          <Table celled>
-            <Table.Body>
-              { this.buildBoard() }
-            </Table.Body>
-          </Table>
-        </div>
-        <div>
-          { this.props.tableData }
-        </div>
-      </div>
+      <Container className="mt-100px">
+        <Grid className="scrabble-container">
+          <Grid.Column computer={ 11 }>
+            <div ref={ (ref) => { this.wrapperRef = ref  }}>
+              <Table celled>
+                <Table.Body>
+                  { this.buildBoard() }
+                </Table.Body>
+              </Table>
+            </div>
+          </Grid.Column>
+
+          <Grid.Column computer={ 5 }>
+            <Input 
+              value={ this.state.rack } 
+              onChange={ this.handleRackChange } 
+            />
+            <Button 
+              onClick={ this.handleSendTableData } 
+              disabled={ this.props.loading }
+            >
+              { this.props.loading ? (<Loader active inline />) : 'Get Words' }
+            </Button>
+
+            <WordList 
+              words={ this.props.suggestedWords } 
+              wordHoveredKey={ this.state.wordHoveredKey }
+              handleHighlightWordOnHover={ this.handleHighlightWordOnHover }
+            />
+          </Grid.Column>
+        </Grid>
+      </Container>
     )
   } 
 }

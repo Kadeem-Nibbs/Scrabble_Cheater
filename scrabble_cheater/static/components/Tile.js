@@ -74,6 +74,8 @@ class Tile extends Component {
       }
     })
 
+    const middleTile = this.props.tileCoordinates.x == 7 && this.props.tileCoordinates.y == 7 ? true : false
+
     if(this.props.tileIsEditable) {
       return (
         <Table.Cell>
@@ -105,7 +107,7 @@ class Tile extends Component {
         <Table.Cell
           selectable
           textAlign='center'
-          className={ classNames({ 'highlight-word-location': highlightCell }) }
+          className={ classNames({ 'highlight-word-location': highlightCell, 'middle-tile': middleTile }) }
           onClick={ this.handleClick }
         >
           { char }
