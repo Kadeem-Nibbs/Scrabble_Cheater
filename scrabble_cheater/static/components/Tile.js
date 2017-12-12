@@ -117,7 +117,7 @@ class Tile extends Component {
           className={ classNames({ 'highlight-word-location': highlightCell, 'middle-tile': middleTile }) }
           onClick={ this.handleClick }
         >
-          { char }{ this.props.tileKey }
+          { char }
         </Table.Cell>
       )
     }

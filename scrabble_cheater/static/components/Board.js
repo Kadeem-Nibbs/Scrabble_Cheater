@@ -87,6 +87,8 @@ class Board extends Component {
 
   // handle table data
   handleSendTableData = () => {
+    this.props.toggleLoadingState()
+
     const tableData =  {
       gameType: this.state.gameType,
       board: this.state.tableData,
@@ -94,7 +96,7 @@ class Board extends Component {
     }
 
     this.props.socket.emit('analyze_board', JSON.stringify(tableData), () => {
-      this.props.toggleLoadingState()
+      
     })
   }
 
@@ -171,7 +173,7 @@ class Board extends Component {
       row.push(
         <Tile
           key={ i }
-          tileKey={ i }
+
           tileIsEditable={ tileIsEditable }
           tileCoordinates={ tileCoordinates } 
 
@@ -212,6 +214,8 @@ class Board extends Component {
   }
 
   render() {
+    console.log('this.props.loading', this.props.loading);
+
     return (
       <Container className="mt-100px">
         <Grid className="scrabble-container">
@@ -226,16 +230,25 @@ class Board extends Component {
           </Grid.Column>
 
           <Grid.Column computer={ 5 }>
-            <Input 
-              value={ this.state.rack } 
-              onChange={ this.handleRackChange } 
-            />
-            <Button 
-              onClick={ this.handleSendTableData } 
-              disabled={ this.props.loading }
-            >
-              { this.props.loading ? (<Loader active inline />) : 'Get Words' }
-            </Button>
+            <Grid>
+              <Grid.Column computer={ 8 }>
+                <Input 
+                  className="rack"
+                  value={ this.state.rack } 
+                  onChange={ this.handleRackChange } 
+                />
+              </Grid.Column>
+              <Grid.Column computer={ 8 }>
+                <Button 
+                  className="btn-get-word"
+                  type="submit"
+                  onClick={ this.handleSendTableData } 
+                  disabled={ this.props.loading }
+                >
+                  { this.props.loading ? (<Loader size='tiny' active inline />) : 'Get Words' }
+                </Button>
+              </Grid.Column>
+            </Grid>
 
             <WordList 
               words={ this.props.suggestedWords } 

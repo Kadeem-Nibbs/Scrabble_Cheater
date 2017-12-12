@@ -27,6 +27,14 @@
   background: green!important;
 }
 
+.btn-get-word {
+  width: 110px;
+}
+
+.ui.input.rack {
+  width: 160px
+}
+
 .ui .selectable {
   cursor: pointer;
 }
