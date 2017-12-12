@@ -1,5 +1,5 @@
 import Tkinter as tk
-from scrabble_constants import WWF_LET_VALUES, WWF_BONUS_TILES, BONUS_TILE_COLORS
+from scrabble_constants import WWF_LETTER_VALUES, WWF_BONUS_TILES, BONUS_TILE_COLORS
 from scrabble_constants import WWF_FULL_RACK_BONUS, MAX_RACK_LENGTH, BOARD_SIZE
 from copy import deepcopy
 
@@ -7,6 +7,8 @@ NUM_WORDS_TO_DISPLAY = 50
 BLANK_TILE = "_"
 ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 TERMINAL = '$' # denotes the end of a word in trie
+TILE_ON_BOARD = "#" # denotes a tile on the board that was used to create a
+                    # new word
 WORD_FILE = "ENABLE.txt" # Enhanced North American Benchmark Lexicon with
                          # with a few hundred additions of more modern words
                          # and about 100 deletions of offensive words made by
@@ -150,7 +152,7 @@ class Board(object):
                     self.occupied_squares.append((i, j))
                     if len(letter) == 1:
                         self.board[i][j] = letter
-                        self.score_board[i][j] = WWF_LET_VALUES[letter]
+                        self.score_board[i][j] = WWF_LETTER_VALUES[letter]
                     elif len(letter) == 2 and letter[1] == '*':
                         self.board[i][j] = letter[0]
                         self.score_board[i][j] = 0
@@ -259,7 +261,7 @@ class Board(object):
                     self.board[row][column] = c
                     self.input_board[row][column] = c
                     self.occupied_squares.append((row, column))
-                    self.score_board[row][column] = WWF_LET_VALUES[c]
+                    self.score_board[row][column] = WWF_LETTER_VALUES[c]
                     column += 1
                     continue
                 if self.board[row][column] != c:
@@ -278,7 +280,7 @@ class Board(object):
                     self.board[row][column] = c
                     self.input_board[row][column] = c
                     self.occupied_squares.append((row, column))
-                    self.score_board[row][column] = WWF_LET_VALUES[c]
+                    self.score_board[row][column] = WWF_LETTER_VALUES[c]
                     row += 1
                     continue
                 if self.board[row][column] != c:
@@ -435,7 +437,7 @@ class WordFinder(object):
         rack = make_counter(self.rack)
         self.get_all_prefixes_rec(trie, rack, "", ())
 
-    def get_all_prefixes_rec(self, node, remaining_tiles, pref, tiles_played):
+    def get_all_prefixes_rec(self, node, remaining_tiles, pref, tiles_used):
         """
         A prefix in this application is a valid beginning to a word that can be
         played in the squares to the left of an anchor square.
@@ -444,7 +446,7 @@ class WordFinder(object):
         rack.  Each dictionary has the key-value pairs: "prefix", the string
         form of the prefix; "node", the node on the global trie corresponding
         to the prefix; "remaining_tiles", a dictionary containing counts of
-        the letters remaining in the rack; "tiles_played", a tuple containing
+        the letters remaining in the rack; "tiles_used", a tuple containing
         the tiles to put on the board, in order, to construct the prefix.
 
         Parameters:
@@ -456,7 +458,7 @@ class WordFinder(object):
         remaining_tiles: dictionary used as makeshift counter for letters remaining in rack
         pref: string
             The letters in the prefix already, in order played.
-        tiles_played: list of strings
+        tiles_used: list of strings
             The tiles put down to construct the prefix, in order played.
 
         """
@@ -464,7 +466,7 @@ class WordFinder(object):
         prefix_info = {"prefix": pref,
                        "node": node,
                        "remaining_tiles": remaining_tiles,
-                       "tiles_played": tiles_played,}
+                       "tiles_used": tiles_used,}
         self.prefixes[prefix_length].append(prefix_info)
         if not remaining_tiles:
             return
@@ -476,11 +478,11 @@ class WordFinder(object):
             if l in remaining_tiles:
                 next_node = node[l]
                 new_remaining_tiles = decrement_counter(remaining_tiles, l)
-                self.get_all_prefixes_rec(next_node, new_remaining_tiles, pref+l, tiles_played+tuple(l))
+                self.get_all_prefixes_rec(next_node, new_remaining_tiles, pref+l, tiles_used+tuple(l))
             if BLANK_TILE in remaining_tiles:
                 next_node = node[l]
                 new_remaining_tiles = decrement_counter(remaining_tiles, BLANK_TILE)
-                self.get_all_prefixes_rec(next_node, new_remaining_tiles, pref+l, tiles_played+tuple(BLANK_TILE))
+                self.get_all_prefixes_rec(next_node, new_remaining_tiles, pref+l, tiles_used+(l+BLANK_TILE,))
         return
 
     def find_legal_prefixes(self, board, row, column):
@@ -498,7 +500,7 @@ class WordFinder(object):
             Each dictionary has the key-value pairs: "prefix", the string
             form of the prefix; "node", the node on the global trie corresponding
             to the prefix; "remaining_tiles", a dictionary containing counts of
-            the letters remaining in the rack; "tiles_played", a tuple containing
+            the letters remaining in the rack; "tiles_used", a tuple containing
             the tiles to put on the board, in order, to construct the prefix.
 
         """
@@ -550,16 +552,16 @@ class WordFinder(object):
                 return False
         return True
 
-    def score_word(self, board, tiles_played, location):
+    def score_word(self, board, tiles_used, location):
         """
-        Returns the score from playing the tiles in tiles_played between
+        Returns the score from playing the tiles in tiles_used between
         start_square and end_square (inclusive).
 
         Parameters:
         -----------
         board: Board
             Either self.board or self.board_t
-        tiles_played: list of single-character strings
+        tiles_used: list of single-character strings
             The tiles to play on the board, in order.
         location: 2-tuple of 2-tuples
             The first and last element are the coordinates of the first and
@@ -568,16 +570,19 @@ class WordFinder(object):
         """
         score = 0
         multiplier = 1
-        tiles_played_index = 0
+        tiles_used_index = 0
         crossing_word_scores = []
         start_square, end_square = location
         for row, column in get_squares_in_range(start_square, end_square):
             letter = board.board[row][column]
             if letter:
-                score += WWF_LET_VALUES[letter]
+                score += WWF_LETTER_VALUES[letter]
+                tiles_used_index += 1
                 continue
-            letter = tiles_played[tiles_played_index]
-            tiles_played_index += 1
+            letter = tiles_used[tiles_used_index]
+            if len(letter) == 2 and letter[1] == BLANK_TILE:
+                letter = letter[1]
+            tiles_used_index += 1
             bonus = find_bonus((row, column))
             board_position = {"board": board.board,
                               "score_board": board.score_board,
@@ -589,17 +594,18 @@ class WordFinder(object):
                     cw_score = self.crossing_word_score(board_position)
                     crossing_word_scores.append(cw_score)
                 if bonus[1] == 'L':
-                    score += WWF_LET_VALUES[letter] * int(bonus[0])
+                    score += WWF_LETTER_VALUES[letter] * int(bonus[0])
                 elif bonus[1] == 'W':
-                    score += WWF_LET_VALUES[letter]
+                    score += WWF_LETTER_VALUES[letter]
                     multiplier *= int(bonus[0])
             else:
-                score += WWF_LET_VALUES[letter]
+                score += WWF_LETTER_VALUES[letter]
                 if board.part_of_vertical_word(row, column):
                     cw_score = self.crossing_word_score(board_position)
                     crossing_word_scores.append(cw_score)
         score *= multiplier
         score += sum(crossing_word_scores)
+        tiles_played = [tile for tile in tiles_used if len(tile) == 1]
         if len(tiles_played) == 7:
             score += WWF_FULL_RACK_BONUS
         return score
@@ -637,13 +643,13 @@ class WordFinder(object):
         letter = board_position["letter"]
         if bonus:
             if bonus[1] == 'L':
-                score = (int(bonus[0]) * WWF_LET_VALUES[letter])
+                score = (int(bonus[0]) * WWF_LETTER_VALUES[letter])
                 multiplier = 1
             elif bonus[1] == 'W':
-                score = WWF_LET_VALUES[letter]
+                score = WWF_LETTER_VALUES[letter]
                 multiplier = int(bonus[0])
         else:
-            score = WWF_LET_VALUES[letter]
+            score = WWF_LETTER_VALUES[letter]
             multiplier = 1
         top_row = row - 1
         bottom_row = row + 1
@@ -674,7 +680,7 @@ class WordFinder(object):
                              from which we continued building a word from
                              a prefix
         rack_state: a dictionary with the following key-value pairs
-            "tiles_played": tuple of single-character strings
+            "tiles_used": tuple of single-character strings
                 The strings represent the tiles put down on the board to reach
                 the current node in the trie, and are ordered from first to
                 last
@@ -686,19 +692,23 @@ class WordFinder(object):
         --------
         List of tuples describing words that can be played using letter at
         board[row][column], each tuple has the form
-        (word, (start_square, end_square), tiles_played, score)
+        (word, (start_square, end_square), tiles_used, score)
 
         """
         words = []
         row, column = board_position['position']
         board = board_position["board"]
+        remaining_tiles = rack_state["remaining_tiles"]
+        tiles_used = rack_state["tiles_used"]
         next_board_position = {'board': board,
                                'position': (row, column+1),
                                'anchor_square': board_position['anchor_square'],}
         letter = board.board[row][column]
         if letter in node.keys():
             next_node = node[letter]
-            words.extend(self.build_words(next_node, next_board_position, rack_state))
+            new_rack_state = {'remaining_tiles': remaining_tiles,
+                              'tiles_used': tiles_used+(letter+TILE_ON_BOARD,),}
+            words.extend(self.build_words(next_node, next_board_position, new_rack_state))
         return words
 
     def build_words_through_empty_square(self, node, board_position, rack_state):
@@ -718,7 +728,7 @@ class WordFinder(object):
                              from which we continued building a word from
                              a prefix
         rack_state: a dictionary with the following key-value pairs
-            "tiles_played": tuple of single-character strings
+            "tiles_used": tuple of single-character strings
                 The strings represent the tiles put down on the board to reach
                 the current node in the trie, and are ordered from first to
                 last
@@ -730,12 +740,12 @@ class WordFinder(object):
         --------
         List of tuples describing words that can be formed by playing aletter at
         board[row][column], each tuple has the form
-        (word, (start_square, end_square), tiles_played, score)
+        (word, (start_square, end_square), tiles_used, score)
 
         """
         words = []
         row, column = board_position['position']
-        tiles_played = rack_state['tiles_played']
+        tiles_used = rack_state['tiles_used']
         remaining_tiles = rack_state['remaining_tiles']
         board = board_position['board']
         anchor_square = board_position['anchor_square']
@@ -744,23 +754,24 @@ class WordFinder(object):
                                'anchor_square': anchor_square,}
         for letter in node.keys():
             if letter == TERMINAL:
+                tiles_played = [tile for tile in tiles_used if len(tile) == 1]
                 if tiles_played and (row, column) != anchor_square:
                     word = node[TERMINAL]
                     start, end = (row, column-len(word)), (row, column-1)
-                    score = self.score_word(board, tiles_played, (start, end))
-                    words.append((word, (start, end), tiles_played, score))
+                    score = self.score_word(board, tiles_used, (start, end))
+                    words.append((word, (start, end), tiles_used, score))
                 continue
             if not board.can_play_letter(row, column, letter):
                 continue
             if letter in remaining_tiles:
                 next_node = node[letter]
                 new_rack_state = {'remaining_tiles': decrement_counter(remaining_tiles, letter),
-                                  'tiles_played': tiles_played+tuple(letter),}
+                                  'tiles_used': tiles_used+tuple(letter),}
                 words.extend(self.build_words(next_node, next_board_position, new_rack_state))
             if BLANK_TILE in remaining_tiles:
                 next_node = node[letter]
                 new_rack_state = {'remaining_tiles': decrement_counter(remaining_tiles, BLANK_TILE),
-                                  'tiles_played': tiles_played+tuple(BLANK_TILE),}
+                                  'tiles_used': tiles_used+(letter+BLANK_TILE,),}
                 words.extend(self.build_words(next_node, next_board_position, new_rack_state))
         return words
 
@@ -781,7 +792,7 @@ class WordFinder(object):
                              from which we continued building a word from
                              a prefix
         rack_state: a dictionary with the following key-value pairs
-            "tiles_played": tuple of single-character strings
+            "tiles_used": tuple of single-character strings
                 The strings represent the tiles put down on the board to reach
                 the current node in the trie, and are ordered from first to
                 last
@@ -793,19 +804,19 @@ class WordFinder(object):
         --------
         List of tuples describing words that could be finished on the edge of the
         board from node's parent.  Each tuple has the form
-        (word, (start_square, end_square), tiles_played, score).
+        (word, (start_square, end_square), tiles_used, score).
 
         """
         words = []
         row, column = board_position['position']
         board = board_position['board']
-        tiles_played = rack_state['tiles_played']
+        tiles_used = rack_state['tiles_used']
         if TERMINAL in node.keys():
-            if tiles_played:
+            if tiles_used:
                 word = node[TERMINAL]
                 start, end = (row, column-len(word)), (row, column-1)
-                score = self.score_word(board, tiles_played, (start, end))
-                words.append((word, (start, end), tiles_played, score))
+                score = self.score_word(board, tiles_used, (start, end))
+                words.append((word, (start, end), tiles_used, score))
         return words
 
     def build_words(self, node, board_position, rack_state):
@@ -824,7 +835,7 @@ class WordFinder(object):
                              from which we continued building a word from
                              a prefix
         rack_state: a dictionary with the following key-value pairs
-            "tiles_played": tuple of single-character strings
+            "tiles_used": tuple of single-character strings
                 The strings represent the tiles put down on the board to reach
                 the current node in the trie, and are ordered from first to
                 last
@@ -836,7 +847,7 @@ class WordFinder(object):
         --------
         List of tuples describing words that can be formed through
         board[row][column]. Each tuple has the form
-        (word, (start_square, end_square), tiles_played, score).
+        (word, (start_square, end_square), tiles_used, score).
 
         """
         row, column = board_position["position"]
@@ -868,7 +879,7 @@ class WordFinder(object):
                                   'position': sq,
                                   'anchor_square': sq,}
                 rack_state = {'remaining_tiles': p['remaining_tiles'],
-                              'tiles_played': p['tiles_played'],}
+                              'tiles_used': p['tiles_used'],}
                 words_from_prefix = self.build_words(node, board_position, rack_state)
                 words.extend(words_from_prefix)
         return words
@@ -890,7 +901,7 @@ class WordFinder(object):
                                   'position': (row, column),
                                   'anchor_square': (row, column),}
                 rack_state = {'remaining_tiles': p['remaining_tiles'],
-                              'tiles_played': p['tiles_played'],}
+                              'tiles_used': p['tiles_used'],}
                 words_from_prefix = self.build_words(node, board_position, rack_state)
                 words.extend(words_from_prefix)
         words = [transpose_word(word) for word in words]
@@ -900,7 +911,7 @@ class WordFinder(object):
         """
         Returns a list of tuples describing the highest scoring words that can be
         played given a board and a rack. Each tuple has the form
-        (word, (start_square, end_square), tiles_played, score).
+        (word, (start_square, end_square), tiles_used, score).
 
         """
         if not self.rack:
@@ -931,7 +942,7 @@ def init_dictionary(f):
             else:
                 dictionary[key] = [word]
 
-def init_trie():
+def init_trie(dictionary):
     """
     Initializes the trie global variable as a dictionary-based trie.  Reads
     the dictionary global variable to construct the trie.
@@ -1083,12 +1094,12 @@ def transpose_word(word_info):
         the score from playing the word as prescribed.
 
     """
-    word, location, tiles_played, score = word_info
+    word, location, tiles_used, score = word_info
     start_column, start_row = location[0]
     end_column, end_row = location[1]
     start = (start_row, start_column)
     end = (end_row, end_column)
-    return (word, (start, end), tiles_played, score)
+    return (word, (start, end), tiles_used, score)
 
 def find_creatable_words(trie, rack):
     """
@@ -1108,7 +1119,7 @@ def find_creatable_words(trie, rack):
 
 def main():
     init_dictionary(WORD_FILE)
-    init_trie()
+    init_trie(dictionary)
     b = Board([[None for x in range(BOARD_SIZE)] for y in range(BOARD_SIZE)])
     wf = WordFinder(b)
     display = Display(b, wf)
