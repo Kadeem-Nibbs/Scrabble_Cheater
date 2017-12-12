@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import io from 'socket.io-client'
+import shortid from 'shortid'
 
 export default (WrappedComponent) => {
   class socketIoHOC extends Component {

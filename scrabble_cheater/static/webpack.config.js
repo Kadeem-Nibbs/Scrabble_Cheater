@@ -10,24 +10,19 @@ const config = {
         extensions: ['.js']
     },
     module: {
-    rules: [
-      {
+      rules: [{
         test: /\.js?/,
         exclude: /node_modules/,
-        use: 'babel-loader'
+        use: 'babel-loader?presets[]=es2015,presets[]=stage-0'
       }
-    ],
-    plugins: [
-      new webpack.DefinePlugin({
-        'process.env': {
-          NODE_ENV: JSON.stringify('production')
-        }
-      }),
-      new webpack.optimize.UglifyJsPlugin()
-      'transform-react-constant-elements',
-      'transform-react-inline-elements'
     ]
-  }
+  },
+  plugins: [
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify('production')
+    }),
+    new webpack.optimize.UglifyJsPlugin()
+  ]
 };
 
 module.exports = config;

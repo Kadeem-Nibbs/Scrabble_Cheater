@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import classNames from 'classnames'
 import { Container, Grid, Table, Button, Input, Loader } from 'semantic-ui-react'
-import shortid from 'shortid'
 import socketIoHOC from '../higherOrderComponents/socketIoHOC'
 
 import WordList from './WordList'

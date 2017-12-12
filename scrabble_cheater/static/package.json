@@ -21,6 +21,7 @@
     "react-dom": "^16.2.0",
     "react-onclickoutside": "^6.7.0",
     "semantic-ui-react": "^0.77.0",
+    "shortid": "^2.2.8",
     "socket.io-client": "^2.0.4",
     "webpack": "^3.10.0"
   },
