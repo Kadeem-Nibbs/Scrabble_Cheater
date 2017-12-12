@@ -14,13 +14,25 @@ export default (WrappedComponent) => {
 
       this.socket.on('play', (suggestedWords) => {
         const parsedWords = JSON.parse(suggestedWords)
-        console.log('Words', parsedWords.length);
 
-        this.setState({ suggestedWords: parsedWords }, () => {
+        suggestedWordsFormatted = parsedWords.map((wordInfo) => {
+          console.log('wordInfo', wordInfo);
+          
+          return {
+            ...wordInfo
+          }
+        })
+
+        this.setState({ suggestedWords: suggestedWordsFormatted }, () => {
 
           this.toggleLoadingState()
         })
       })
+    }
+
+    // This is so <Tile /> can be far more perfomant when looking up what to highlight. 
+    calculateSquaresToHighlight = () => {
+
     }
 
     toggleLoadingState = () => {

@@ -38,6 +38,9 @@ class Tile extends Component {
     // This is super expensive. Need to make this way better. 
     // Maybe go back to using the cell# instead of x/y coords for faster lookup
 
+
+    // TODO: Hold a flat version of this or something in props an do a compare against that so you dont have to 
+    //   use forEach on every hover :: this is stupid expensive
     let update = false
     props.coordinatesToHighlight.forEach((coordinate) => {
       if((coordinate.x === this.props.tileCoordinates.x) && (coordinate.y === this.props.tileCoordinates.y)) {
@@ -66,6 +69,9 @@ class Tile extends Component {
     let highlightCell = false
     const colorClass = ''
 
+    // TODO: same as above :: make less expensive. Save in props or something. 
+    // Maybe go back to tile #'s so you don't have to do searching through objects / arrays ?
+    // Not too sure
     this.props.coordinatesToHighlight.filter((coordinates) => {
       if(coordinates.x === this.props.tileCoordinates.x && coordinates.y === this.props.tileCoordinates.y) {
         // Set char 
@@ -103,6 +109,7 @@ class Tile extends Component {
       )
 
     } else {
+      console.log('render');
       return (
         <Table.Cell
           selectable

@@ -15,7 +15,7 @@
   
 }
 
-.ui.vertical.scroll.menu.scrollable {
+.ui.vertical.menu.scrollable {
   display: block;
   height: 680px;
   width: 20.6rem;
@@ -24,7 +24,7 @@
 }
 
 .hover-word {
-  background: yellow;
+  background: green!important;
 }
 
 .ui .selectable {

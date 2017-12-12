@@ -76,7 +76,6 @@ class WordList extends Component {
           className={ classNames({ 'hover-word': this.props.wordHoveredKey === i}) }
           key={ i }
           onMouseEnter={ this.handleWordOver.bind(this, wordInfo, i) }
-          onMouseOut={ this.handleWordOut.bind(this, wordInfo, i) }
         >
           {`${ word } is worth ${points} points`} | {}
         </Menu.Item>
@@ -92,7 +91,11 @@ class WordList extends Component {
     }
 
     return(
-      <Menu vertical className="scrollable">
+      <Menu 
+        vertical 
+        className="scrollable"
+        onMouseOut={ this.handleWordOut }
+      >
         { this.buildList() }
       </Menu>
     )
