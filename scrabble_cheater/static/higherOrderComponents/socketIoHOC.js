@@ -16,28 +16,33 @@ export default (WrappedComponent) => {
       this.socket.on('play', (suggestedWords) => {
         const parsedWords = JSON.parse(suggestedWords)
 
-        suggestedWordsFormatted = parsedWords.map((wordInfo) => {
-          console.log('wordInfo', wordInfo);
-          
-          return {
-            ...wordInfo
-          }
-        })
+        console.log('parsedWords.length', parsedWords.length);
 
-        this.setState({ suggestedWords: suggestedWordsFormatted }, () => {
+        // const suggestedWordsFormatted = parsedWords.map((wordInfo, i) => {
+        //   return calculateSquaresToHighlight(wordInfo)
+        // })
+
+        this.setState({ suggestedWords: parsedWords }, () => {
 
           this.toggleLoadingState()
         })
       })
     }
 
-    // This is so <Tile /> can be far more perfomant when looking up what to highlight. 
-    calculateSquaresToHighlight = () => {
+    addCellToLetts = () => {
+      const startOfWord = wordInfo[1][0]
+      const endOfWord   = wordInfo[1][1]
+
+    }
+
+    // This is so <Tile /> can be _way_ more perfomant when looking up what to highlight.
+    //  With of answers above 1000, looking up x/y on hover over is sort of slow.
+    //  Giving the exact tile to highlight is way faster.
+    calculateSquaresToHighlight = (wordInfo) => {
 
     }
 
     toggleLoadingState = () => {
-      console.log('Loading', this.state.loading);
       this.setState({ loading: !this.state.loading })
     }
 

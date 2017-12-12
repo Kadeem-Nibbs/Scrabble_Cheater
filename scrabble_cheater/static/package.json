@@ -5,7 +5,7 @@
   "repository": "https://github.com/Kadeem-Nibbs/Scrabble_Cheater",
   "license": "MIT",
   "scripts": {
-    "build": "webpack -p --progress --config webpack.config.js",
+    "build": "webpack -p --progress --config webpack.production.config.js",
     "dev-build": "webpack --progress -d --config webpack.config.js",
     "watch": "webpack --progress -d --config webpack.config.js --watch",
     "test": "echo \"Error: no test specified\" && exit 1"

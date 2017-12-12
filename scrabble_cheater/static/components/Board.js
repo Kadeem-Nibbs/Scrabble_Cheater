@@ -171,6 +171,7 @@ class Board extends Component {
       row.push(
         <Tile
           key={ i }
+          tileKey={ i }
           tileIsEditable={ tileIsEditable }
           tileCoordinates={ tileCoordinates } 
 
@@ -211,8 +212,6 @@ class Board extends Component {
   }
 
   render() {
-    console.log('Board render: | this.props.loading', this.props.loading)
-
     return (
       <Container className="mt-100px">
         <Grid className="scrabble-container">

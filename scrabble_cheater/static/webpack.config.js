@@ -13,15 +13,14 @@ const config = {
       rules: [{
         test: /\.js?/,
         exclude: /node_modules/,
-        use: 'babel-loader?presets[]=es2015,presets[]=stage-0'
+        use: 'babel-loader'
       }
     ]
   },
   plugins: [
     new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify('production')
-    }),
-    new webpack.optimize.UglifyJsPlugin()
+      'process.env.NODE_ENV': JSON.stringify('development')
+    })
   ]
 };
 
