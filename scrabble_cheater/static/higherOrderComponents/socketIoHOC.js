@@ -16,8 +16,6 @@ export default (WrappedComponent) => {
       this.socket.on('play', (suggestedWords) => {
         const parsedWords = JSON.parse(suggestedWords)
 
-        console.log('suggestedWords', suggestedWords);
-
         this.setState({ suggestedWords: parsedWords }, () => {
           this.toggleLoadingState()
         })
@@ -25,7 +23,6 @@ export default (WrappedComponent) => {
     }
 
     toggleLoadingState = () => {
-      console.log("TOGGLED")
       this.setState({ loading: !this.state.loading })
     }
 

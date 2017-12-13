@@ -98,8 +98,6 @@ class Board extends Component {
     // add to table data and update suggested words
     const newData = this.state.tableData.slice()
 
-    console.log('wordInfo', wordInfo);
-
     const firstY = wordInfo[1][0][0]
     const secondY = wordInfo[1][1][0]
 
@@ -128,43 +126,41 @@ class Board extends Component {
     // todo: split out into method
     let currentRack = this.state.rack.split('').slice()
     let wordPlayed = wordInfo[2].slice()
-    let newRack = []
 
-    // yeesh
-    for(let i = currentRack.length; i--;){
-      if(wordPlayed.length) {
-        for(let j = wordPlayed.length; j--;) {
-          console.log('wordPlayed[j]', wordPlayed[j]);
-          if(currentRack.includes(wordPlayed[j])) {
-            console.log('for currentRack');
-            delete wordPlayed[i]
-            delete currentRack[j]
-          }
-        }
+    // todo: yeesh this is unreadable, fix
+    for(let i = wordPlayed.length; i--;) {
+      if(wordPlayed[i].length === 2) {
+        delete wordPlayed[i] // delete tiles that are already on board
       }
     }
 
-    console.log('currentRack', currentRack.join());
-    console.log('wordPlayed', wordPlayed);
+    wordPlayed = wordPlayed.join('').split('').slice() // get rid of empty cells
 
-    // let newRack = currentRack.map((letter, i) => {
-    //   let oneChar = letter.length === 2 ? letter.split('')[0] : letter
+    for(let j = wordPlayed.length; j--;) {
+      if(wordPlayed.length === 0) {
+        break
+      }
 
-    //   console.log('oneChar', oneChar);
-    //   console.log('currentRack', currentRack);
+      if(currentRack.includes(wordPlayed[j])) {
+        let indexOfCellToRemove = currentRack.indexOf(wordPlayed[j])
+        delete currentRack[indexOfCellToRemove]
+        delete wordPlayed[j]
 
-    //   if(!wordInfo[2].indexOf(oneChar) !== 0) {
-    //     return oneChar
-    //   } 
-    // })
+        // wordPlayed = wordPlayed.join('').split('').slice()
+      }
+    }
+
+    currentRack = currentRack.join('') // get rid of undefined's and turn into string
 
     this.setState({ 
       tableData: newData,
       suggestedWords: newSuggestedWordsList,
-      rack: currentRack.join('') // get rid of undefined's and turn into string
+      rack: currentRack
     }, () => {
       if(currentRack.length) {
         this.handleSendTableData()
+      } else {
+        this.setState({ suggestedWords: null })
       }
     })
   }

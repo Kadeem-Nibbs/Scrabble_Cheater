@@ -80,7 +80,6 @@ class Tile extends Component {
   }
 
   handleSubmitTile = (e) => {
-    console.log('e', e);
     if(e) { 
       // incase user hits enter without choosting a direction
       e.preventDefault()  
@@ -100,7 +99,8 @@ class Tile extends Component {
     this.props.coordinatesToHighlight.filter((coordinates) => {
       if(coordinates.x === this.props.tileCoordinates.x && coordinates.y === this.props.tileCoordinates.y) {
         // Set char 
-        char = coordinates.char
+        // TODO: SOMETHING HERE TO SIGNIFY IT ALREADY EXISTS ON THE BOARD - highlight or something
+        char = coordinates.char.length === 2 ? coordinates.char.split('')[0] : coordinates.char
         highlightCell = true
       }
     })
