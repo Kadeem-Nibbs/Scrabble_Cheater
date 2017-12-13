@@ -87,7 +87,8 @@ class Board extends Component {
   }
 
   // handle table data
-  handleSendTableData = () => {
+  handleSendTableData = (e) => {
+    e.preventDefault()
     this.props.toggleLoadingState()
 
     const tableData =  {
@@ -116,7 +117,6 @@ class Board extends Component {
   }
 
   handleTileValueChanged = (newTileValue, tileCoordinates, moveDirection) => {
-    console.log('newTileValue, tileCoordinates, moveDirection', newTileValue, tileCoordinates, moveDirection);
     // Calculate row 
     const row = tileCoordinates.y
     const newRowState = this.state.tableData[row]
@@ -262,26 +262,27 @@ class Board extends Component {
             <Label>
               <Icon name='info' /> use <span className="big-underscore">_</span> for blank tiles
             </Label>
-            <Grid>
-              <Grid.Column computer={ 8 }>
-                <Input 
-                  placeholder="Enter your rack..."
-                  className="rack"
-                  value={ this.state.rack } 
-                  onChange={ this.handleRackChange } 
-                />
-              </Grid.Column>
-              <Grid.Column computer={ 8 }>
-                <Button 
-                  className="btn-get-word"
-                  type="submit"
-                  onClick={ this.handleSendTableData } 
-                  disabled={ this.props.loading }
-                >
-                  { this.props.loading ? (<Loader size='tiny' active inline />) : 'Get Words' }
-                </Button>
-              </Grid.Column>
-            </Grid>
+            <form onSubmit={ this.handleSendTableData }>
+              <Grid>
+                <Grid.Column computer={ 8 }>
+                  <Input 
+                    placeholder="Enter your rack..."
+                    className="rack"
+                    value={ this.state.rack } 
+                    onChange={ this.handleRackChange } 
+                  />
+                </Grid.Column>
+                <Grid.Column computer={ 8 }>
+                  <Button 
+                    className="btn-get-word"
+                    type="submit"
+                    disabled={ this.props.loading }
+                  >
+                    { this.props.loading ? (<Loader size='tiny' active inline />) : 'Get Words' }
+                  </Button>
+                </Grid.Column>
+              </Grid>
+            </form>
 
             <WordList 
               words={ this.props.suggestedWords } 

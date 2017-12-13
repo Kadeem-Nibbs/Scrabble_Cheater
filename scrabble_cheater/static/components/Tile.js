@@ -67,10 +67,10 @@ class Tile extends Component {
     }
   }
 
-  handleFormSubmit = (newTileValue, tileCoordinates, moveDirection) => {
-
+  handleFormSubmit = (newTileValue, tileCoordinates, moveDirection, form) => {
     const direction = this.props.moveDirection ? this.props.moveDirection : this.direction
-    console.log('this.directin', this.direction);
+    // console.log(form.target.checkValidity());
+    
     this.props.handleTileValueChanged(newTileValue, tileCoordinates, direction)
   }
 
