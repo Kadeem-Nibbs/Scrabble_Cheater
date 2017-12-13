@@ -89,8 +89,11 @@ class Board extends Component {
   // handle table data
   handleSendTableData = (e) => {
     e.preventDefault()
+
+
     this.props.toggleLoadingState()
 
+    // should be false for spaces / special chars besides _
     const tableData =  {
       gameType: this.state.gameType,
       board: this.state.tableData,
@@ -227,7 +230,16 @@ class Board extends Component {
   handleRackChange = (e, data) => {
     const rack = data.value || ''
     console.log('data.value', data.value)
-    if(rack.length <= 7) {
+
+    if(data.value.length === 0) {
+      // user highlighted and cleared input
+      this.setState({ 
+        rack: ''
+      })
+    }
+
+    if(/^[A-Za-z_]+$/.test(rack) && rack.length <= 7) { 
+      // Don't allow weird chars
       this.setState({ 
         rack: data.value.toUpperCase() 
       })
