@@ -114,6 +114,11 @@ class Tile extends Component {
       this.handleMoveDown()
     } else if(e.key === 'ArrowRight') {
       this.handleMoveRight()
+    } 
+
+    if(!this.state.direction && e.key === 'Enter') {
+      // submit is picked up by form's onSubmit so don't need to handle submit tile also
+      this.setState({ direction: 'right' })
     }
   }
 
@@ -188,10 +193,7 @@ class Tile extends Component {
                     <Button 
                       type="button"
                       className="btn-tile-submit down-arrow" 
-                      onClick={ () => { 
-                          this.setState({ direction: 'down' }, () => this.handleSubmitTile() )
-                        }
-                      }
+                      onClick={ this.handleMoveDown }
                     >  
                         <i className="fas fa-arrow-down"></i>  
                       </Button>
