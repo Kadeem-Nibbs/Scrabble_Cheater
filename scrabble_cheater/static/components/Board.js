@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import classNames from 'classnames'
-import { Container, Grid, Table, Button, Input, Loader, Label, Icon } from 'semantic-ui-react'
+import { Container, Grid, Table, Button, Input, Loader, Label, Icon, Header, Popup } from 'semantic-ui-react'
 import socketIoHOC from '../higherOrderComponents/socketIoHOC'
 
 import WordList from './WordList'
@@ -116,6 +116,7 @@ class Board extends Component {
   }
 
   handleTileValueChanged = (newTileValue, tileCoordinates, moveDirection) => {
+    console.log('newTileValue, tileCoordinates, moveDirection', newTileValue, tileCoordinates, moveDirection);
     // Calculate row 
     const row = tileCoordinates.y
     const newRowState = this.state.tableData[row]
@@ -235,7 +236,17 @@ class Board extends Component {
 
   render() {
     return (
-      <Container className="mt-100px">
+      <Container className="mt-60px">
+        <Header as='h2'>
+          Words With Fiends
+          <Header.Subheader>
+            Generate answers for Words With Friends or Scrabble 
+            <Popup
+              trigger={<Button className="info-popover" icon='question' />}
+              content="Enter your rack to the right, add all played letters to the board below, and you're good to go!"
+            />
+          </Header.Subheader>
+        </Header>
         <Grid className="scrabble-container">
           <Grid.Column computer={ 7 }>
             <div ref={ (ref) => { this.wrapperRef = ref  }}>
@@ -254,6 +265,7 @@ class Board extends Component {
             <Grid>
               <Grid.Column computer={ 8 }>
                 <Input 
+                  placeholder="Enter your rack..."
                   className="rack"
                   value={ this.state.rack } 
                   onChange={ this.handleRackChange } 

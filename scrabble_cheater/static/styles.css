@@ -1,7 +1,7 @@
 /* do we need Sass ? */
 
-.mt-100px {
-  margin-top: 40px;
+.mt-60px {
+  margin-top: 60px;
 }
 .scrabble-container {
   /* Set fixed min width so table doesn't get crumpled - can fix for mobile later */
@@ -13,6 +13,13 @@
 .middle-tile {
   background: red;
   
+}
+
+.ui.icon.button.info-popover {
+  margin-left: 8px;
+  font-size: 1.1rem;
+  border-radius: .2rem;
+  padding: 2px 1px;
 }
 
 .big-underscore {
@@ -30,7 +37,7 @@
 
 .ui.vertical.menu.scrollable {
   display: block;
-  height: 370px;
+  height: 342px;
   width: 20.6rem;
   overflow-y: scroll;
   scroll-behavior: smooth;
@@ -45,7 +52,15 @@
 }
 
 .ui.input.rack {
-  width: 160px
+  width: 160px;
+}
+
+.ui.input.rack input {
+  letter-spacing: 5px;
+}
+
+.ui.input.rack input::placeholder {
+  letter-spacing: 1px;
 }
 
 .ui .selectable {
@@ -94,7 +109,8 @@
   width: 25px;
   padding: 0;
 }
-.ui.button.btn-tile-submit.down-arrow {
+.ui.button.btn-tile-submit.down-arrow,
+.ui.button.btn-tile-submit.move-down {
   top: 26px;
   left: 2px;
 }

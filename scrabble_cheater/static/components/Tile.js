@@ -8,7 +8,10 @@ class Tile extends Component {
     this.state = {
       newTileValue: ''
     }
+
+    this.direction = 'right' // default to moving right
   }
+
 
   componentDidUpdate() {
     if(this.inputRef) {
@@ -64,12 +67,11 @@ class Tile extends Component {
     }
   }
 
-  handleSelectGoRight = () => {
-    this.props.handleSelectDirection('right', this.props.tileCoordinates)
-  }
+  handleFormSubmit = (newTileValue, tileCoordinates, moveDirection) => {
 
-  handleSelectGoDown = () => {
-    this.props.handleSelectDirection('down', this.props.tileCoordinates)
+    const direction = this.props.moveDirection ? this.props.moveDirection : this.direction
+    console.log('this.directin', this.direction);
+    this.props.handleTileValueChanged(newTileValue, tileCoordinates, direction)
   }
 
   render() {
@@ -93,10 +95,10 @@ class Tile extends Component {
     if(this.props.tileIsEditable) {
       return (
         <Table.Cell>
-          <Form onSubmit={ this.props.handleTileValueChanged.bind(this, this.state.newTileValue, this.props.tileCoordinates, this.props.moveDirection) }>
+          <Form onSubmit={ this.handleFormSubmit.bind(this, this.state.newTileValue, this.props.tileCoordinates, this.props.moveDirection) }>
             <Input 
-              pattern='[A-Za-z]'
-              onInvalid={ (event) => { event.target.setCustomValidity('Please enter a Letter')} }
+              pattern='[A-Za-z_]'
+              onInvalid={ (event) => { event.target.setCustomValidity('Please enter a Letter or a _ for a blank tile')} }
               onInput={ (event) => { event.target.setCustomValidity('')} }
               value={ this.state.newTileValue } 
               onChange={ this.updateStateWithTileValue } 
@@ -111,20 +113,29 @@ class Tile extends Component {
                 event.target.value = value
               }}
             />
-            { this.props.moveDirection ?
-                (<Button className="btn-tile-submit" type='submit'> <i className="fas fa-plus"></i> </Button>) :
+            { this.props.moveDirection ? // todo: move this to function its huge
+              // TODO: figure out how to get patthern="XX" to trigger from right / down arrorws
+                (
+                  <Button 
+                    className={ classNames("btn-tile-submit", this.props.moveDirection === 'down' ? 'move-down' : null) } 
+                    type='submit'> 
+                    <i className="fas fa-plus"></i> 
+                  </Button>
+                ) :
                 (
                   <span>
                     <Button 
-                      className="btn-tile-submit" 
-                      onClick={ this.props.handleTileValueChanged.bind(this, this.state.newTileValue, this.props.tileCoordinates, 'right') }
+                      className="btn-tile-submit right-arrow"
+                      onMouseOver={ () => { this.direction = 'right' } }
                       type='submit'
                     > 
                       <i className="fas fa-arrow-right"></i> 
                     </Button>
                     <Button 
                       className="btn-tile-submit down-arrow" 
-                      onClick={ this.props.handleTileValueChanged.bind(this, this.state.newTileValue, this.props.tileCoordinates, 'down') }>  
+                      onMouseOver={ () => { this.direction = 'down' } }
+                      type='submit'
+                    >  
                         <i className="fas fa-arrow-down"></i>  
                       </Button>
                   </span>
