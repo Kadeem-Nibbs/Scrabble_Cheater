@@ -324,7 +324,7 @@ class Board extends Component {
 
   render() {
     return (
-      <Container className="mt-60px">
+      <Container className="mt-50px">
         <Header as='h2'>
           Words With Fiends
           <Header.Subheader>
