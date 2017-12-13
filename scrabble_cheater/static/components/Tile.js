@@ -38,7 +38,9 @@ class Tile extends Component {
     if(nextProps.cellChar && !this.state.newTileValue) {
       // So when a user is adding new letters to the board, 
       // if a one is added via menu, it stays when they are auto placed into it
-      this.setState({ newTileValue: nextProps.cellChar })
+      this.setState({ 
+        newTileValue: nextProps.cellChar 
+      })
     }
   }
 
@@ -86,6 +88,10 @@ class Tile extends Component {
     }
   }
 
+  handleFocus = (e) => {
+    e.target.select()
+  }
+
   handleSubmitTile = (e) => {
     if(e) { 
       // incase user hits enter without choosting a direction
@@ -101,8 +107,6 @@ class Tile extends Component {
     const colorClass = '' // for stuff
     let onBoard = false
     let blankTile = false
-
-    console.log('this.state.newTileValue', this.state.newTileValue);
 
     // TODO: same as above :: make less expensive. Save in props or something. 
     // Maybe go back to tile #'s so you don't have to do searching through objects / arrays ?
@@ -142,6 +146,7 @@ class Tile extends Component {
               value={ this.state.newTileValue } 
               onChange={ this.updateStateWithTileValue } 
               ref={ (ref) => { this.inputRef = ref }}
+              onFocus={ this.handleFocus }
             />
             { this.props.moveDirection ? // todo: move this to function its huge
               // TODO: figure out how to get patthern="XX" to trigger from right / down arrorws
