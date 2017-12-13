@@ -98,13 +98,19 @@ class WordList extends Component {
     if(!this.props.words) {
       return null
     }
-
     return(
       <Menu 
         vertical 
         className="scrollable"
         onMouseOut={ this.handleWordOut }
       >
+        { this.props.words && this.props.words.length === 0 ? // this doesn't seem right
+          (
+            <Menu.Item>
+              No current possible words with this rack
+            </Menu.Item>
+          ) : null
+        }
         { this.buildList() }
       </Menu>
     )
