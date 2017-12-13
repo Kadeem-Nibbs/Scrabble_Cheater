@@ -116,13 +116,20 @@ class Board extends Component {
   }
 
   handleTileValueChanged = (newTileValue, tileCoordinates, moveDirection) => {
-    console.log('moveDirection', moveDirection);
     // Calculate row 
     const row = tileCoordinates.y
     const newRowState = this.state.tableData[row]
     const newState = this.state.tableData
     newRowState[tileCoordinates.x] = newTileValue.toUpperCase()
     newState[row] = newRowState
+
+    // Allow user to select a move direction before inputs a value
+    if(!newTileValue && moveDirection) {
+      this.setState({ moveDirection }, () => {
+        this.handleMakeTileEditable(tileCoordinates)
+      })
+      return
+    }
 
     this.setState({
       editableTileCoordinates: {
@@ -225,8 +232,6 @@ class Board extends Component {
   }
 
   render() {
-    console.log('this.props.loading', this.props.loading);
-
     return (
       <Container className="mt-100px">
         <Grid className="scrabble-container">

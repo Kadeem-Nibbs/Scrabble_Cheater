@@ -89,7 +89,7 @@ class Tile extends Component {
     })
 
     const middleTile = this.props.tileCoordinates.x == 7 && this.props.tileCoordinates.y == 7 ? true : false
-    console.log('this.props.moveDirection', this.props.moveDirection);
+
     if(this.props.tileIsEditable) {
       return (
         <Table.Cell>
@@ -118,6 +118,7 @@ class Tile extends Component {
                     <Button 
                       className="btn-tile-submit" 
                       onClick={ this.props.handleTileValueChanged.bind(this, this.state.newTileValue, this.props.tileCoordinates, 'right') }
+                      type='submit'
                     > 
                       <i className="fas fa-arrow-right"></i> 
                     </Button>
