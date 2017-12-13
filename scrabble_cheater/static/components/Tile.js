@@ -11,7 +11,6 @@ class Tile extends Component {
     }
   }
 
-
   componentDidUpdate() {
     if(this.inputRef) {
       this.inputRef.focus()
@@ -32,6 +31,14 @@ class Tile extends Component {
       return true
     } else {
       return false
+    }
+  }
+
+  componentWillReceiveProps(nextProps, nextState) {
+    if(nextProps.cellChar && !this.state.newTileValue) {
+      // So when a user is adding new letters to the board, 
+      // if a one is added via menu, it stays when they are auto placed into it
+      this.setState({ newTileValue: nextProps.cellChar })
     }
   }
 
@@ -95,6 +102,8 @@ class Tile extends Component {
     let onBoard = false
     let blankTile = false
 
+    console.log('this.state.newTileValue', this.state.newTileValue);
+
     // TODO: same as above :: make less expensive. Save in props or something. 
     // Maybe go back to tile #'s so you don't have to do searching through objects / arrays ?
     // Not too sure
@@ -105,15 +114,15 @@ class Tile extends Component {
         // console.log('char', char);
         // console.log('coordinates.char', coordinates.char);
         if(coordinates.char.length == 2) {
-          console.log('ITS TWO');
+
           let charInfo = coordinates.char.split('')
           char = charInfo[0]
-          console.log('charInfo[1]', charInfo[1]);
+          
           if(charInfo[1] === '#') {
-            console.log('ON BOARD');
+          
             onBoard = true 
           } else if (charInfo[1] === '_') {
-            console.log('BLANK');
+          
             blankTile = true
           }
         } else {
@@ -124,9 +133,6 @@ class Tile extends Component {
     })
 
     const middleTile = this.props.tileCoordinates.x == 7 && this.props.tileCoordinates.y == 7 ? true : false
-
-    console.log('onBoard ', onBoard);
-    console.log('blankTile ', blankTile);
 
     if(this.props.tileIsEditable) {
       return (
