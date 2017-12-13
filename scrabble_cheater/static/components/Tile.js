@@ -101,6 +101,22 @@ class Tile extends Component {
     this.props.handleTileValueChanged(this.state.newTileValue, this.props.tileCoordinates, direction)
   }
 
+  handleMoveRight = () => {
+    this.setState({ direction: 'right' }, () => this.handleSubmitTile() )
+  }
+
+  handleMoveDown = () => {
+    this.setState({ direction: 'down' }, () => this.handleSubmitTile() )
+  }
+
+  handleArrowPress = (e) => {
+    if(e.key === 'ArrowDown') {
+      this.handleMoveDown()
+    } else if(e.key === 'ArrowRight') {
+      this.handleMoveRight()
+    }
+  }
+
   render() {
     let char = this.props.cellChar || ''
     let highlightCell = false
@@ -143,6 +159,7 @@ class Tile extends Component {
         <Table.Cell>
           <form className="ui form" onSubmit={ this.handleSubmitTile }>
             <Input 
+              onKeyDown={ this.handleArrowPress }
               value={ this.state.newTileValue } 
               onChange={ this.updateStateWithTileValue } 
               ref={ (ref) => { this.inputRef = ref }}
@@ -164,10 +181,7 @@ class Tile extends Component {
                     <Button 
                       type="button"
                       className="btn-tile-submit right-arrow"
-                      onClick={ () => { 
-                          this.setState({ direction: 'right' }, () => this.handleSubmitTile() )
-                        } 
-                      }
+                      onClick={ this.handleMoveRight }
                     > 
                       <i className="fas fa-arrow-right"></i> 
                     </Button>
