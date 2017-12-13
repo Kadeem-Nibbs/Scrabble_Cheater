@@ -100,6 +100,8 @@ class Tile extends Component {
       if(coordinates.x === this.props.tileCoordinates.x && coordinates.y === this.props.tileCoordinates.y) {
         // Set char 
         // TODO: SOMETHING HERE TO SIGNIFY IT ALREADY EXISTS ON THE BOARD - highlight or something
+        // console.log('char', char);
+        // console.log('coordinates.char', coordinates.char);
         char = coordinates.char.length === 2 ? coordinates.char.split('')[0] : coordinates.char
         highlightCell = true
       }

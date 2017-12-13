@@ -107,7 +107,7 @@ class WordList extends Component {
         { this.props.words && this.props.words.length === 0 ? // this doesn't seem right
           (
             <Menu.Item>
-              No current possible words with this rack
+              No possible words with this rack
             </Menu.Item>
           ) : null
         }

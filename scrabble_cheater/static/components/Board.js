@@ -129,7 +129,7 @@ class Board extends Component {
 
     // todo: yeesh this is unreadable, fix
     for(let i = wordPlayed.length; i--;) {
-      if(wordPlayed[i].length === 2) {
+      if(wordPlayed[i].length === 2 && wordPlayed[i][1] !== '_') {
         delete wordPlayed[i] // delete tiles that are already on board
       }
     }
@@ -141,6 +141,8 @@ class Board extends Component {
         break
       }
 
+      console.log('before currentRack', currentRack);
+
       if(currentRack.includes(wordPlayed[j])) {
         let indexOfCellToRemove = currentRack.indexOf(wordPlayed[j])
         delete currentRack[indexOfCellToRemove]
@@ -151,6 +153,8 @@ class Board extends Component {
     }
 
     currentRack = currentRack.join('') // get rid of undefined's and turn into string
+
+    console.log('currentRack', currentRack);
 
     this.setState({ 
       tableData: newData,
