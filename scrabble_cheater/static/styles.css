@@ -15,6 +15,19 @@
   
 }
 
+.big-underscore {
+  font-size: 2rem;
+  position: relative;
+  top: -3px;
+  margin-left: 3px;
+  margin-right: 3px;
+  line-height: 1px;
+}
+
+.ui.label {
+  background-color: #fff;
+}
+
 .ui.vertical.menu.scrollable {
   display: block;
   height: 370px;

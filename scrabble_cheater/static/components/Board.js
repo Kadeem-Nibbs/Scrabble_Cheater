@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import classNames from 'classnames'
-import { Container, Grid, Table, Button, Input, Loader } from 'semantic-ui-react'
+import { Container, Grid, Table, Button, Input, Loader, Label, Icon } from 'semantic-ui-react'
 import socketIoHOC from '../higherOrderComponents/socketIoHOC'
 
 import WordList from './WordList'
@@ -224,7 +224,9 @@ class Board extends Component {
   }
 
   handleRackChange = (e, data) => {
-    if(data && data.value) {
+    const rack = data.value || ''
+    console.log('data.value', data.value)
+    if(rack.length <= 7) {
       this.setState({ 
         rack: data.value.toUpperCase() 
       })
@@ -246,6 +248,9 @@ class Board extends Component {
           </Grid.Column>
 
           <Grid.Column computer={ 5 }>
+            <Label>
+              <Icon name='info' /> use <span className="big-underscore">_</span> for blank tiles
+            </Label>
             <Grid>
               <Grid.Column computer={ 8 }>
                 <Input 
