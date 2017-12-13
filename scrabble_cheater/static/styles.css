@@ -41,11 +41,12 @@
 
 .ui.table {
   table-layout: fixed;
-  width: 750px; /* 40 * 15 */
+  width: 450px; /* 40 * 15 */
 }
 .ui.table td {
-  height: 50px;
-  width: 50px;
+  height: 30px;
+  width: 30px;
+  padding: 0;
 }
 
 .ui.table tr.highlight-word-location,
@@ -63,6 +64,15 @@
   text-align: center;
 }
 
+.ui.button {
+  background: #333;
+  color: #fff;
+}
+.ui.button:hover {
+  background: #000;
+  color: #fff;
+}
+
 .ui.button.btn-tile-submit {
   position: absolute;
   top: 0;
@@ -70,4 +80,8 @@
   height: 25px;
   width: 25px;
   padding: 0;
+}
+.ui.button.btn-tile-submit.down-arrow {
+  top: 26px;
+  left: 2px;
 }

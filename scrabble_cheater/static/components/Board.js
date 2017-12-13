@@ -38,7 +38,7 @@ const initialState = {
     y: null
   },
   gameType:'wordWithFriends',
-  moveDirection: 'right',
+  moveDirection: null, // will be either 'down' or 'right'
   tableData: initialTableData,
   wordHoveredKey: null,
   loading: false
@@ -80,7 +80,8 @@ class Board extends Component {
         editableTileCoordinates: {
           x: null,
           y: null
-        }
+        },
+        moveDirection: null
       })
     }
   }
@@ -100,17 +101,26 @@ class Board extends Component {
     })
   }
 
-  // Edit tile logic
-  handleTileClick = (tileCoordinates) => {
-    this.setState({ editableTileCoordinates: tileCoordinates})
+  handleMakeTileEditable = (tileCoordinates, newClick) => {
+    // If this is being called from <Tile />, its a new click so the user hasn't
+    //   set a direction yet.
+    if(newClick) {
+      this.setState({ 
+        moveDirection: null,
+        editableTileCoordinates: tileCoordinates 
+      })
+    } else {
+      // If this is being called from handleTileValueChanged(), keep going the same direction
+      this.setState({  editableTileCoordinates: tileCoordinates  })
+    }
   }
 
-  handleTileValueChanged = (newTileValue, tileCoordinates) => {
+  handleTileValueChanged = (newTileValue, tileCoordinates, moveDirection) => {
+    console.log('moveDirection', moveDirection);
     // Calculate row 
     const row = tileCoordinates.y
     const newRowState = this.state.tableData[row]
     const newState = this.state.tableData
-
     newRowState[tileCoordinates.x] = newTileValue.toUpperCase()
     newState[row] = newRowState
 
@@ -121,7 +131,8 @@ class Board extends Component {
       },
       tableData: newState,
       wordChars: '',
-      initialRack: ''
+      initialRack: '',
+      moveDirection: moveDirection
     }, () => {
 
       const newTileCoordinates = Object.assign({}, tileCoordinates)
@@ -136,11 +147,11 @@ class Board extends Component {
         if(tileCoordinates.y === 14) {
           return 
         } else {
-          newTileCoordinates.x = tileCoordinates.y + 1
+          newTileCoordinates.y = tileCoordinates.y + 1
         }
       }
 
-      this.handleTileClick(newTileCoordinates)
+      this.handleMakeTileEditable(newTileCoordinates)
     })
   }
 
@@ -159,8 +170,7 @@ class Board extends Component {
     let rowNumber = 0
     let cellNumber = 0
 
-    for(let i = 0; i < totalTiles - 1; i++) {   
-
+    for(let i = 0; i < totalTiles - 1; i++) {
       const tileCoordinates = { x: cellNumber, y: rowNumber }
       const endRow = (cellNumber === 14) ? true : false
 
@@ -175,10 +185,11 @@ class Board extends Component {
           key={ i }
 
           tileIsEditable={ tileIsEditable }
-          tileCoordinates={ tileCoordinates } 
+          tileCoordinates={ tileCoordinates }
+          moveDirection={ this.state.moveDirection }
 
           handleTileValueChanged={ this.handleTileValueChanged }
-          handleTileClick={ this.handleTileClick }
+          handleMakeTileEditable={ this.handleMakeTileEditable }
 
           coordinatesToHighlight={ this.state.coordinatesToHighlight }
           cellChar={ this.state.tableData[rowNumber][cellNumber] }
@@ -219,7 +230,7 @@ class Board extends Component {
     return (
       <Container className="mt-100px">
         <Grid className="scrabble-container">
-          <Grid.Column computer={ 11 }>
+          <Grid.Column computer={ 7 }>
             <div ref={ (ref) => { this.wrapperRef = ref  }}>
               <Table celled>
                 <Table.Body>
@@ -256,6 +267,7 @@ class Board extends Component {
               handleHighlightWordOnHover={ this.handleHighlightWordOnHover }
             />
           </Grid.Column>
+          <div computer={ 4 }></div>
         </Grid>
       </Container>
     )

@@ -31,7 +31,6 @@ class Tile extends Component {
     } else {
       return false
     }
-
   }
 
   shouldCellUpdate = (props) => {
@@ -52,16 +51,25 @@ class Tile extends Component {
   }
 
   handleClick = () => {
-    this.props.handleTileClick(this.props.tileCoordinates) 
+    const newClick = true
+    this.props.handleMakeTileEditable(this.props.tileCoordinates, newClick) 
   }
 
-  handleChangeTileValue = (event, data) => {
+  updateStateWithTileValue = (event, data) => {
     const { value } = data
     if(value.length > 1) {
       return 
     } else {
       this.setState({ newTileValue: value })
     }
+  }
+
+  handleSelectGoRight = () => {
+    this.props.handleSelectDirection('right', this.props.tileCoordinates)
+  }
+
+  handleSelectGoDown = () => {
+    this.props.handleSelectDirection('down', this.props.tileCoordinates)
   }
 
   render() {
@@ -81,17 +89,17 @@ class Tile extends Component {
     })
 
     const middleTile = this.props.tileCoordinates.x == 7 && this.props.tileCoordinates.y == 7 ? true : false
-
+    console.log('this.props.moveDirection', this.props.moveDirection);
     if(this.props.tileIsEditable) {
       return (
         <Table.Cell>
-          <Form onSubmit={ this.props.handleTileValueChanged.bind(this, this.state.newTileValue, this.props.tileCoordinates) }>
+          <Form onSubmit={ this.props.handleTileValueChanged.bind(this, this.state.newTileValue, this.props.tileCoordinates, this.props.moveDirection) }>
             <Input 
               pattern='[A-Za-z]'
               onInvalid={ (event) => { event.target.setCustomValidity('Please enter a Letter')} }
               onInput={ (event) => { event.target.setCustomValidity('')} }
               value={ this.state.newTileValue } 
-              onChange={ this.handleChangeTileValue } 
+              onChange={ this.updateStateWithTileValue } 
               ref={ (ref) => { this.inputRef = ref }}
               onFocus={(event) => {
                 // ridiculous: you have to do this
@@ -103,7 +111,24 @@ class Tile extends Component {
                 event.target.value = value
               }}
             />
-            <Button className="btn-tile-submit" type='submit'>+</Button>
+            { this.props.moveDirection ?
+                (<Button className="btn-tile-submit" type='submit'> <i className="fas fa-plus"></i> </Button>) :
+                (
+                  <span>
+                    <Button 
+                      className="btn-tile-submit" 
+                      onClick={ this.props.handleTileValueChanged.bind(this, this.state.newTileValue, this.props.tileCoordinates, 'right') }
+                    > 
+                      <i className="fas fa-arrow-right"></i> 
+                    </Button>
+                    <Button 
+                      className="btn-tile-submit down-arrow" 
+                      onClick={ this.props.handleTileValueChanged.bind(this, this.state.newTileValue, this.props.tileCoordinates, 'down') }>  
+                        <i className="fas fa-arrow-down"></i>  
+                      </Button>
+                  </span>
+                )
+            }
           </Form>
         </Table.Cell>
       )
