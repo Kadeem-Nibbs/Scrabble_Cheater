@@ -118,7 +118,15 @@ class Tile extends Component {
             />
             { this.props.moveDirection ? // todo: move this to function its huge
               // TODO: figure out how to get patthern="XX" to trigger from right / down arrorws
-                null :
+                (
+                  <Button 
+                    type="button"
+                    className={ classNames("btn-tile-submit", this.props.moveDirection === 'down' ? 'move-down' : null) } 
+                    onClick={ this.handleSubmitTile }
+                  > 
+                    <i className="fas fa-plus"></i> 
+                  </Button>
+                ) :
                 (
                   <span>
                     <Button 
