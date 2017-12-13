@@ -44,6 +44,7 @@ const initialState = {
   loading: false
 }
 
+// Todo: push some of this logic into this into WordListContainer and TileContainer so this file is less huge
 class Board extends Component {
   constructor(props) {
     super(props)

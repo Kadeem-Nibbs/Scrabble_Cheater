@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import classNames from 'classnames'
 
-import { Menu } from 'semantic-ui-react'
+import { Menu, Label, Button } from 'semantic-ui-react'
 
 class WordList extends Component {
   constructor(props) {
@@ -77,7 +77,10 @@ class WordList extends Component {
           key={ i }
           onMouseEnter={ this.handleWordOver.bind(this, wordInfo, i) }
         >
-          {`${ word } is worth ${points} points`} | {}
+          {`${ word } is worth ${points} points`}
+           <Button><Label>
+              <i class="fa fa-plus-circle" aria-hidden="true"></i>
+           </Label></Button>
         </Menu.Item>
       )
     })

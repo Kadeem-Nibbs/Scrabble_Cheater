@@ -6,10 +6,9 @@ class Tile extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      newTileValue: ''
+      newTileValue: '',
+      direction: null
     }
-
-    this.direction = 'right' // default to moving right
   }
 
 
@@ -53,25 +52,41 @@ class Tile extends Component {
     return update
   }
 
-  handleClick = () => {
+  handleClick = (e) => {
+    e.preventDefault()
     const newClick = true
     this.props.handleMakeTileEditable(this.props.tileCoordinates, newClick) 
   }
 
   updateStateWithTileValue = (event, data) => {
     const { value } = data
-    if(value.length > 1) {
+
+    if(value.length == 0) {
+      this.setState({ newTileValue: ''})
+    } else if(value.length > 1 ) {
       return 
+    } 
+
+
+    if(/^[A-Za-z_]+$/.test(value)) {
+      this.setState({ newTileValue: value.toUpperCase() }, () => {
+        if(this.state.direction || this.props.moveDirection) {
+          this.handleSubmitTile()
+        }
+      })
     } else {
-      this.setState({ newTileValue: value })
+      return
     }
   }
 
-  handleFormSubmit = (newTileValue, tileCoordinates, moveDirection, form) => {
-    const direction = this.props.moveDirection ? this.props.moveDirection : this.direction
-    // console.log(form.target.checkValidity());
-    
-    this.props.handleTileValueChanged(newTileValue, tileCoordinates, direction)
+  handleSubmitTile = (e) => {
+    console.log('e', e);
+    if(e) { 
+      // incase user hits enter without choosting a direction
+      e.preventDefault()  
+    }
+    const direction = this.props.moveDirection ? this.props.moveDirection : this.state.direction
+    this.props.handleTileValueChanged(this.state.newTileValue, this.props.tileCoordinates, direction)
   }
 
   render() {
@@ -95,53 +110,41 @@ class Tile extends Component {
     if(this.props.tileIsEditable) {
       return (
         <Table.Cell>
-          <Form onSubmit={ this.handleFormSubmit.bind(this, this.state.newTileValue, this.props.tileCoordinates, this.props.moveDirection) }>
+          <form className="ui form" onSubmit={ this.handleSubmitTile }>
             <Input 
-              pattern='[A-Za-z_]'
-              onInvalid={ (event) => { event.target.setCustomValidity('Please enter a Letter or a _ for a blank tile')} }
-              onInput={ (event) => { event.target.setCustomValidity('')} }
               value={ this.state.newTileValue } 
               onChange={ this.updateStateWithTileValue } 
               ref={ (ref) => { this.inputRef = ref }}
-              onFocus={(event) => {
-                // ridiculous: you have to do this
-                // to get cursor to be at the end of the
-                // text in the input when you re-click it
-                const { target } = event
-                const { value }= target
-                event.target.value = ''
-                event.target.value = value
-              }}
             />
             { this.props.moveDirection ? // todo: move this to function its huge
               // TODO: figure out how to get patthern="XX" to trigger from right / down arrorws
-                (
-                  <Button 
-                    className={ classNames("btn-tile-submit", this.props.moveDirection === 'down' ? 'move-down' : null) } 
-                    type='submit'> 
-                    <i className="fas fa-plus"></i> 
-                  </Button>
-                ) :
+                null :
                 (
                   <span>
                     <Button 
+                      type="button"
                       className="btn-tile-submit right-arrow"
-                      onMouseOver={ () => { this.direction = 'right' } }
-                      type='submit'
+                      onClick={ () => { 
+                          this.setState({ direction: 'right' }, () => this.handleSubmitTile() )
+                        } 
+                      }
                     > 
                       <i className="fas fa-arrow-right"></i> 
                     </Button>
                     <Button 
+                      type="button"
                       className="btn-tile-submit down-arrow" 
-                      onMouseOver={ () => { this.direction = 'down' } }
-                      type='submit'
+                      onClick={ () => { 
+                          this.setState({ direction: 'down' }, () => this.handleSubmitTile() )
+                        }
+                      }
                     >  
                         <i className="fas fa-arrow-down"></i>  
                       </Button>
                   </span>
                 )
             }
-          </Form>
+          </form>
         </Table.Cell>
       )
 

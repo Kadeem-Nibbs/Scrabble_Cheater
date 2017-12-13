@@ -10,9 +10,13 @@
   font-size: 1em;
 }
 
+.scrabble-container .ui.input input[type=text] {
+  padding: 3px 0;
+  text-align: center;
+}
+
 .middle-tile {
   background: red;
-  
 }
 
 .ui.icon.button.info-popover {
@@ -53,6 +57,7 @@
 
 .ui.input.rack {
   width: 160px;
+  height: 36px;
 }
 
 .ui.input.rack input {
@@ -87,10 +92,7 @@
   color: blue !important;
 }
 
-.ui.form input[type=text] {
-  padding: 3px 0;
-  text-align: center;
-}
+
 
 .ui.button {
   background: #333;
