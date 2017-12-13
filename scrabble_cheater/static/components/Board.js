@@ -123,11 +123,11 @@ class Board extends Component {
     const newSuggestedWordsList = this.state.suggestedWords.slice()
     delete newSuggestedWordsList[wordIndexInSuggestedWords]
 
-    // todo: split out into method
+    // todo: split out into array
     let currentRack = this.state.rack.split('').slice()
     let wordPlayed = wordInfo[2].slice()
 
-    // todo: yeesh this is unreadable, fix
+    // todo: yeesh this is all unreadable, refactor when less rushed
     for(let i = wordPlayed.length; i--;) {
       if(wordPlayed[i].length === 2 && wordPlayed[i][1] !== '_') {
         delete wordPlayed[i] // delete tiles that are already on board
@@ -137,20 +137,16 @@ class Board extends Component {
     wordPlayed = wordPlayed.join('').split('').slice() // get rid of empty cells
 
     for(let j = wordPlayed.length; j--;) {
-      if(wordPlayed.length === 0) {
-        break
-      }
-
       if(currentRack.includes(wordPlayed[j])) {
         let indexOfCellToRemove = currentRack.indexOf(wordPlayed[j])
+
         delete currentRack[indexOfCellToRemove]
         delete wordPlayed[j]
-
-        // wordPlayed = wordPlayed.join('').split('').slice()
       }
     }
 
     currentRack = currentRack.join('') // get rid of undefined's and turn into string
+    console.log('currentRack', currentRack);
 
     this.setState({ 
       tableData: newData,
@@ -258,7 +254,7 @@ class Board extends Component {
     let rowNumber = 0
     let cellNumber = 0
 
-    for(let i = 0; i < totalTiles - 1; i++) {
+    for(let i = 0; i < totalTiles; i++) {
       const tileCoordinates = { x: cellNumber, y: rowNumber }
       const endRow = (cellNumber === 14) ? true : false
 
@@ -271,7 +267,7 @@ class Board extends Component {
       row.push(
         <Tile
           key={ i }
-
+          cellNumber={i}
           tileIsEditable={ tileIsEditable }
           tileCoordinates={ tileCoordinates }
           moveDirection={ this.state.moveDirection }
