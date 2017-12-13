@@ -141,8 +141,6 @@ class Board extends Component {
         break
       }
 
-      console.log('before currentRack', currentRack);
-
       if(currentRack.includes(wordPlayed[j])) {
         let indexOfCellToRemove = currentRack.indexOf(wordPlayed[j])
         delete currentRack[indexOfCellToRemove]
@@ -153,8 +151,6 @@ class Board extends Component {
     }
 
     currentRack = currentRack.join('') // get rid of undefined's and turn into string
-
-    console.log('currentRack', currentRack);
 
     this.setState({ 
       tableData: newData,

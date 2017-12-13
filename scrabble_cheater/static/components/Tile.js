@@ -91,7 +91,9 @@ class Tile extends Component {
   render() {
     let char = this.props.cellChar || ''
     let highlightCell = false
-    const colorClass = ''
+    const colorClass = '' // for stuff
+    let onBoard = false
+    let blankTile = false
 
     // TODO: same as above :: make less expensive. Save in props or something. 
     // Maybe go back to tile #'s so you don't have to do searching through objects / arrays ?
@@ -102,12 +104,29 @@ class Tile extends Component {
         // TODO: SOMETHING HERE TO SIGNIFY IT ALREADY EXISTS ON THE BOARD - highlight or something
         // console.log('char', char);
         // console.log('coordinates.char', coordinates.char);
-        char = coordinates.char.length === 2 ? coordinates.char.split('')[0] : coordinates.char
+        if(coordinates.char.length == 2) {
+          console.log('ITS TWO');
+          let charInfo = coordinates.char.split('')
+          char = charInfo[0]
+          console.log('charInfo[1]', charInfo[1]);
+          if(charInfo[1] === '#') {
+            console.log('ON BOARD');
+            onBoard = true 
+          } else if (charInfo[1] === '_') {
+            console.log('BLANK');
+            blankTile = true
+          }
+        } else {
+          char = coordinates.char
+        }
         highlightCell = true
       }
     })
 
     const middleTile = this.props.tileCoordinates.x == 7 && this.props.tileCoordinates.y == 7 ? true : false
+
+    console.log('onBoard ', onBoard);
+    console.log('blankTile ', blankTile);
 
     if(this.props.tileIsEditable) {
       return (
@@ -164,7 +183,12 @@ class Tile extends Component {
         <Table.Cell
           selectable
           textAlign='center'
-          className={ classNames({ 'highlight-word-location': highlightCell, 'middle-tile': middleTile }) }
+          className={ classNames({ 
+            'highlight-word-location': highlightCell, 
+            'middle-tile': middleTile, 
+            'on-board': onBoard,   
+            'blank-tile': blankTile,   
+          }) }
           onClick={ this.handleClick }
         >
           { char }

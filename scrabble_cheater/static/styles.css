@@ -10,6 +10,14 @@
   font-size: 1em;
 }
 
+.on-board {
+  background: green!important;
+}
+
+.blank-tile {
+  background: purple!important;
+}
+
 .scrabble-container .ui.input input[type=text] {
   padding: 3px 0;
   text-align: center;
@@ -101,8 +109,8 @@
 }
 .ui.table tr.highlight-word-location,
 .ui.table td.highlight-word-location {
-  background: yellow !important;
-  color: blue !important;
+  background: yellow;
+  color: blue;
 }
 
 .ui.button {
