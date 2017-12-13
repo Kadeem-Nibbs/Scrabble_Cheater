@@ -63,6 +63,11 @@ class WordList extends Component {
     this.props.handleHighlightWordOnHover([], null)
   }
 
+  handleAddWordToTable = (wordInfo, i) => {
+    this.props.addWordToTable(wordInfo, i)
+    this.handleWordOut() // un-highlight word added
+  }
+
 
   buildList = () => {
     const wordList = []
@@ -78,7 +83,7 @@ class WordList extends Component {
         >
           {`${ word } is worth ${points} points`}
            <Label 
-            onClick={ this.props.addWordToTable.bind(this, wordInfo, i) }
+            onClick={ this.handleAddWordToTable.bind(this, wordInfo, i) }
             onMouseEnter={ this.handleWordOver.bind(this, wordInfo, i) } /* todo: this is lazy and expensive: fix */
           >
               <i 
