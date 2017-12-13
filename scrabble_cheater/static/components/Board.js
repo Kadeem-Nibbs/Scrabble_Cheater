@@ -1,3 +1,5 @@
+// todo: REFACTOR THIS TO USE REDUX HOLY HELL
+
 import React, { Component } from 'react'
 import classNames from 'classnames'
 import { Container, Grid, Table, Button, Input, Loader, Label, Icon, Header, Popup } from 'semantic-ui-react'
@@ -41,7 +43,8 @@ const initialState = {
   moveDirection: null, // will be either 'down' or 'right'
   tableData: initialTableData,
   wordHoveredKey: null,
-  loading: false
+  loading: false,
+  suggestedWords: null
 }
 
 // Todo: push some of this logic into this into WordListContainer and TileContainer so this file is less huge
@@ -63,6 +66,10 @@ class Board extends Component {
       this.setState({ 
         loading: nextProps.loading 
       })
+    }
+
+    if(this.props.suggestedWords) {
+      this.setState({ suggestedWords: this.props.suggestedWords })
     }
   }
 
@@ -87,9 +94,84 @@ class Board extends Component {
     }
   }
 
+  addWordToTable = (wordInfo, wordIndexInSuggestedWords) => {
+    // add to table data and update suggested words
+    const newData = this.state.tableData.slice()
+
+    console.log('wordInfo', wordInfo);
+
+    const firstY = wordInfo[1][0][0]
+    const secondY = wordInfo[1][1][0]
+
+    const firstX = wordInfo[1][0][1]
+    const secondX = wordInfo[1][1][1]
+    
+    const yDistance = secondY - firstY
+    const xDistance = secondX - firstX
+
+    if(firstY === secondY)  {
+
+      for(let i = 0; i <= xDistance; i++) {
+        newData[firstY][firstX + i] = wordInfo[2][i].length === 2 ? wordInfo[2][i].split('')[0] : wordInfo[2][i]
+      }
+
+    } else if (firstX === secondX) {
+      
+      for(let i = 0; i <= yDistance; i++) {
+        newData[firstY + i][firstX] = wordInfo[2][i].length === 2 ? wordInfo[2][i].split('')[0] : wordInfo[2][i]
+      }
+    }
+
+    const newSuggestedWordsList = this.state.suggestedWords.slice()
+    delete newSuggestedWordsList[wordIndexInSuggestedWords]
+
+    // todo: split out into method
+    let currentRack = this.state.rack.split('').slice()
+    let wordPlayed = wordInfo[2].slice()
+    let newRack = []
+
+    // yeesh
+    for(let i = currentRack.length; i--;){
+      if(wordPlayed.length) {
+        for(let j = wordPlayed.length; j--;) {
+          console.log('wordPlayed[j]', wordPlayed[j]);
+          if(currentRack.includes(wordPlayed[j])) {
+            console.log('for currentRack');
+            delete wordPlayed[i]
+            delete currentRack[j]
+          }
+        }
+      }
+    }
+
+    console.log('currentRack', currentRack.join());
+    console.log('wordPlayed', wordPlayed);
+
+    // let newRack = currentRack.map((letter, i) => {
+    //   let oneChar = letter.length === 2 ? letter.split('')[0] : letter
+
+    //   console.log('oneChar', oneChar);
+    //   console.log('currentRack', currentRack);
+
+    //   if(!wordInfo[2].indexOf(oneChar) !== 0) {
+    //     return oneChar
+    //   } 
+    // })
+
+    this.setState({ 
+      tableData: newData,
+      suggestedWords: newSuggestedWordsList,
+      rack: currentRack.join('') // get rid of undefined's and turn into string
+    }, () => {
+      if(currentRack.length) {
+        this.handleSendTableData()
+      }
+    })
+  }
+
   // handle table data
   handleSendTableData = (e) => {
-    e.preventDefault()
+    if(e){ e.preventDefault() }
 
 
     this.props.toggleLoadingState()
@@ -101,9 +183,7 @@ class Board extends Component {
       rack: this.state.rack
     }
 
-    this.props.socket.emit('analyze_board', JSON.stringify(tableData), () => {
-      
-    })
+    this.props.socket.emit('analyze_board', JSON.stringify(tableData))
   }
 
   handleMakeTileEditable = (tileCoordinates, newClick) => {
@@ -123,10 +203,10 @@ class Board extends Component {
   handleTileValueChanged = (newTileValue, tileCoordinates, moveDirection) => {
     // Calculate row 
     const row = tileCoordinates.y
-    const newRowState = this.state.tableData[row]
+    const newRowStateRow = this.state.tableData[row]
     const newState = this.state.tableData
-    newRowState[tileCoordinates.x] = newTileValue.toUpperCase()
-    newState[row] = newRowState
+    newRowStateRow[tileCoordinates.x] = newTileValue.toUpperCase()
+    newState[row] = newRowStateRow
 
     // Allow user to select a move direction before inputs a value
     if(!newTileValue && moveDirection) {
@@ -230,7 +310,6 @@ class Board extends Component {
 
   handleRackChange = (e, data) => {
     const rack = data.value || ''
-    console.log('data.value', data.value)
 
     if(data.value.length === 0) {
       // user highlighted and cleared input
@@ -298,7 +377,8 @@ class Board extends Component {
             </form>
 
             <WordList 
-              words={ this.props.suggestedWords } 
+              words={ this.state.suggestedWords } 
+              addWordToTable={ this.addWordToTable }
               wordHoveredKey={ this.state.wordHoveredKey }
               handleHighlightWordOnHover={ this.handleHighlightWordOnHover }
             />

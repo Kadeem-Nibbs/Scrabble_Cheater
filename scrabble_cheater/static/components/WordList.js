@@ -66,7 +66,6 @@ class WordList extends Component {
 
   buildList = () => {
     const wordList = []
-
     this.props.words.forEach((wordInfo, i) => {
       const word = wordInfo[0]
       const points = wordInfo[3]
@@ -78,9 +77,16 @@ class WordList extends Component {
           onMouseEnter={ this.handleWordOver.bind(this, wordInfo, i) }
         >
           {`${ word } is worth ${points} points`}
-           <Button><Label>
-              <i class="fa fa-plus-circle" aria-hidden="true"></i>
-           </Label></Button>
+           <Label 
+            onClick={ this.props.addWordToTable.bind(this, wordInfo, i) }
+            onMouseEnter={ this.handleWordOver.bind(this, wordInfo, i) } /* todo: this is lazy and expensive: fix */
+          >
+              <i 
+                className="fa fa-plus-circle" 
+                aria-hidden="true"
+                onMouseEnter={ this.handleWordOver.bind(this, wordInfo, i) } /* todo: this is lazy and expensive: fix */
+              ></i>
+           </Label>
         </Menu.Item>
       )
     })

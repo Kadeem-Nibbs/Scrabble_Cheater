@@ -47,6 +47,19 @@
   scroll-behavior: smooth;
 }
 
+.ui.vertical.scrollable.menu .item>.label {
+  cursor: pointer;
+  background: #333;
+  color: #fff;
+  padding: 4px 4px;
+  margin-top: -3px;
+}
+
+.ui.vertical.scrollable.menu .item>.label:hover {
+  background: #000;
+  color: #fff;
+}
+
 .hover-word {
   background: green!important;
 }
@@ -91,8 +104,6 @@
   background: yellow !important;
   color: blue !important;
 }
-
-
 
 .ui.button {
   background: #333;
