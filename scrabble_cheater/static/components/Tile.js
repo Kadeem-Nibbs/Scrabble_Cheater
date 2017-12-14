@@ -142,7 +142,6 @@ class Tile extends Component {
     let blankTile = false
     let playedTile = this.props.cellChar ? true : false
 
-
     const tw = this.testForBonusTile(scores[this.props.gameType].trippleWordScore)
     const dw = this.testForBonusTile(scores[this.props.gameType].doubleWordScore)
     const tl = this.testForBonusTile(scores[this.props.gameType].trippleLetterScore)

@@ -378,10 +378,10 @@ class Board extends Component {
             </div>
           </Grid.Column>
 
-          <Grid.Column computer={ 5 } className="mt-24px">
+          <Grid.Column computer={ 9 } floated='right' className="mt-24px">
             <Label className="mb-10px">
-              <Icon name='info' /> enter <span className="big-underscore">_</span> for blank tiles. 
-              <div>Blank tiles will show up on the board with a <span className="big-underscore">_</span> below it</div>
+              <Icon name='info' /> Enter <span className="big-underscore">_</span> for blank tiles. 
+              <div>Blank tiles on the board show have a <span className="big-underscore">_</span> below them.</div>
             </Label>
             <form onSubmit={ this.handleSendTableData }>
               <Grid>
@@ -412,7 +412,6 @@ class Board extends Component {
               handleHighlightWordOnHover={ this.handleHighlightWordOnHover }
             />
           </Grid.Column>
-          <div computer={ 4 }></div>
         </Grid>
       </Container>
     )
