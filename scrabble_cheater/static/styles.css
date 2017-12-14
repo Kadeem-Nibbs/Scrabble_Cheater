@@ -1,6 +1,23 @@
 /* do we need Sass ? */
 
 /* Only reasonable use of important is on these */
+
+/*
+// semantic-ui colors
+@red            : #B03060;
+@orange         : #FE9A76;
+@yellow         : #FFD700;
+@olive          : #32CD32;
+@green          : #016936;
+@teal           : #008080;
+@blue           : #0E6EB8;
+@violet         : #EE82EE;
+@purple         : #B413EC;
+@pink           : #FF1493;
+@brown          : #A52A2A;
+@grey           : #A0A0A0;
+@black          : #000000;*/
+
 .mt-24px {
   margin-top: 24px !important;
 }
@@ -9,14 +26,76 @@
   margin-top: 50px !important;
 }
 
+.mt-10px {
+  margin-top: 10px !important;
+}
+
 .mb-10px {
   margin-bottom: 10px !important;
 }
 
-/** wwf styles **/
-.tile-bg-color {
-  background: #E7EBEF;
+/** words with friends styles styles **/
+
+.scrabble-container .ui.table tbody tr td.selectable.played-tile,
+.scrabble-container .ui.table tbody tr td.selectable.played-tile:hover {
+  background: #FCE356 !important;
 }
+.tile-bg-color {
+  background: #f9fafb;
+}
+
+/* http://www.colourlovers.com/palette/2571794/Words_with_Friends */
+
+.tw,
+.ui.table tbody tr td.selectable.tw:hover {
+  background-color: #E19235!important; /* @orange */
+}
+.dw,
+.ui.table tbody tr td.selectable.dw:hover {
+  background-color: #B2483B!important; /* @red */
+}
+.tl,
+.ui.table tbody tr td.selectable.tl:hover {
+  background-color: #66A453!important; /* @green */
+}
+.dl,
+.ui.table tbody tr td.selectable.dl:hover {
+  background-color: #0082C8!important; /* @blue */
+}
+
+.on-board {
+  /* doesn't really need a style since its obvious its on there */
+}
+.blank-tile {
+    border-bottom: 2px solid black;
+    width: 20px;
+    margin-left: 5px;
+    display: block;
+}
+.scrabble-container .ui.table tbody tr td.selectable.highlight-word-location {
+  background: #fff!important;
+  border: 1px solid #333;
+  color: #000 !important;
+  box-shadow: -1 -1 1px #333!important;
+  font-weight: 600;
+}
+.scrabble-container .ui.table tbody tr td.selectable.played-tile.highlight-word-location {
+  background: #FCE356 !important;
+  border: 1px solid rgba(34,36,38,.1);
+  color: inherit;
+  font-weight: inherit;
+}
+
+/*.scrabble-container .ui.table tbody tr td.selectable.played-tile*/
+
+.section-toggle-game {
+  /*float: right;*/
+  height: auto;
+  width: 180px;
+  /*text-align: right;*/
+  margin-right: 25px;
+}
+
 
 .scrabble-container {
   /* Set fixed min width so table doesn't get crumpled - can fix for mobile later */
@@ -25,27 +104,11 @@
   font-size: 1em;
 }
 
-.on-board {
-  background: green!important;
-}
 
-.blank-tile {
-  background: purple!important;
-}
-
-.highlight-word-location,
-.highlight-word-location {
-  background: pink;
-  color: blue;
-}
 
 .scrabble-container .ui.input input[type=text] {
   padding: 3px 0;
   text-align: center;
-}
-
-.middle-tile {
-  background: red;
 }
 
 .ui.icon.button.info-popover {

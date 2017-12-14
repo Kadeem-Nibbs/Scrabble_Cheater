@@ -77,7 +77,7 @@ class WordList extends Component {
 
       wordList.push(
         <Menu.Item
-          className={ classNames({ 'hover-word': this.props.wordHoveredKey === i}) }
+          className={ classNames({ 'active': this.props.wordHoveredKey === i}) }
           key={ i }
           onMouseEnter={ this.handleWordOver.bind(this, wordInfo, i) }
           onMouseDown={ this.handleWordOver.bind(this, wordInfo, i) }

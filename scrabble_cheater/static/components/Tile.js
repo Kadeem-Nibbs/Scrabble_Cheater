@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import { Table, Form, Input, Button } from 'semantic-ui-react'
 import classNames from 'classnames'
 
+import { scores } from  '../constants'
+
 class Tile extends Component {
   constructor(props) {
     super(props)
@@ -18,6 +20,10 @@ class Tile extends Component {
   }
 
   shouldComponentUpdate(nextProps) {
+    if(this.props.gameType !== nextProps.gameType) {
+      return true
+    }
+
     // Update if this Tile is marked as editable or remove from being editable
     if(nextProps.tileIsEditable || nextProps.tileIsEditable !== this.props.tileIsEditable) {
       return true
@@ -122,22 +128,28 @@ class Tile extends Component {
     }
   }
 
+  testForBonusTile = (bonusScoreArray) => {
+    return bonusScoreArray.some((elem) => { 
+      return (elem[0] === this.props.tileCoordinates.y) && (elem[1] === this.props.tileCoordinates.x) 
+    })
+    return false
+  }
+
   render() {
     let char = this.props.cellChar || ''
     let highlightCell = false
-    const colorClass = '' // for stuff
     let onBoard = false
     let blankTile = false
+    let playedTile = this.props.cellChar ? true : false
 
-    // TODO: same as above :: make less expensive. Save in props or something. 
-    // Maybe go back to tile #'s so you don't have to do searching through objects / arrays ?
-    // Not too sure
+
+    const tw = this.testForBonusTile(scores[this.props.gameType].trippleWordScore)
+    const dw = this.testForBonusTile(scores[this.props.gameType].doubleWordScore)
+    const tl = this.testForBonusTile(scores[this.props.gameType].trippleLetterScore)
+    const dl = this.testForBonusTile(scores[this.props.gameType].doubleLetterScore)
+
     this.props.coordinatesToHighlight.filter((coordinates) => {
       if(coordinates.x === this.props.tileCoordinates.x && coordinates.y === this.props.tileCoordinates.y) {
-        // Set char 
-        // TODO: SOMETHING HERE TO SIGNIFY IT ALREADY EXISTS ON THE BOARD - highlight or something
-        // console.log('char', char);
-        // console.log('coordinates.char', coordinates.char);
         if(coordinates.char.length == 2) {
 
           let charInfo = coordinates.char.split('')
@@ -146,6 +158,7 @@ class Tile extends Component {
           if(charInfo[1] === '#') {
           
             onBoard = true 
+
           } else if (charInfo[1] === '_') {
           
             blankTile = true
@@ -156,8 +169,6 @@ class Tile extends Component {
         highlightCell = true
       }
     })
-
-    const middleTile = this.props.tileCoordinates.x == 7 && this.props.tileCoordinates.y == 7 ? true : false
 
     if(this.props.tileIsEditable) {
       return (
@@ -205,20 +216,24 @@ class Tile extends Component {
       )
 
     } else {
-      console.log('render');
       return (
         <Table.Cell
           selectable
           textAlign='center'
-          className={ classNames({ 
+          className={ classNames('tile-bg-color', { 
+            'tw': tw,
+            'dw': dw,
+            'tl': tl,
+            'dl': dl,
+            'played-tile': playedTile,
             'highlight-word-location': highlightCell, 
-            'middle-tile': middleTile, 
-            'on-board': onBoard,   
-            'blank-tile': blankTile,   
+            'on-board': onBoard
           }) }
           onClick={ this.handleClick }
         >
-          { char }
+          <span className={ classNames({ 'blank-tile': blankTile })} >
+            { char }
+          </span>
         </Table.Cell>
       )
     }

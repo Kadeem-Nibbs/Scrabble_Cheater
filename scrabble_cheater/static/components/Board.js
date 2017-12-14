@@ -1,4 +1,8 @@
 // todo: REFACTOR THIS TO USE REDUX HOLY HELL
+//  would actually be a perfect thing to make a youtube tutorial about
+//  how using redux could refactor this into smaller components easier
+//  since you wouldn't have to pass setState methods down to components 
+//  via props. do that.
 
 import React, { Component } from 'react'
 import classNames from 'classnames'
@@ -13,7 +17,7 @@ import {
   Icon, 
   Header, 
   Popup, 
-  Segment 
+  Radio
 } from 'semantic-ui-react'
 import socketIoHOC from '../higherOrderComponents/socketIoHOC'
 
@@ -51,7 +55,7 @@ const initialState = {
     x: null,
     y: null
   },
-  gameType:'wordWithFriends',
+  gameType:'wordsWithFriends',
   moveDirection: null, // will be either 'down' or 'right'
   tableData: initialTableData,
   wordHoveredKey: null,
@@ -279,14 +283,14 @@ class Board extends Component {
       row.push(
         <Tile
           key={ i }
-          cellNumber={i}
           tileIsEditable={ tileIsEditable }
           tileCoordinates={ tileCoordinates }
-          moveDirection={ this.state.moveDirection }
 
           handleTileValueChanged={ this.handleTileValueChanged }
           handleMakeTileEditable={ this.handleMakeTileEditable }
 
+          gameType={ this.state.gameType }
+          moveDirection={ this.state.moveDirection }
           coordinatesToHighlight={ this.state.coordinatesToHighlight }
           cellChar={ this.state.tableData[rowNumber][cellNumber] }
         />
@@ -330,6 +334,11 @@ class Board extends Component {
     }
   }
 
+  toggleGameType = () => {
+    const gameType = this.state.gameType === 'wordsWithFriends' ? 'scrabble' : 'wordsWithFriends'
+    this.setState({ gameType }) 
+  }
+
   render() {
     return (
       <Container className="mt-50px">
@@ -351,6 +360,21 @@ class Board extends Component {
                   { this.buildBoard() }
                 </Table.Body>
               </Table>
+            </div>
+            <div className="section-toggle-game">
+              <Label>
+                <div className="mt-10px">
+                  <Radio 
+                    slider
+                    onChange={ this.toggleGameType }
+                  />
+                </div>
+                <div className="mt-10px">
+                  <Label.Detail>
+                    { this.state.gameType === 'wordsWithFriends' ? 'Words With Friends' : 'Scrabble' }
+                  </Label.Detail>
+                </div>
+              </Label>
             </div>
           </Grid.Column>
 
