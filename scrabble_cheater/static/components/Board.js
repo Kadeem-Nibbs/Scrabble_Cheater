@@ -55,7 +55,7 @@ const initialState = {
     x: null,
     y: null
   },
-  gameType:'wordsWithFriends',
+  gameType:'wordsWithFriends', // wwf : scrabble
   moveDirection: null, // will be either 'down' or 'right'
   tableData: initialTableData,
   wordHoveredKey: null,

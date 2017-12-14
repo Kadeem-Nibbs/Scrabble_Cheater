@@ -2,6 +2,8 @@
 /* Only reasonable use of important is on these */
 
 
+/*IDEA: make the tiles being placed on the board look the same as when you're editing a tile - makes sense ? */
+
 .mt-24px {
   margin-top: 24px !important;
 }
@@ -88,23 +90,44 @@
   /* doesn't really need a style since its obvious its on there */
 }
 .blank-tile {
-    border-bottom: 2px solid black;
-    width: 20px;
-    margin-left: 5px;
-    display: block;
+  border-bottom: 2px solid black;
+  width: 20px;
+  margin-left: 5px;
+  display: block;
 }
 .scrabble-container .ui.table tbody tr td.selectable.highlight-word-location {
-  background: #fff!important;
-  border: 1px solid #333;
-  color: #000 !important;
-  box-shadow: -1 -1 1px #333!important;
-  font-weight: 600;
+  /* make the same as .tile-background-color */
+
+  background: #f9fafb !important;
 }
-.scrabble-container .ui.table tbody tr td.selectable.played-tile.highlight-word-location {
+
+.scrabble-container .ui.table tbody tr td.selectable.highlight-word-location span {
+  color: rgba(0,0,0,.95);
+    border-radius: .28571429rem;
+    background: #fff!important;
+    width: 100%;
+    vertical-align: top;
+    box-shadow: 0 0 0 0 rgba(34,36,38,.35) inset;
+    margin: 0;
+    outline: 0;
+    transition: color .1s ease,border-color .1s ease;
+    padding: 3px 0;
+    border: 1px solid #85b7d9;
+    box-shadow: inset 0px 0px 10px #d8d8d8;
+    height: 26px;
+    display: block;
+    height: 100%;
+}
+.scrabble-container .ui.table tbody tr td.selectable.played-tile.highlight-word-location.on-board  {
+  background:     background: #FCE356!important;
+}
+.scrabble-container .ui.table tbody tr td.selectable.played-tile.highlight-word-location.on-board span {
   background: #FCE356 !important;
   border: 1px solid rgba(34,36,38,.1);
   color: inherit;
   font-weight: inherit;
+  border-radius: inherit;
+  box-shadow: none;
 }
 
 /*.scrabble-container .ui.table tbody tr td.selectable.played-tile*/
@@ -128,6 +151,7 @@
 .scrabble-container .ui.input input[type=text] {
   padding: 3px 0;
   text-align: center;
+  box-shadow: inset 0px 0px 10px #d8d8d8;
 }
 
 .ui.icon.button.info-popover {
