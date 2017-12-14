@@ -1,22 +1,6 @@
-/* do we need Sass ? */
-
+/* TODO: switch to LESS so i can override semnatic UI variables cleanly instead of !important life */
 /* Only reasonable use of important is on these */
 
-/*
-// semantic-ui colors
-@red            : #B03060;
-@orange         : #FE9A76;
-@yellow         : #FFD700;
-@olive          : #32CD32;
-@green          : #016936;
-@teal           : #008080;
-@blue           : #0E6EB8;
-@violet         : #EE82EE;
-@purple         : #B413EC;
-@pink           : #FF1493;
-@brown          : #A52A2A;
-@grey           : #A0A0A0;
-@black          : #000000;*/
 
 .mt-24px {
   margin-top: 24px !important;
@@ -33,6 +17,25 @@
 .mb-10px {
   margin-bottom: 10px !important;
 }
+
+.fixed-width-left-col {
+  width: 482px!important;
+}
+.fixed-width-right-col {
+  width: 320px!important;
+}
+
+/*@media (max-width: 1200px) {
+  .word-list-col {
+    margin-left: 90px;
+  }
+}
+@media (max-width: 992px) {
+  .word-list-col {
+    margin-left: 160px;
+  }
+}
+
 
 /** words with friends styles styles **/
 
@@ -120,8 +123,6 @@
   font-size: 1em;
 }
 
-
-
 .scrabble-container .ui.input input[type=text] {
   padding: 3px 0;
   text-align: center;
@@ -149,7 +150,7 @@
 
 .ui.vertical.menu.scrollable {
   display: block;
-  height: 402px;
+  height: 377px;
   width: 20.6rem;
   overflow-y: scroll;
   scroll-behavior: smooth;

@@ -342,8 +342,8 @@ class Board extends Component {
   render() {
     return (
       <Container className="mt-50px">
-        <Grid className="scrabble-container">
-          <Grid.Column computer={ 7 }>
+        <Grid className="scrabble-container centered">
+          <Grid.Column className="fixed-width-left-col">
             <Header as='h2'>
               Words With Fiends
               <Header.Subheader>
@@ -355,7 +355,7 @@ class Board extends Component {
               </Header.Subheader>
             </Header>
             <div ref={ (ref) => { this.wrapperRef = ref  }}>
-              <Table celled>
+              <Table unstackable celled>
                 <Table.Body>
                   { this.buildBoard() }
                 </Table.Body>
@@ -378,14 +378,14 @@ class Board extends Component {
             </div>
           </Grid.Column>
 
-          <Grid.Column computer={ 9 } floated='right' className="mt-24px">
+          <Grid.Column className="mt-24px fixed-width-right-col">
             <Label className="mb-10px">
               <Icon name='info' /> Enter <span className="big-underscore">_</span> for blank tiles. 
-              <div>Blank tiles on the board show have a <span className="big-underscore">_</span> below them.</div>
+              <div>Blank tiles on the board will be above a <span className="big-underscore">_</span>.</div>
             </Label>
             <form onSubmit={ this.handleSendTableData }>
               <Grid>
-                <Grid.Column computer={ 8 }>
+                <Grid.Column width={ 8 }>
                   <Input 
                     placeholder="Enter your rack..."
                     className="rack"
@@ -393,7 +393,7 @@ class Board extends Component {
                     onChange={ this.handleRackChange } 
                   />
                 </Grid.Column>
-                <Grid.Column computer={ 8 }>
+                <Grid.Column width={ 8 }>
                   <Button 
                     className="btn-get-word"
                     type="submit"
