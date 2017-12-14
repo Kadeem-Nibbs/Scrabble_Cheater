@@ -321,18 +321,18 @@ class Board extends Component {
   render() {
     return (
       <Container className="mt-50px">
-        <Header as='h2'>
-          Words With Fiends
-          <Header.Subheader>
-            Generate answers for Words With Friends or Scrabble 
-            <Popup
-              trigger={<Button className="info-popover" icon='question' />}
-              content="Enter your rack to the right, add all played letters to the board below, and you're good to go!"
-            />
-          </Header.Subheader>
-        </Header>
         <Grid className="scrabble-container">
           <Grid.Column computer={ 7 }>
+            <Header as='h2'>
+              Words With Fiends
+              <Header.Subheader>
+                Generate answers for Words With Friends or Scrabble 
+                <Popup
+                  trigger={<Button className="info-popover" icon='question' />}
+                  content="Enter your rack to the right, add all played letters to the board below, and you're good to go!"
+                />
+              </Header.Subheader>
+            </Header>
             <div ref={ (ref) => { this.wrapperRef = ref  }}>
               <Table celled>
                 <Table.Body>
@@ -342,8 +342,8 @@ class Board extends Component {
             </div>
           </Grid.Column>
 
-          <Grid.Column computer={ 5 }>
-            <Label>
+          <Grid.Column computer={ 5 } className="mt-24px">
+            <Label className="mb-10px">
               <Icon name='info' /> use <span className="big-underscore">_</span> for blank tiles
             </Label>
             <form onSubmit={ this.handleSendTableData }>

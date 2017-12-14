@@ -1,8 +1,18 @@
 /* do we need Sass ? */
 
-.mt-50px {
-  margin-top: 50px;
+/* Only reasonable use of important is on these */
+.mt-24px {
+  margin-top: 24px !important;
 }
+
+.mt-50px {
+  margin-top: 50px !important;
+}
+
+.mb-10px {
+  margin-bottom: 10px !important;
+}
+
 .scrabble-container {
   /* Set fixed min width so table doesn't get crumpled - can fix for mobile later */
   min-width: 756px;
