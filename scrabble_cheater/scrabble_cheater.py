@@ -1,14 +1,22 @@
 import Tkinter as tk
 from scrabble_constants import WWF_LETTER_VALUES, WWF_BONUS_TILES, BONUS_TILE_COLORS
+from scrabble_constants import SCRABBLE_LETTER_VALUES, SCRABBLE_BONUS_TILES
+from scrabble_constants import ALPHABET, SCRABBLE_FULL_RACK_BONUS
 from scrabble_constants import WWF_FULL_RACK_BONUS, MAX_RACK_LENGTH, BOARD_SIZE
 from copy import deepcopy
 
+# To Do:
+# - Allow toggling between Scrabble and Words with Friends
+# - Experiment with OpenCV for reading board states
+
+SCRABBLE = "scrabble"
+WORDS_WITH_FRIENDS = "wwf"
 NUM_WORDS_TO_DISPLAY = 50
 BLANK_TILE = "_"
-ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 TERMINAL = '$' # denotes the end of a word in trie
 TILE_ON_BOARD = "#" # denotes a tile on the board that was used to create a
                     # new word
+EMPTY_BOARD = [[None for x in range(BOARD_SIZE)] for y in range(BOARD_SIZE)]
 WORD_FILE = "ENABLE.txt" # Enhanced North American Benchmark Lexicon with
                          # with a few hundred additions of more modern words
                          # and about 100 deletions of offensive words made by
@@ -33,10 +41,13 @@ class Display(object):
 
         """
         self.GUI = tk.Tk()
-        self.initialize_GUI()
         self.input_board = [[None for row in range(BOARD_SIZE)] for column in range(BOARD_SIZE)]
         self.board = board
         self.word_finder = word_finder
+        self.game = WORDS_WITH_FRIENDS
+        self.bonus_tiles = WWF_BONUS_TILES
+        self.board.set_game(self.game)
+        self.initialize_GUI()
 
     def initialize_GUI(self):
         """
@@ -56,17 +67,44 @@ class Display(object):
         for r in range(BOARD_SIZE):
             for c in range(BOARD_SIZE):
                 square = (r, c)
-                bonus = WWF_BONUS_TILES.get(square)
+                bonus = self.bonus_tiles.get(square)
                 color = BONUS_TILE_COLORS[bonus]
                 e = tk.Entry(self.board_entry, width=4, bg=color)
                 e.grid(row=r, column=c)
 
-        btn = tk.Button(self.GUI, text="Analyze", command=lambda: self.update_board_and_display_words())
+        analyze_button = tk.Button(self.GUI, text="Analyze", command=lambda: self.update_board_and_display_words())
+        change_game_button = tk.Button(self.GUI, text="Change Game", command=lambda: self.change_game())
+        clear_button = tk.Button(self.GUI, text="Clear Board", command=lambda: self.clear_board())
         tk.Label(self.GUI, text="Enter rack of letters: ").grid(row=r+2, column=1, sticky='W')
         self.rack_entry = tk.Entry(self.GUI)
         self.rack_entry.grid(row=r+2, column=1, sticky='E')
 
-        btn.grid(row=r+3)
+        analyze_button.grid(row=r+3)
+        change_game_button.grid(row=r+4)
+        clear_button.grid(row=r+5)
+
+    def change_game(self):
+        if self.game == SCRABBLE:
+            self.game = WORDS_WITH_FRIENDS
+            self.bonus_tiles = WWF_BONUS_TILES
+        elif self.game == WORDS_WITH_FRIENDS:
+            self.game = SCRABBLE
+            self.bonus_tiles = SCRABBLE_BONUS_TILES
+        self.board.set_game(self.game)
+        self.recolor_board()
+
+    def recolor_board(self):
+        for child in self.board_entry.children.values():
+            r = int(child.grid_info()['row'])
+            c = int(child.grid_info()['column'])
+            square = (r, c)
+            bonus = self.bonus_tiles.get(square)
+            color = BONUS_TILE_COLORS[bonus]
+            child.configure(bg=color)
+
+    def clear_board(self):
+        for child in self.board_entry.children.values():
+            child.delete(0, tk.END)
 
     def update_board_and_display_words(self):
         """
@@ -88,7 +126,7 @@ class Display(object):
         print_board(self.board.board)
         rack = self.rack_entry.get().upper()
         self.word_finder.load_rack(rack)
-        self.word_finder.update_board(self.board)
+        #self.word_finder.update_board(self.board)
         best_plays = self.word_finder.find_highest_scoring_words()
         print "Number of legal moves:", len(best_plays)
         for play in best_plays[:NUM_WORDS_TO_DISPLAY]:
@@ -108,7 +146,7 @@ class Display(object):
 
 class Board(object):
 
-    def __init__(self, board):
+    def __init__(self, board, game):
         """
         Initializes the game board, including the letter and value of each tile.
 
@@ -124,7 +162,31 @@ class Board(object):
         self.read_board(self.input_board)
         self.find_anchor_squares()
         self.compute_cross_checks()
+        if game == SCRABBLE:
+            self.letter_values = SCRABBLE_LETTER_VALUES
+            self.bonus_tiles = SCRABBLE_BONUS_TILES
+        elif game == WORDS_WITH_FRIENDS:
+            self.letter_values = WWF_LETTER_VALUES
+            self.bonus_tiles = WWF_BONUS_TILES
+        else:
+            raise ValueError("%s is not a supported game" % game)
+        self.game = game
 
+    def set_game(self, game):
+        if game == SCRABBLE:
+            self.letter_values = SCRABBLE_LETTER_VALUES
+        elif game == WORDS_WITH_FRIENDS:
+            self.letter_values = WWF_LETTER_VALUES
+        else:
+            raise ValueError("%s is not a supported game" % game)
+        self.game = game
+        self.recompute_score_board()
+
+    def recompute_score_board(self):
+        for i, j in self.occupied_squares:
+            letter = self.board[i][j]
+            if self.score_board[i][j]: # Letter not played with blank tile
+                self.score_board[i][j] = self.letter_values[letter]
 
     def read_board(self, board):
         """
@@ -152,13 +214,26 @@ class Board(object):
                     self.occupied_squares.append((i, j))
                     if len(letter) == 1:
                         self.board[i][j] = letter
-                        self.score_board[i][j] = WWF_LETTER_VALUES[letter]
+                        self.score_board[i][j] = self.letter_values[letter]
                     elif len(letter) == 2 and letter[1] == '*':
                         self.board[i][j] = letter[0]
                         self.score_board[i][j] = 0
         self.input_board = deepcopy(board)
         self.find_anchor_squares()
         self.compute_cross_checks()
+
+    def find_bonus(self, square):
+        """
+        Returns a string detailing the bonus attached to a square on the game
+        board. Returns None if the square does not have a bonus.
+
+        Parameters:
+        -----------
+        square: 2-tuple of ints
+            (row, column) tuple represending the indices of a square on the board.
+
+        """
+        return self.bonus_tiles.get(square)
 
     def find_anchor_squares(self):
         """
@@ -261,7 +336,7 @@ class Board(object):
                     self.board[row][column] = c
                     self.input_board[row][column] = c
                     self.occupied_squares.append((row, column))
-                    self.score_board[row][column] = WWF_LETTER_VALUES[c]
+                    self.score_board[row][column] = self.letter_values[c]
                     column += 1
                     continue
                 if self.board[row][column] != c:
@@ -280,7 +355,7 @@ class Board(object):
                     self.board[row][column] = c
                     self.input_board[row][column] = c
                     self.occupied_squares.append((row, column))
-                    self.score_board[row][column] = WWF_LETTER_VALUES[c]
+                    self.score_board[row][column] = self.letter_values[c]
                     row += 1
                     continue
                 if self.board[row][column] != c:
@@ -399,14 +474,29 @@ class WordFinder(object):
 
         """
         self.board = board # for computing across words
-        self.board_t = Board(self.board.transposed_input_board()) # for
-                                            # computing down words
+        self.board_t = Board(self.board.transposed_input_board(),
+                             self.board.game) # for computing down words
+        self.game = self.board.game
+        if self.game == SCRABBLE:
+            self.full_rack_bonus = SCRABBLE_FULL_RACK_BONUS
+        elif self.game == WORDS_WITH_FRIENDS:
+            self.full_rack_bonus = WWF_FULL_RACK_BONUS
         if rack:
             self.rack = rack
         else:
             self.rack = ""
+
         self.prefixes = [[] for x in range(MAX_RACK_LENGTH+1)]
         self.get_all_prefixes()
+
+    def set_game(self, game):
+        if game == SCRABBLE:
+            self.full_rack_bonus = SCRABBLE_FULL_RACK_BONUS
+        elif game == WORDS_WITH_FRIENDS:
+            self.full_rack_bonus = WWF_FULL_RACK_BONUS
+        else:
+            raise ValueError("%s is not a supported game" % game)
+        self.game = game
 
     def load_rack(self, rack):
         """
@@ -424,7 +514,7 @@ class WordFinder(object):
 
         """
         self.board = board
-        self.board_t = Board(self.board.transposed_input_board())
+        self.board_t = Board(self.board.transposed_input_board(), self.board.game)
 
     def get_all_prefixes(self):
         """
@@ -576,14 +666,14 @@ class WordFinder(object):
         for row, column in get_squares_in_range(start_square, end_square):
             letter = board.board[row][column]
             if letter:
-                score += WWF_LETTER_VALUES[letter]
+                score += board.letter_values[letter]
                 tiles_used_index += 1
                 continue
             letter = tiles_used[tiles_used_index]
             if len(letter) == 2 and letter[1] == BLANK_TILE:
                 letter = letter[1]
             tiles_used_index += 1
-            bonus = find_bonus((row, column))
+            bonus = self.board.find_bonus((row, column))
             board_position = {"board": board.board,
                               "score_board": board.score_board,
                               "position": (row, column),
@@ -594,12 +684,12 @@ class WordFinder(object):
                     cw_score = self.crossing_word_score(board_position)
                     crossing_word_scores.append(cw_score)
                 if bonus[1] == 'L':
-                    score += WWF_LETTER_VALUES[letter] * int(bonus[0])
+                    score += board.letter_values[letter] * int(bonus[0])
                 elif bonus[1] == 'W':
-                    score += WWF_LETTER_VALUES[letter]
+                    score += board.letter_values[letter]
                     multiplier *= int(bonus[0])
             else:
-                score += WWF_LETTER_VALUES[letter]
+                score += board.letter_values[letter]
                 if board.part_of_vertical_word(row, column):
                     cw_score = self.crossing_word_score(board_position)
                     crossing_word_scores.append(cw_score)
@@ -607,11 +697,10 @@ class WordFinder(object):
         score += sum(crossing_word_scores)
         tiles_played = [tile for tile in tiles_used if len(tile) == 1]
         if len(tiles_played) == 7:
-            score += WWF_FULL_RACK_BONUS
+            score += self.full_rack_bonus
         return score
 
-    @staticmethod
-    def crossing_word_score(board_position):
+    def crossing_word_score(self, board_position):
         """
         Calculates the score of the vertical word that intersects with
         board[row][column].
@@ -643,13 +732,13 @@ class WordFinder(object):
         letter = board_position["letter"]
         if bonus:
             if bonus[1] == 'L':
-                score = (int(bonus[0]) * WWF_LETTER_VALUES[letter])
+                score = (int(bonus[0]) * self.board.letter_values[letter])
                 multiplier = 1
             elif bonus[1] == 'W':
-                score = WWF_LETTER_VALUES[letter]
+                score = self.board.letter_values[letter]
                 multiplier = int(bonus[0])
         else:
-            score = WWF_LETTER_VALUES[letter]
+            score = self.board.letter_values[letter]
             multiplier = 1
         top_row = row - 1
         bottom_row = row + 1
@@ -916,6 +1005,9 @@ class WordFinder(object):
         """
         if not self.rack:
             return []
+        if self.board.board == EMPTY_BOARD:
+            self.board.anchor_squares = [(7, 7)]
+            self.board_t.anchor_squares = [(7, 7)]
         across_words = self.find_across_words()
         down_words = self.find_down_words()
         print "Num across words:", len(across_words)
@@ -1022,19 +1114,6 @@ def get_squares_in_range(start, end):
         return None
     return squares
 
-def find_bonus(square):
-    """
-    Returns a string detailing the bonus attached to a square on the game
-    board. Returns None if the square does not have a bonus.
-
-    Parameters:
-    -----------
-    square: 2-tuple of ints
-        (row, column) tuple represending the indices of a square on the board.
-
-    """
-    return WWF_BONUS_TILES.get(square)
-
 def make_counter(rack):
     """
     Parameters:
@@ -1120,7 +1199,7 @@ def find_creatable_words(trie, rack):
 def main():
     init_dictionary(WORD_FILE)
     init_trie(dictionary)
-    b = Board([[None for x in range(BOARD_SIZE)] for y in range(BOARD_SIZE)])
+    b = Board([[None for x in range(BOARD_SIZE)] for y in range(BOARD_SIZE)], WORDS_WITH_FRIENDS)
     wf = WordFinder(b)
     display = Display(b, wf)
     display.run()
