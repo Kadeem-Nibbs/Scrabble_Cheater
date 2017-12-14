@@ -2,7 +2,19 @@
 
 import React, { Component } from 'react'
 import classNames from 'classnames'
-import { Container, Grid, Table, Button, Input, Loader, Label, Icon, Header, Popup } from 'semantic-ui-react'
+import { 
+  Container, 
+  Grid, 
+  Table, 
+  Button, 
+  Input, 
+  Loader, 
+  Label, 
+  Icon, 
+  Header, 
+  Popup, 
+  Segment 
+} from 'semantic-ui-react'
 import socketIoHOC from '../higherOrderComponents/socketIoHOC'
 
 import WordList from './WordList'

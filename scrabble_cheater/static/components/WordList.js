@@ -80,6 +80,7 @@ class WordList extends Component {
           className={ classNames({ 'hover-word': this.props.wordHoveredKey === i}) }
           key={ i }
           onMouseEnter={ this.handleWordOver.bind(this, wordInfo, i) }
+          onMouseDown={ this.handleWordOver.bind(this, wordInfo, i) }
         >
           {`${ word } is worth ${points} points`}
            <Label 
