@@ -2,6 +2,26 @@
 <script type="text/javascript" charset="utf-8">
     var socket = io.connect('http://' + document.domain + ':' + location.port);
     socket.on('connect', function() {
-        socket.emit('my event', {data: 'I\'m connected!'});
+        socket.emit('analyze_board', {"rack": 'DJIKS__',
+                                      "board": [[null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+                                      [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+                                      [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+                                      [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+                                      [null, null, null, null, null, null, null, 'P', null, null, null, null, null, null, null],
+                                      [null, null, null, null, null, null, null, 'A', null, null, null, null, null, null, null],
+                                      [null, null, null, null, null, null, null, 'I', null, null, null, null, null, null, null],
+                                      [null, null, null, 'D', 'U', 'R', 'A', 'L', null, null, null, null, null, null, null],
+                                      [null, null, null, null, null, 'O', null, null, null, null, null, null, null, null, null],
+                                      [null, null, null, null, null, 'M', 'O', 'D', 'I', 'C', 'A', null, null, null, null],
+                                      [null, null, null, null, null, 'A', null, null, null, null, null, null, null, null, null],
+                                      [null, null, null, null, null, 'I', null, null, null, null, null, null, null, null, null],
+                                      [null, null, null, null, null, 'N', null, null, null, null, null, null, null, null, null],
+                                      [null, null, null, null, null, 'E', null, null, null, null, null, null, null, null, null],
+                                      [null, null, null, 'M', 'E', 'S', 'H', null, null, null, null, null, null, null, null]]
+                                    });
+      });
+    socket.on('play', function(play) {
+      document.write(play);
+      document.write('<br/>')
     });
 </script>
