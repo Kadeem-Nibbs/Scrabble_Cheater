@@ -22,17 +22,19 @@
   width: 482px!important;
 }
 .fixed-width-right-col {
-  width: 320px!important;
+  width: 356px!important
 }
 
-/*@media (max-width: 1200px) {
+/* 
+// maybe make this mobile friendly
+@media (max-width: 1200px) {
   .word-list-col {
-    margin-left: 90px;
+    
   }
 }
 @media (max-width: 992px) {
   .word-list-col {
-    margin-left: 160px;
+    
   }
 }
 
