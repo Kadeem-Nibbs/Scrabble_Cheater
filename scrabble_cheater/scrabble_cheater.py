@@ -497,6 +497,8 @@ class WordFinder(object):
         else:
             raise ValueError("%s is not a supported game" % game)
         self.game = game
+        self.board.set_game(self.game)
+        self.board_t.set_game(self.game)
 
     def load_rack(self, rack):
         """
