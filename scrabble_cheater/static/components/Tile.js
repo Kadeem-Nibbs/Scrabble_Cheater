@@ -231,9 +231,7 @@ class Tile extends Component {
           }) }
           onClick={ this.handleClick }
         >
-          <span className={ classNames({ 'blank-tile': blankTile })} >
-            { char }
-          </span>
+          <span className={ classNames({ 'blank-tile': blankTile })}>{char}</span>
         </Table.Cell>
       )
     }

@@ -50,17 +50,33 @@
 .ui.table tbody tr td.selectable.tw:hover {
   background-color: #E19235!important; /* @orange */
 }
+.tw span:empty:before {
+  content: 'TW';
+  color: #fff;
+}
 .dw,
 .ui.table tbody tr td.selectable.dw:hover {
   background-color: #B2483B!important; /* @red */
+}
+.dw span:empty:before {
+  content: 'DW';
+  color: #fff;
 }
 .tl,
 .ui.table tbody tr td.selectable.tl:hover {
   background-color: #66A453!important; /* @green */
 }
+.tl span:empty:before {
+  content: 'TL';
+  color: #fff;
+}
 .dl,
 .ui.table tbody tr td.selectable.dl:hover {
   background-color: #0082C8!important; /* @blue */
+}
+.dl span:empty:before {
+  content: 'DL';
+  color: #fff;
 }
 
 .on-board {

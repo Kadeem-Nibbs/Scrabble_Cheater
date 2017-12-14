@@ -380,7 +380,8 @@ class Board extends Component {
 
           <Grid.Column computer={ 5 } className="mt-24px">
             <Label className="mb-10px">
-              <Icon name='info' /> use <span className="big-underscore">_</span> for blank tiles
+              <Icon name='info' /> enter <span className="big-underscore">_</span> for blank tiles. 
+              <div>Blank tiles will show up on the board with a <span className="big-underscore">_</span> below it</div>
             </Label>
             <form onSubmit={ this.handleSendTableData }>
               <Grid>
