@@ -4,7 +4,7 @@ Game States:
     {
       rack: 
         'asddffg',
-      gameType: 'scrabble' OR 'wordsWithFriends',
+      gameType: 'scrabble' OR 'wwf',
       board: 
         [[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], [None, None, None, None, None, None, u'F', None, None, None, None, None, None, None, None], [None, None, None, None, None, None, u'F', None, None, None, None, None, None, None, None], [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None]]
     }

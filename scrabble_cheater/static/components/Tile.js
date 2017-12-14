@@ -142,6 +142,8 @@ class Tile extends Component {
     let blankTile = false
     let playedTile = this.props.cellChar ? true : false
 
+    console.log('blankTile,', blankTile);
+
     const tw = this.testForBonusTile(scores[this.props.gameType].trippleWordScore)
     const dw = this.testForBonusTile(scores[this.props.gameType].doubleWordScore)
     const tl = this.testForBonusTile(scores[this.props.gameType].trippleLetterScore)
@@ -230,7 +232,7 @@ class Tile extends Component {
           }) }
           onClick={ this.handleClick }
         >
-          <span className={ classNames({ 'blank-tile': blankTile })}>{char}</span>
+          <span><div className={ classNames({ 'blank-tile': blankTile })}>{char}</div></span>
         </Table.Cell>
       )
     }

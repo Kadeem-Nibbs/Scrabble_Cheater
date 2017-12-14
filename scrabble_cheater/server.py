@@ -24,8 +24,9 @@ def display_highest_scoring_words(game_data_json):
     game_data = json.loads(game_data_json)
     print type(game_data)
     game_board = game_data['board']
+    game_type = game_data['gameType']
     rack = game_data['rack']
-    board = Board(game_board)
+    board = Board(game_board, game_type)
     wf = WordFinder(board, rack)
     emit('play', json.dumps(wf.find_highest_scoring_words()[:100]))
 

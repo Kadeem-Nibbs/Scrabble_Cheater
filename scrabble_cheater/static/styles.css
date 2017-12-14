@@ -57,7 +57,7 @@
 .ui.table tbody tr td.selectable.tw:hover {
   background-color: #E19235!important; /* @orange */
 }
-.tw span:empty:before {
+.tw div:empty:before {
   content: 'TW';
   color: #fff;
 }
@@ -65,7 +65,7 @@
 .ui.table tbody tr td.selectable.dw:hover {
   background-color: #B2483B!important; /* @red */
 }
-.dw span:empty:before {
+.dw div:empty:before {
   content: 'DW';
   color: #fff;
 }
@@ -73,7 +73,7 @@
 .ui.table tbody tr td.selectable.tl:hover {
   background-color: #66A453!important; /* @green */
 }
-.tl span:empty:before {
+.tl div:empty:before {
   content: 'TL';
   color: #fff;
 }
@@ -81,7 +81,7 @@
 .ui.table tbody tr td.selectable.dl:hover {
   background-color: #0082C8!important; /* @blue */
 }
-.dl span:empty:before {
+.dl div:empty:before {
   content: 'DL';
   color: #fff;
 }
@@ -89,12 +89,15 @@
 .on-board {
   /* doesn't really need a style since its obvious its on there */
 }
-.blank-tile {
-  border-bottom: 2px solid black;
-  width: 20px;
-  margin-left: 5px;
-  display: block;
+div.blank-tile {
+  display: inline;
+  border-bottom: 2px solid black!important;
+  width: 20px!important;
+  margin-left: 5px!important;
+  display: block!important;
+  /*height: 30px;*/
 }
+
 .scrabble-container .ui.table tbody tr td.selectable.highlight-word-location {
   /* make the same as .tile-background-color */
 
@@ -102,7 +105,7 @@
 }
 
 .scrabble-container .ui.table tbody tr td.selectable.highlight-word-location span {
-  color: rgba(0,0,0,.95);
+    color: rgba(0,0,0,.95);
     border-radius: .28571429rem;
     background: #fff!important;
     width: 100%;

@@ -159,9 +159,6 @@ class Board(object):
 
         """
         self.input_board = board
-        self.read_board(self.input_board)
-        self.find_anchor_squares()
-        self.compute_cross_checks()
         if game == SCRABBLE:
             self.letter_values = SCRABBLE_LETTER_VALUES
             self.bonus_tiles = SCRABBLE_BONUS_TILES
@@ -170,6 +167,9 @@ class Board(object):
             self.bonus_tiles = WWF_BONUS_TILES
         else:
             raise ValueError("%s is not a supported game" % game)
+        self.read_board(self.input_board)
+        self.find_anchor_squares()
+        self.compute_cross_checks()
         self.game = game
 
     def set_game(self, game):

@@ -55,7 +55,7 @@ const initialState = {
     x: null,
     y: null
   },
-  gameType:'wordsWithFriends', // wwf : scrabble
+  gameType:'wwf', // wwf : scrabble
   moveDirection: null, // will be either 'down' or 'right'
   tableData: initialTableData,
   wordHoveredKey: null,
@@ -335,7 +335,7 @@ class Board extends Component {
   }
 
   toggleGameType = () => {
-    const gameType = this.state.gameType === 'wordsWithFriends' ? 'scrabble' : 'wordsWithFriends'
+    const gameType = this.state.gameType === 'wwf' ? 'scrabble' : 'wwf'
     this.setState({ gameType }) 
   }
 
@@ -371,7 +371,7 @@ class Board extends Component {
                 </div>
                 <div className="mt-10px">
                   <Label.Detail>
-                    { this.state.gameType === 'wordsWithFriends' ? 'Words With Friends' : 'Scrabble' }
+                    { this.state.gameType === 'wwf' ? 'Words With Friends' : 'Scrabble' }
                   </Label.Detail>
                 </div>
               </Label>
