@@ -1,0 +1,1 @@
+{"dependencies":[{"name":"./_overArg","loc":{"line":1,"column":22}}],"generated":{"js":"var overArg = require('./_overArg');\n\n/** Built-in value references. */\nvar getPrototype = overArg(Object.getPrototypeOf, Object);\n\nmodule.exports = getPrototype;\n"},"hash":"869558db23c2f7ab9f3e1b5b173cb808"}

@@ -1,0 +1,1 @@
+{"dependencies":[{"name":"./_getNative","loc":{"line":1,"column":24}}],"generated":{"js":"var getNative = require('./_getNative');\n\n/* Built-in method references that are verified to be native. */\nvar nativeCreate = getNative(Object, 'create');\n\nmodule.exports = nativeCreate;\n"},"hash":"d6ee6e58d9cb54363c30f0a08cd2d251"}

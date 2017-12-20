@@ -1,0 +1,1 @@
+{"dependencies":[{"name":"./_export","loc":{"line":1,"column":22}},{"name":"./_object-create","loc":{"line":3,"column":47}}],"generated":{"js":"var $export = require('./_export');\n// 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])\n$export($export.S, 'Object', { create: require('./_object-create') });\n"},"hash":"f5337c221a7229c5851133bca4e03572"}

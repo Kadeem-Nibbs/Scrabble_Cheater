@@ -1,0 +1,1 @@
+{"dependencies":[{"name":"./_global","loc":{"line":1,"column":21}}],"generated":{"js":"\nvar global = require('./_global');\nvar SHARED = '__core-js_shared__';\nvar store = global[SHARED] || (global[SHARED] = {});\nmodule.exports = function (key) {\n  return store[key] || (store[key] = {});\n};\n"},"hash":"82cd2e0de9eac504ad5b0234fc429056"}

@@ -1,0 +1,1 @@
+{"dependencies":[{"name":"./_root","loc":{"line":1,"column":19}}],"generated":{"js":"var root = require('./_root');\n\n/** Built-in value references. */\nvar Symbol = root.Symbol;\n\nmodule.exports = Symbol;\n"},"hash":"8b55f601a5b4371c5ea2cffc5a8608cb"}

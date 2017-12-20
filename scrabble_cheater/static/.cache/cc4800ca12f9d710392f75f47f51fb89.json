@@ -1,0 +1,1 @@
+{"dependencies":[],"generated":{"js":"/**\n * The function whose prototype chain sequence wrappers inherit from.\n *\n * @private\n */\nfunction baseLodash() {\n  // No operation performed.\n}\n\nmodule.exports = baseLodash;\n"},"hash":"e69264d3a7307ca8fbac7fd3207cfa57"}

@@ -1,0 +1,1 @@
+{"dependencies":[],"generated":{"js":"/**\n * This method returns `false`.\n *\n * @static\n * @memberOf _\n * @since 4.13.0\n * @category Util\n * @returns {boolean} Returns `false`.\n * @example\n *\n * _.times(2, _.stubFalse);\n * // => [false, false]\n */\nfunction stubFalse() {\n  return false;\n}\n\nmodule.exports = stubFalse;\n"},"hash":"9510e6d6a4a3c20171dfbcd6673927d4"}

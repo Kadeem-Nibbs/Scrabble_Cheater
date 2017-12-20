@@ -1,0 +1,1 @@
+{"dependencies":[{"name":"./_to-integer","loc":{"line":2,"column":24}}],"generated":{"js":"// 7.1.15 ToLength\nvar toInteger = require('./_to-integer');\nvar min = Math.min;\nmodule.exports = function (it) {\n  return it > 0 ? min(toInteger(it), 0x1fffffffffffff) : 0; // pow(2, 53) - 1 == 9007199254740991\n};\n"},"hash":"3f8281d6476f9b7e8977bcc2f44e8778"}

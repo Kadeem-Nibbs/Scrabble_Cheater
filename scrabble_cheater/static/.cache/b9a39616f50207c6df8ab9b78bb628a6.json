@@ -1,0 +1,1 @@
+{"dependencies":[{"name":"./_root","loc":{"line":1,"column":19}}],"generated":{"js":"var root = require('./_root');\n\n/** Built-in value references. */\nvar Uint8Array = root.Uint8Array;\n\nmodule.exports = Uint8Array;\n"},"hash":"c2411ed968d07f04abb89c9dd5f0aee5"}

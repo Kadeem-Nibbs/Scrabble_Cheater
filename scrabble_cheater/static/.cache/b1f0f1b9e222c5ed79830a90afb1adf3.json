@@ -1,0 +1,1 @@
+{"dependencies":[{"name":"./_defined","loc":{"line":2,"column":22}}],"generated":{"js":"// 7.1.13 ToObject(argument)\nvar defined = require('./_defined');\nmodule.exports = function (it) {\n  return Object(defined(it));\n};\n"},"hash":"7ededb2e70014a155fc69223ee8072b3"}

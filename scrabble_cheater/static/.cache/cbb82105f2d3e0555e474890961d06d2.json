@@ -1,0 +1,1 @@
+{"dependencies":[{"name":"./_cof","loc":{"line":2,"column":18}}],"generated":{"js":"// 7.2.2 IsArray(argument)\nvar cof = require('./_cof');\nmodule.exports = Array.isArray || function isArray(arg) {\n  return cof(arg) == 'Array';\n};\n"},"hash":"8eb0c2fbe376940dc24f8fe41598a9be"}

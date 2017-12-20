@@ -1,0 +1,1 @@
+{"dependencies":[{"name":"./_getNative","loc":{"line":1,"column":24}}],"generated":{"js":"var getNative = require('./_getNative');\n\nvar defineProperty = (function() {\n  try {\n    var func = getNative(Object, 'defineProperty');\n    func({}, '', {});\n    return func;\n  } catch (e) {}\n}());\n\nmodule.exports = defineProperty;\n"},"hash":"5d6577b81f6a3ec31c7657f1c2396b00"}

@@ -1,0 +1,1 @@
+{"dependencies":[],"generated":{"js":"// IE 8- don't enum bug keys\nmodule.exports = (\n  'constructor,hasOwnProperty,isPrototypeOf,propertyIsEnumerable,toLocaleString,toString,valueOf'\n).split(',');\n"},"hash":"2ef0393b863b806614385d72c20e2be9"}

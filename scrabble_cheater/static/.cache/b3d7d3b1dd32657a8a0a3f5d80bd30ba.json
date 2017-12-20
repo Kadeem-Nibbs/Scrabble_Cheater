@@ -1,0 +1,1 @@
+{"dependencies":[{"name":"./_shared","loc":{"line":1,"column":21}},{"name":"./_uid","loc":{"line":2,"column":18}}],"generated":{"js":"var shared = require('./_shared')('keys');\nvar uid = require('./_uid');\nmodule.exports = function (key) {\n  return shared[key] || (shared[key] = uid(key));\n};\n"},"hash":"871e0a1009072e29be62e5bb82496212"}

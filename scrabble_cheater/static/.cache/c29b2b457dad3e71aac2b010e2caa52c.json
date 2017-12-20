@@ -1,0 +1,1 @@
+{"dependencies":[{"name":"./_global","loc":{"line":1,"column":23}}],"generated":{"js":"var document = require('./_global').document;\nmodule.exports = document && document.documentElement;\n"},"hash":"55d21763624d1c6b52eaf76205d223a4"}

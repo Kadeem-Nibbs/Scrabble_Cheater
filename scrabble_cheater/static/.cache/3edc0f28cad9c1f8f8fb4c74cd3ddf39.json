@@ -1,0 +1,1 @@
+{"dependencies":[{"name":"./_overArg","loc":{"line":1,"column":22}}],"generated":{"js":"var overArg = require('./_overArg');\n\n/* Built-in method references for those with the same name as other `lodash` methods. */\nvar nativeKeys = overArg(Object.keys, Object);\n\nmodule.exports = nativeKeys;\n"},"hash":"6893d3562df75d9269b43e50cd62f5dc"}

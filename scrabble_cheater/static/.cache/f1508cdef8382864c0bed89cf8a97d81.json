@@ -1,0 +1,1 @@
+{"dependencies":[{"name":"../../modules/es6.object.assign","loc":{"line":1,"column":8}},{"name":"../../modules/_core","loc":{"line":2,"column":25}}],"generated":{"js":"require('../../modules/es6.object.assign');\nmodule.exports = require('../../modules/_core').Object.assign;\n"},"hash":"a8d2c31536c207e74905cd0ea9e58ff3"}

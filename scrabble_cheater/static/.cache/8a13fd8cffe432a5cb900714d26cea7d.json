@@ -1,0 +1,1 @@
+{"dependencies":[],"generated":{"js":"var global = (1,eval)(\"this\");\n\nmodule.exports = isBuf;\n\n/**\n * Returns true if obj is a buffer or an arraybuffer.\n *\n * @api private\n */\n\nfunction isBuf(obj) {\n  return (global.Buffer && global.Buffer.isBuffer(obj)) ||\n         (global.ArrayBuffer && obj instanceof ArrayBuffer);\n}\n"},"hash":"f333a74880dcc0a09d916a154e1dfaa8"}

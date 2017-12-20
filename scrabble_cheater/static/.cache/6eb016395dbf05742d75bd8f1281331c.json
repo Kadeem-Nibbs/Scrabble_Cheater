@@ -1,0 +1,1 @@
+{"dependencies":[{"name":"core-js/library/fn/object/assign","loc":{"line":1,"column":38}}],"generated":{"js":"module.exports = { \"default\": require(\"core-js/library/fn/object/assign\"), __esModule: true };"},"hash":"6acc45dc876b84993fb20a0a7d3f6a75"}

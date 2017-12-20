@@ -1,0 +1,1 @@
+{"dependencies":[{"name":"./_to-integer","loc":{"line":1,"column":24}}],"generated":{"js":"var toInteger = require('./_to-integer');\nvar max = Math.max;\nvar min = Math.min;\nmodule.exports = function (index, length) {\n  index = toInteger(index);\n  return index < 0 ? max(index + length, 0) : min(index, length);\n};\n"},"hash":"5ea684f16e55b3db16f4fd8e3d421dd3"}

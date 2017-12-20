@@ -1,0 +1,1 @@
+{"dependencies":[{"name":"./_root","loc":{"line":1,"column":19}}],"generated":{"js":"var root = require('./_root');\n\n/** Used to detect overreaching core-js shims. */\nvar coreJsData = root['__core-js_shared__'];\n\nmodule.exports = coreJsData;\n"},"hash":"66efc70d1ca980da9be59a68f0aee164"}
