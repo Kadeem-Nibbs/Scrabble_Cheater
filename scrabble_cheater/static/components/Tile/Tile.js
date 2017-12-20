@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Table, Form, Input, Button } from 'semantic-ui-react'
 import classNames from 'classnames'
 
-import { scores } from  '../constants'
+import { scores } from  '../../constants'
 
 class Tile extends Component {
   constructor(props) {

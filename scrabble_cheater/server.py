@@ -33,4 +33,4 @@ def display_highest_scoring_words(game_data_json):
 if __name__ == "__main__":
     init_dictionary(WORD_FILE)
     init_trie(dictionary)
-    socketio.run(app, debug=True)
+    socketio.run(app)

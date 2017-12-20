@@ -19,10 +19,10 @@ import {
   Popup, 
   Radio
 } from 'semantic-ui-react'
-import socketIoHOC from '../higherOrderComponents/socketIoHOC'
+import socketIoHOC from '../socketIoHOC'
 
-import WordList from './WordList'
-import Tile from './Tile'
+import WordList from '../WordList/WordList'
+import Tile from '../Tile/Tile'
 
 const tilesAcross = 15
 const tilesDown = 15
