@@ -1,0 +1,30 @@
+{
+  "name": "scrabble_cheater",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/Kadeem-Nibbs/Scrabble_Cheater",
+  "license": "MIT",
+  "scripts": {
+    "build": "parcel build index.html --out-dir dist",
+    "watch": "parcel index.html --out-dir dev --open",
+    "serve": "node server.js",
+    "buildAndServe": "build && serve",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "classnames": "^2.2.5",
+    "express": "^4.16.2",
+    "less": "^2.7.3",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "semantic-ui-react": "^0.77.0",
+    "shortid": "^2.2.8",
+    "socket.io-client": "^2.0.4"
+  },
+  "devDependencies": {
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "parcel-bundler": "^1.2.1"
+  }
+}
