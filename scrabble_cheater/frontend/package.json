@@ -8,7 +8,7 @@
     "build": "parcel build index.html --out-dir dist",
     "watch": "parcel index.html --out-dir dev --open",
     "serve": "node server.js",
-    "buildAndServe": "build && serve",
+    "buildAndServe": "npm run build && npm run serve",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
