@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, redirect
+from flask import Flask, request, redirect
 
 from flask_socketio import SocketIO, emit, send
 from scrabble_cheater import Board, WordFinder, init_dictionary, init_trie, WORD_FILE, dictionary, trie
@@ -6,16 +6,12 @@ from scrabble_cheater import Board, WordFinder, init_dictionary, init_trie, WORD
 import json
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'jfldaur3892309jlksf'
 socketio = SocketIO(app)
 
 # @app.before_request
 # def before_request():
 #     pass
 #
-@app.route('/')
-def index():
-    return render_template("index.html")
 
 @socketio.on('analyze_board')
 def display_highest_scoring_words(game_data_json):

@@ -1,1 +1,0 @@
-{"dependencies":[],"generated":{"js":"\nvar indexOf = [].indexOf;\n\nmodule.exports = function(arr, obj){\n  if (indexOf) return arr.indexOf(obj);\n  for (var i = 0; i < arr.length; ++i) {\n    if (arr[i] === obj) return i;\n  }\n  return -1;\n};"},"hash":"bf4dbf8645bf2e4586f2f645d895ef5c"}

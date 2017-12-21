@@ -1,1 +1,0 @@
-{"dependencies":[{"name":"core-js/library/fn/object/get-prototype-of","loc":{"line":1,"column":38}}],"generated":{"js":"module.exports = { \"default\": require(\"core-js/library/fn/object/get-prototype-of\"), __esModule: true };"},"hash":"79b7a1cca2a8ff18764ccd5acdf99539"}

@@ -1,1 +1,0 @@
-{"dependencies":[{"name":"./socket","loc":{"line":2,"column":25}},{"name":"engine.io-parser","loc":{"line":10,"column":32}}],"generated":{"js":"\nmodule.exports = require('./socket');\n\n/**\n * Exports parser\n *\n * @api public\n *\n */\nmodule.exports.parser = require('engine.io-parser');\n"},"hash":"f3d3c027c1dbd0efc25d717094735cb2"}

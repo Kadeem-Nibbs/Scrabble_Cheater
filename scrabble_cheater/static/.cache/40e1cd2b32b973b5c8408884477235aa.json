@@ -1,1 +1,0 @@
-{"dependencies":[],"generated":{"js":"\nmodule.exports = function(a, b){\n  var fn = function(){};\n  fn.prototype = b.prototype;\n  a.prototype = new fn;\n  a.prototype.constructor = a;\n};"},"hash":"a0393dea826de2528b2d6bec68687ce1"}
