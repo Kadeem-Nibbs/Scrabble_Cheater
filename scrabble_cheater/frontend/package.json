@@ -5,8 +5,8 @@
   "repository": "https://github.com/Kadeem-Nibbs/Scrabble_Cheater",
   "license": "MIT",
   "scripts": {
-    "build": "parcel build index.html --out-dir dist",
     "watch": "parcel index.html --out-dir dev --open",
+    "build": "parcel build index.html --out-dir dist",
     "serve": "node server.js",
     "build-and-serve": "npm run build && npm run serve",
     "test": "echo \"Error: no test specified\" && exit 1"
