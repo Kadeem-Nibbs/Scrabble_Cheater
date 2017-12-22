@@ -5,7 +5,7 @@
   "repository": "https://github.com/Kadeem-Nibbs/Scrabble_Cheater",
   "license": "MIT",
   "scripts": {
-    "watch": "parcel index.html --out-dir dev --open",
+    "dev":   "parcel index.html --out-dir dev --open",
     "build": "parcel build index.html --out-dir dist",
     "serve": "node server.js",
     "build-and-serve": "npm run build && npm run serve",

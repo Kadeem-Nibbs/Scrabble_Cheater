@@ -2,9 +2,10 @@ import React, { Component } from 'react'
 import { Table, Form, Input, Button } from 'semantic-ui-react'
 import classNames from 'classnames'
 
-import { scores } from  '../../constants'
+import DisplayTile from './DisplayTile'
+import EditTile from './EditTile'
 
-class Tile extends Component {
+class TileContainer extends Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -128,49 +129,7 @@ class Tile extends Component {
     }
   }
 
-  testForBonusTile = (bonusScoreArray) => {
-    return bonusScoreArray.some((elem) => { 
-      return (elem[0] === this.props.tileCoordinates.y) && (elem[1] === this.props.tileCoordinates.x) 
-    })
-    return false
-  }
-
   render() {
-    let char = this.props.cellChar || ''
-    let highlightCell = false
-    let onBoard = false
-    let blankTile = false
-    let playedTile = this.props.cellChar ? true : false
-
-    console.log('blankTile,', blankTile);
-
-    const tw = this.testForBonusTile(scores[this.props.gameType].trippleWordScore)
-    const dw = this.testForBonusTile(scores[this.props.gameType].doubleWordScore)
-    const tl = this.testForBonusTile(scores[this.props.gameType].trippleLetterScore)
-    const dl = this.testForBonusTile(scores[this.props.gameType].doubleLetterScore)
-
-    this.props.coordinatesToHighlight.filter((coordinates) => {
-      if(coordinates.x === this.props.tileCoordinates.x && coordinates.y === this.props.tileCoordinates.y) {
-        if(coordinates.char.length == 2) {
-
-          let charInfo = coordinates.char.split('')
-          char = charInfo[0]
-          
-          if(charInfo[1] === '#') {
-          
-            onBoard = true 
-
-          } else if (charInfo[1] === '_') {
-          
-            blankTile = true
-          }
-        } else {
-          char = coordinates.char
-        }
-        highlightCell = true
-      }
-    })
-
     if(this.props.tileIsEditable) {
       return (
         <Table.Cell>
@@ -217,26 +176,18 @@ class Tile extends Component {
       )
 
     } else {
+      const dummyCellChar = 'S'
+      const dummyGameType = 'wwf'
+
       return (
-        <Table.Cell
-          selectable
-          textAlign='center'
-          className={ classNames('tile-bg-color', { 
-            'tw': tw,
-            'dw': dw,
-            'tl': tl,
-            'dl': dl,
-            'played-tile': playedTile,
-            'highlight-word-location': highlightCell, 
-            'on-board': onBoard
-          }) }
-          onClick={ this.handleClick }
-        >
-          <span><div className={ classNames({ 'blank-tile': blankTile })}>{char}</div></span>
-        </Table.Cell>
+        <DisplayTile
+          gameType={ dummyGameType } 
+          coordinatesToHighlight={ this.props.coordinatesToHighlight }
+          tileCoordinates={ this.props.tileCoordinates }
+        />
       )
     }
   } 
 }
 
-export default Tile
+export default TileContainer

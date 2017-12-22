@@ -1,11 +1,6 @@
-// todo: REFACTOR THIS TO USE REDUX HOLY HELL
-//  would actually be a perfect thing to make a youtube tutorial about
-//  how using redux could refactor this into smaller components easier
-//  since you wouldn't have to pass setState methods down to components 
-//  via props. do that.
-
 import React, { Component } from 'react'
 import classNames from 'classnames'
+
 import { 
   Container, 
   Grid, 
@@ -19,33 +14,20 @@ import {
   Popup, 
   Radio
 } from 'semantic-ui-react'
+
+import { connect } from 'react-redux'
+
 import socketIoHOC from '../socketIoHOC'
 
-import WordList from '../WordList/WordList'
-import Tile from '../Tile/Tile'
+
+import TileContainer from './Tile/TileContainer'
+
 
 const tilesAcross = 15
 const tilesDown = 15
 const totalTiles = tilesAcross * tilesDown
 
 // Server expects data in this format
-const initialTableData = [
-  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
-  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
-  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
-  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
-  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
-  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
-  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
-  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
-  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
-  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
-  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
-  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
-  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
-  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
-  [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ]
-]
 
 const initialState = {
   coordinatesToHighlight: [],
@@ -57,7 +39,7 @@ const initialState = {
   },
   gameType:'wwf', // wwf : scrabble
   moveDirection: null, // will be either 'down' or 'right'
-  tableData: initialTableData,
+  tableData: null,
   wordHoveredKey: null,
   loading: false,
   suggestedWords: null
@@ -67,7 +49,7 @@ const initialState = {
 class Board extends Component {
   constructor(props) {
     super(props)
-    this.state = { ...initialState }
+    this.state = { ...initialState, tableData: this.props.boardState }
 
     this.wrapperRef = null
 
@@ -281,7 +263,7 @@ class Board extends Component {
       ) ? true : false
 
       row.push(
-        <Tile
+        <TileContainer
           key={ i }
           tileIsEditable={ tileIsEditable }
           tileCoordinates={ tileCoordinates }
@@ -334,88 +316,17 @@ class Board extends Component {
     }
   }
 
-  toggleGameType = () => {
-    const gameType = this.state.gameType === 'wwf' ? 'scrabble' : 'wwf'
-    this.setState({ gameType }) 
-  }
-
   render() {
     return (
-      <Container className="mt-50px">
-        <Grid className="scrabble-container centered">
-          <Grid.Column className="fixed-width-left-col">
-            <Header as='h2'>
-              Words With Fiends
-              <Header.Subheader>
-                Generate answers for Words With Friends or Scrabble 
-                <Popup
-                  trigger={<Button className="info-popover" icon='question' />}
-                  content="Enter your rack to the right, add all played letters to the board below, and you're good to go!"
-                />
-              </Header.Subheader>
-            </Header>
-            <div ref={ (ref) => { this.wrapperRef = ref  }}>
-              <Table unstackable celled>
-                <Table.Body>
-                  { this.buildBoard() }
-                </Table.Body>
-              </Table>
-            </div>
-            <div className="section-toggle-game">
-              <Label>
-                <div className="mt-10px">
-                  <Radio 
-                    slider
-                    onChange={ this.toggleGameType }
-                  />
-                </div>
-                <div className="mt-10px">
-                  <Label.Detail>
-                    { this.state.gameType === 'wwf' ? 'Words With Friends' : 'Scrabble' }
-                  </Label.Detail>
-                </div>
-              </Label>
-            </div>
-          </Grid.Column>
-
-          <Grid.Column className="mt-24px fixed-width-right-col">
-            <Label className="mb-10px">
-              <Icon name='info' /> Enter <span className="big-underscore">_</span> for blank tiles. 
-              <div>Blank tiles on the board will be above a <span className="big-underscore">_</span>.</div>
-            </Label>
-            <form onSubmit={ this.handleSendTableData }>
-              <Grid>
-                <Grid.Column width={ 8 }>
-                  <Input 
-                    placeholder="Enter your rack..."
-                    className="rack"
-                    value={ this.state.rack } 
-                    onChange={ this.handleRackChange } 
-                  />
-                </Grid.Column>
-                <Grid.Column width={ 8 }>
-                  <Button 
-                    className="btn-get-word"
-                    type="submit"
-                    disabled={ this.props.loading }
-                  >
-                    { this.props.loading ? (<Loader size='tiny' active inline />) : 'Get Words' }
-                  </Button>
-                </Grid.Column>
-              </Grid>
-            </form>
-
-            <WordList 
-              words={ this.state.suggestedWords } 
-              addWordToTable={ this.addWordToTable }
-              wordHoveredKey={ this.state.wordHoveredKey }
-              handleHighlightWordOnHover={ this.handleHighlightWordOnHover }
-            />
-          </Grid.Column>
-        </Grid>
-      </Container>
+      <div ref={ (ref) => { this.wrapperRef = ref  }}>
+        <Table unstackable celled>
+          <Table.Body>
+            { this.buildBoard() }
+          </Table.Body>
+        </Table>
+      </div>
     )
   } 
 }
 
-export default socketIoHOC(Board)
+export default Board

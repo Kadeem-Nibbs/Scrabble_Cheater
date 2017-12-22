@@ -1,13 +1,20 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-import './styles.less'
+import { createStore } from 'redux'
+import { Provider } from 'react-redux'
+import reducers from './_reducers'
 
-import Board from './components/Board/BoardContainer'
+import './styles.less'
+import App from './components/App.js'
+
+const store = createStore(reducers)
 
 const Root = () => {
   return (
-    <Board />
+    <Provider store={ store }>
+      <App />
+    </Provider>
   )
 }
 
