@@ -5,7 +5,7 @@ node_modules
 __pycache__/
 *.pickle
 venv*
-dist/*
-dev/*
+dist
+dev
 scrabble_cheater/frontend/dev/
 .cache
