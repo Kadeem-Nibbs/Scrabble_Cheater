@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import classNames from 'classnames'
 
+import { connect } from 'react-redux'
+
 import { 
   Container, 
   Grid, 
@@ -15,7 +17,6 @@ import {
   Radio
 } from 'semantic-ui-react'
 
-import { connect } from 'react-redux'
 
 import socketIoHOC from '../socketIoHOC'
 
@@ -326,7 +327,21 @@ class Board extends Component {
         </Table>
       </div>
     )
-  } 
+  }
 }
 
-export default Board
+const mapStateToProps = (state, ownProps) => {
+  return { 
+    boardData: state.board.boardData
+  }
+}
+
+const mapDispatchToProps = (dispatch, ownProps) => {
+  return {
+    dispatchToggleGameType: () => {
+      dispatch(toggleGameType())
+    }
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Board)

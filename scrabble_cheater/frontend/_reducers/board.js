@@ -24,7 +24,7 @@ const blankBoard = [
 
 const defaultState = {
   gameType: wordsWithFriends,
-  data: blankBoard
+  boardData: blankBoard
 }
 
 const board = (state = defaultState, action) => {
