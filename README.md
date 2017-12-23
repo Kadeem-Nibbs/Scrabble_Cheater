@@ -15,6 +15,8 @@ python server.py
 ```
 
 #### Frontend:
+`cd` to `scrabble_cheater/frontend/` and run:
+
 Install dependencies and run dev server: 
 ```
 npm run install
