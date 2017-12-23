@@ -8,12 +8,20 @@ API:
 
 `cd` to `scrabble_cheater/` and run:
 
-Install dependencies: `pip install -r requirements.txt`
-
-Run server: `python server.py`
+Install dependencies and run server: 
+```
+pip install -r requirements.txt`
+python server.py
+```
 
 Frontend:
-Install dependencies: `npm run install`
-Run dev server: `npm run dev`
+Install dependencies and run dev server: 
+```
+npm run install
+npm run dev
+```
+
 For production, to bundle html/js/css files and serve them using express: 
-`npm run build-and-serve`
+```
+npm run build-and-serve
+```
