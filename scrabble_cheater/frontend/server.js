@@ -1,8 +1,8 @@
-// Prod server
+// Prod server for Digital Ocean
 
 let express = require('express')
 let app = express()
-let port = process.env.PORT || 3000 // need to make .env file
+let port = 80
 
 app.use('/dist', express.static('dist'))
 app.use(express.static(__dirname + '/dist'))
