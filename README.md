@@ -6,18 +6,14 @@ Scrabble Cheater serves up an algorithm that calculates the best words you can p
 
 #### API:
 
-Navigate to to `scrabble_cheater/` and run:
-
-Install dependencies and run server: 
+Navigate to to `scrabble_cheater/` to install dependencies and run server: 
 ```
 pip install -r requirements.txt`
 python server.py
 ```
 
 #### Frontend:
-Navigate to `scrabble_cheater/frontend/` and run:
-
-Install dependencies and run dev server: 
+Navigate to `scrabble_cheater/frontend/` to install dependencies and run server:
 ```
 npm run install
 npm run dev
