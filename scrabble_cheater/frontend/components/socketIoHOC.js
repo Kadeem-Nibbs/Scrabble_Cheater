@@ -6,7 +6,7 @@ export default (WrappedComponent) => {
   class socketIoHOC extends Component {
     constructor(props) {
       super(props)
-      this.socket = io()
+      this.socket = io('localhost:5000')
 
       this.state = {
         suggestedWords: null,
