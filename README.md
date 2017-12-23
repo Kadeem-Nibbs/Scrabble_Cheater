@@ -6,7 +6,7 @@ Scrabble Cheater serves up an algorithm that calculates the best words you can p
 
 #### API:
 
-`cd` to `scrabble_cheater/` and run:
+Navigate to to `scrabble_cheater/` and run:
 
 Install dependencies and run server: 
 ```
@@ -15,7 +15,7 @@ python server.py
 ```
 
 #### Frontend:
-`cd` to `scrabble_cheater/frontend/` and run:
+Navigate to `scrabble_cheater/frontend/` and run:
 
 Install dependencies and run dev server: 
 ```
