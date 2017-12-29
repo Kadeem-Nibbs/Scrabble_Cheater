@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import updateRack from '../../_actions'
+import { updateRack, sendTableData } from '../../_actions'
 
 import Rack from './Rack'
 
@@ -10,6 +10,8 @@ class RackContainer extends Component {
     return(
       <Rack 
         rack={ this.props.rack }
+        handleUpdateRack={ this.props.handleUpdateRack }
+        handleSendTableData={ this.props.handleSendTableData }
       />
     )
   } 
@@ -23,9 +25,12 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    // dispatchToggleGameType: () => {
-    //   dispatch(toggleGameType())
-    // }
+    handleUpdateRack: (value) => {
+      dispatch(updateRack(value))
+    },
+    handleSendTableData: () => {
+      dispatch(sendTableData())
+    }
   }
 }
 

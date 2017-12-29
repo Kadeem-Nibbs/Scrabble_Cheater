@@ -3,16 +3,30 @@ import { connect } from 'react-redux'
 import { Grid, Input, Button } from 'semantic-ui-react'
 
 class Rack extends Component {
-  render() {  
+  handleRackChange = (e, target) => {
+    const rack = target.value || ''
+
+    if(target.value.length === 0) {
+      // user highlighted and cleared input
+      this.props.handleUpdateRack('')
+    }
+
+    if(/^[A-Za-z_]+$/.test(rack) && rack.length <= 7) { 
+      // Don't allow weird chars
+      this.props.handleUpdateRack(target.value.toUpperCase())
+    }
+  }
+
+  render() {
     return(
-      <form onSubmit={ this.handleSendTableData }>
+      <form onSubmit={ this.props.handleSendTableData }>
         <Grid>
           <Grid.Column width={ 8 }>
             <Input 
               placeholder="Enter your rack..."
               className="rack"
-              value={ this.props.rack } 
-              onChange={ this.handleRackChange } 
+              value={ this.props.rack }
+              onChange={ (e, target) => this.handleRackChange(e, target) } 
             />
           </Grid.Column>
           <Grid.Column width={ 8 }>

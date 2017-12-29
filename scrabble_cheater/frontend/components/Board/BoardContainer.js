@@ -239,24 +239,6 @@ class BoardContainer extends Component {
     })
   }
 
-  handleRackChange = (e, data) => {
-    const rack = data.value || ''
-
-    if(data.value.length === 0) {
-      // user highlighted and cleared input
-      this.setState({ 
-        rack: ''
-      })
-    }
-
-    if(/^[A-Za-z_]+$/.test(rack) && rack.length <= 7) { 
-      // Don't allow weird chars
-      this.setState({ 
-        rack: data.value.toUpperCase() 
-      })
-    }
-  }
-
   render() {
     return (
       <div ref={ (ref) => { this.wrapperRef = ref  }}>

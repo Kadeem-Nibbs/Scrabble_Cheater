@@ -24,18 +24,19 @@ class DisplayTile extends Component {
 
     if(some(nextProps.coordinatesToHighlight, nextProps.coordinates) && nextProps.cellCharacter == 2) {
 
-        if(charInfo[1] === '#') {
-          onBoard = true 
-        } else if (charInfo[1] === '_') {
-          blankTile = true
-        }
-        highlightCell = true
+      if(charInfo[1] === '#') {
+        onBoard = true 
+      } else if (charInfo[1] === '_') {
+        blankTile = true
+      }
+      highlightCell = true
 
-        this.setState({
-          onBoard,
-          blankTile,
-          highlightCell
-        })
+      this.setState({
+        onBoard,
+        blankTile,
+        highlightCell
+      })
+
     }
   }
 

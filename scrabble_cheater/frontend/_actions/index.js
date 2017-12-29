@@ -1,6 +1,7 @@
 import { 
   MAKE_TILE_EDITABLE, 
-  TOGGLE_GAME_TYPE 
+  TOGGLE_GAME_TYPE,
+  UPDATE_RACK
 } from '../constants/actions'
 
 export const makeTileEditable = (coordinates) => ({
@@ -9,14 +10,12 @@ export const makeTileEditable = (coordinates) => ({
 })
 
 export const toggleGameType = () => {
-  console.log('??? toggleGameType');
   return { type: TOGGLE_GAME_TYPE }
 }
 
-
-export const updateRack = (newRack) => ({
+export const updateRack = (value) => ({
   type: UPDATE_RACK,
-  newRack
+  value
 })
 
 // export const setVisibilityFilter = (filter) => ({
