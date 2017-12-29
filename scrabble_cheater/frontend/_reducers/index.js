@@ -1,11 +1,11 @@
 import { combineReducers } from 'redux'
 
 import board from './board'
-// import tiles from './tiles'
+import rack from './rack'
 
 const wordsAppReducers = combineReducers({
   board,
-  // tiles
+  rack
 })
 
 export default wordsAppReducers

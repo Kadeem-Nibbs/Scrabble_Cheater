@@ -19,14 +19,9 @@ import {
 
 
 import socketIoHOC from '../socketIoHOC'
-
-
 import TileContainer from './Tile/TileContainer'
 
-
-const tilesAcross = 15
-const tilesDown = 15
-const totalTiles = tilesAcross * tilesDown
+import Board from './Board'
 
 // Server expects data in this format
 
@@ -38,7 +33,6 @@ const initialState = {
     x: null,
     y: null
   },
-  gameType:'wwf', // wwf : scrabble
   moveDirection: null, // will be either 'down' or 'right'
   tableData: null,
   wordHoveredKey: null,
@@ -47,17 +41,17 @@ const initialState = {
 }
 
 // Todo: push some of this logic into this into WordListContainer and TileContainer so this file is less huge
-class Board extends Component {
+class BoardContainer extends Component {
   constructor(props) {
     super(props)
     this.state = { ...initialState, tableData: this.props.boardState }
 
     this.wrapperRef = null
 
-    const gameType = localStorage.getItem('gameType')
-    if(gameType) {
-      this.setState({ gameType })
-    }
+    // const gameType = localStorage.getItem('gameType')
+    // if(gameType) {
+    //   this.setState({ gameType })
+    // } // do this somewhere else
   }
 
   componentWillReceiveProps(nextProps) {
@@ -169,7 +163,7 @@ class Board extends Component {
 
     // should be false for spaces / special chars besides _
     const tableData =  {
-      gameType: this.state.gameType,
+      gameType: this.props.gameType,
       board: this.state.tableData,
       rack: this.state.rack
     }
@@ -245,60 +239,6 @@ class Board extends Component {
     })
   }
 
-  // Build board logic
-  buildBoard = () => {
-    const board = []
-    // These three vars get altered when endRow is true
-    let row =[] 
-    let rowNumber = 0
-    let cellNumber = 0
-
-    for(let i = 0; i < totalTiles; i++) {
-      const tileCoordinates = { x: cellNumber, y: rowNumber }
-      const endRow = (cellNumber === 14) ? true : false
-
-      const tileIsEditable = (
-        this.state.editableTileCoordinates.x === cellNumber
-      ) && (
-        this.state.editableTileCoordinates.y === rowNumber
-      ) ? true : false
-
-      row.push(
-        <TileContainer
-          key={ i }
-          tileIsEditable={ tileIsEditable }
-          tileCoordinates={ tileCoordinates }
-
-          handleTileValueChanged={ this.handleTileValueChanged }
-          handleMakeTileEditable={ this.handleMakeTileEditable }
-
-          gameType={ this.state.gameType }
-          moveDirection={ this.state.moveDirection }
-          coordinatesToHighlight={ this.state.coordinatesToHighlight }
-          cellChar={ this.state.tableData[rowNumber][cellNumber] }
-        />
-      )
-
-      cellNumber++
-
-      if(endRow) {
-        board.push(
-          <Table.Row 
-            key={ rowNumber } 
-            children={row} 
-          />
-        )
-
-        // reset row after its pushed / increment rowNumber to next row / and reset cell we are at
-        row = [] 
-        rowNumber = rowNumber + 1
-        cellNumber = 0
-      }
-    }
-
-    return board
-  }
-
   handleRackChange = (e, data) => {
     const rack = data.value || ''
 
@@ -321,9 +261,7 @@ class Board extends Component {
     return (
       <div ref={ (ref) => { this.wrapperRef = ref  }}>
         <Table unstackable celled>
-          <Table.Body>
-            { this.buildBoard() }
-          </Table.Body>
+          <Board />
         </Table>
       </div>
     )
@@ -332,16 +270,17 @@ class Board extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   return { 
-    boardData: state.board.boardData
+    boardData: state.board.boardData,
+    gameType: state.board.gameType
   }
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    dispatchToggleGameType: () => {
-      dispatch(toggleGameType())
-    }
+    // dispatchToggleGameType: () => {
+    //   dispatch(toggleGameType())
+    // }
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Board)
+export default connect(mapStateToProps, mapDispatchToProps)(BoardContainer)

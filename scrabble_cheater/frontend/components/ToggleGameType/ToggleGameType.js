@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Label, Radio } from 'semantic-ui-react'
-import { wordsWithFriends, scrabble } from '../../constants'
+import { WORDS_WITH_FRIENDS, SCRABBLE } from '../../constants/board'
 
 import { toggleGameType } from '../../_actions'
 
@@ -17,7 +17,7 @@ class ToggleGameType extends Component {
           </div>
           <div className="mt-10px">
             <Label.Detail>
-              { this.props.gameType === wordsWithFriends ? 'Words With Friends' : 'Scrabble' }
+              { this.props.gameType === WORDS_WITH_FRIENDS ? 'Words With Friends' : 'Scrabble' }
             </Label.Detail>
           </div>
         </Label>

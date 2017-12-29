@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
 import { Grid, Input, Button } from 'semantic-ui-react'
 
-class Header extends Component {
+class Rack extends Component {
   render() {  
     return(
       <form onSubmit={ this.handleSendTableData }>
@@ -10,7 +11,7 @@ class Header extends Component {
             <Input 
               placeholder="Enter your rack..."
               className="rack"
-              value={ this.state.rack } 
+              value={ this.props.rack } 
               onChange={ this.handleRackChange } 
             />
           </Grid.Column>
@@ -29,4 +30,4 @@ class Header extends Component {
   } 
 }
 
-export default Header
+export default Rack

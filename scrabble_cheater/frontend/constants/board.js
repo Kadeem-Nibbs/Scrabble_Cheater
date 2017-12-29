@@ -13,8 +13,9 @@ export const scores = {
   }
 }
 
-export const wordsWithFriends = 'wwf'
-export const scrabble = 'scrabble'
+export const WORDS_WITH_FRIENDS = 'wwf'
+export const SCRABBLE = 'scrabble'
 
-export const MAKE_TILE_EDITABLE = 'MAKE_TILE_EDITABLE'
-export const TOGGLE_GAME_TYPE = 'TOGGLE_GAME_TYPE'
+export const NUMBER_OF_ROWS = 15
+export const NUMBER_OF_COLS = 15
+export const TOTAL_TILES = NUMBER_OF_ROWS * NUMBER_OF_COLS

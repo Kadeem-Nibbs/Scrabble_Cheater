@@ -5,7 +5,7 @@ class HeaderLeft extends Component {
   render() {  
     return(
       <Header as='h2'>
-        Help get solutions for board games!
+        Solutions for board games!
         <Header.Subheader>
           You can use this to generate answers for Words with friends or Scrabble!
         </Header.Subheader>

@@ -21,12 +21,21 @@ const mapStateToProps = (state, ownProps) => {
   }
 }
 
-const mapDispatchToProps = (dispatch, ownProps) => {
-  return {
-    dispatchToggleGameType: () => {
-      dispatch(toggleGameType())
-    }
+// const mapDispatchToProps = (dispatch, ownProps) => {
+//   return {
+//     dispatchToggleGameType: () => {
+//       console.log('CLICK')
+
+//       return dispatch(toggleGameType())
+//     }
+//   }
+// }
+
+const mapDispatchToProps = (dispatch, ownProps) => ({
+  dispatchToggleGameType: () => {
+    console.log('CLICK')
+    dispatch(toggleGameType())
   }
-}
+})
 
 export default connect(mapStateToProps, mapDispatchToProps)(ToggleGameTypeContainer)

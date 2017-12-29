@@ -1,4 +1,4 @@
-import { MAKE_TILE_EDITABLE } from '../constants/'
+import { MAKE_TILE_EDITABLE } from '../constants/actions'
 
 const defaultState = {
   x: null, y: null

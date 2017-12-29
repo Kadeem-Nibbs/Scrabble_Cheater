@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
 import { Table, Form, Input, Button } from 'semantic-ui-react'
 import classNames from 'classnames'
 
@@ -58,9 +59,10 @@ class TileContainer extends Component {
 
     // TODO: Hold a flat version of this or something in props an do a compare against that so you dont have to 
     //   use forEach on every hover :: this is stupid expensive
+
     let update = false
     props.coordinatesToHighlight.forEach((coordinate) => {
-      if((coordinate.x === this.props.tileCoordinates.x) && (coordinate.y === this.props.tileCoordinates.y)) {
+      if((coordinate.x === this.props.coordinates.x) && (coordinate.y === this.props.coordinates.y)) {
         update = true
       }
     })
@@ -71,7 +73,7 @@ class TileContainer extends Component {
   handleClick = (e) => {
     e.preventDefault()
     const newClick = true
-    this.props.handleMakeTileEditable(this.props.tileCoordinates, newClick) 
+    this.props.handleMakeTileEditable(this.props.coordinates, newClick) 
   }
 
   updateStateWithTileValue = (event, data) => {
@@ -105,7 +107,7 @@ class TileContainer extends Component {
       e.preventDefault()  
     }
     const direction = this.props.moveDirection ? this.props.moveDirection : this.state.direction
-    this.props.handleTileValueChanged(this.state.newTileValue, this.props.tileCoordinates, direction)
+    this.props.handleTileValueChanged(this.state.newTileValue, this.props.coordinates, direction)
   }
 
   handleMoveRight = () => {
@@ -132,62 +134,34 @@ class TileContainer extends Component {
   render() {
     if(this.props.tileIsEditable) {
       return (
-        <Table.Cell>
-          <form className="ui form" onSubmit={ this.handleSubmitTile }>
-            <Input 
-              onKeyDown={ this.handleArrowPress }
-              value={ this.state.newTileValue } 
-              onChange={ this.updateStateWithTileValue } 
-              ref={ (ref) => { this.inputRef = ref }}
-              onFocus={ this.handleFocus }
-            />
-            { this.props.moveDirection ? // todo: move this to function its huge
-              // TODO: figure out how to get patthern="XX" to trigger from right / down arrorws
-                (
-                  <Button 
-                    type="button"
-                    className={ classNames("btn-tile-submit", this.props.moveDirection === 'down' ? 'move-down' : null) } 
-                    onClick={ this.handleSubmitTile }
-                  > 
-                    <i className="fas fa-plus"></i> 
-                  </Button>
-                ) :
-                (
-                  <span>
-                    <Button 
-                      type="button"
-                      className="btn-tile-submit right-arrow"
-                      onClick={ this.handleMoveRight }
-                    > 
-                      <i className="fas fa-arrow-right"></i> 
-                    </Button>
-                    <Button 
-                      type="button"
-                      className="btn-tile-submit down-arrow" 
-                      onClick={ this.handleMoveDown }
-                    >  
-                        <i className="fas fa-arrow-down"></i>  
-                      </Button>
-                  </span>
-                )
-            }
-          </form>
-        </Table.Cell>
+        <EditTile />
       )
 
     } else {
-      const dummyCellChar = 'S'
-      const dummyGameType = 'wwf'
-
       return (
         <DisplayTile
-          gameType={ dummyGameType } 
-          coordinatesToHighlight={ this.props.coordinatesToHighlight }
-          tileCoordinates={ this.props.tileCoordinates }
+          coordinates={ this.props.coordinates }
         />
       )
     }
   } 
 }
 
-export default TileContainer
+
+const mapStateToProps = (state, ownProps) => {
+  return {
+    gameType: state.board.gameType,
+    coordinatesToHighlight: [{x: 1, y:1}, {x:2, y: 1}, {x:3, y:1}] // TEMP dummy code
+
+  }
+}
+
+const mapDispatchToProps = (dispatch, ownProps) => {
+  return {
+    // dispatchToggleGameType: () => {
+    //   dispatch(toggleGameType())
+    // }
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(TileContainer)
