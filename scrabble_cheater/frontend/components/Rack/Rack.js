@@ -6,14 +6,9 @@ class Rack extends Component {
   handleRackChange = (e, target) => {
     const rack = target.value || ''
 
-    if(target.value.length === 0) {
-      // user highlighted and cleared input
-      this.props.handleUpdateRack('')
-    }
-
-    if(/^[A-Za-z_]+$/.test(rack) && rack.length <= 7) { 
+    if(/^[A-Za-z_]+$|^$/.test(rack) && rack.length <= 7) { 
       // Don't allow weird chars
-      this.props.handleUpdateRack(target.value.toUpperCase())
+      this.props.handleUpdateRack(rack.toUpperCase())
     }
   }
 
