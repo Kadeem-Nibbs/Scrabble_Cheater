@@ -37,7 +37,15 @@ class TileContainer extends Component {
   // }
 
   shouldComponentUpdate(nextProps) {
-    return nextProps.tileIsEditable || (nextProps.tileIsEditable !== this.props.tileIsEditable)
+    // Dont re-render everytime a user selects a tile as editable
+    if(this.props.gameType !== nextProps.gameType) {
+      return true
+    }
+    if(nextProps.tileIsEditable || (nextProps.tileIsEditable !== this.props.tileIsEditable)) {
+      return true
+    }
+
+    return true
   }
 
   // componentWillReceiveProps(nextProps, nextState) {

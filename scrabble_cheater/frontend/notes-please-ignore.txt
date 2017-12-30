@@ -1,9 +1,4 @@
 Enter value and click direction:
-  need to 
-  SET_MOVE_DIRECTION
-
-  then 
-
   CHANGE_COORDINATE_VALUE
 
   then
@@ -19,3 +14,16 @@ Move arrow key any direction:
   if no tile value:
     need to:
       MAKE_TILE_EDITABLE
+
+handleChangeCoordinateValue
+  => need to fire off 
+    MAKE_TILE_EDITABLE for next file
+  
+
+Handle backspace:
+  use redux-undo and return to prior states
+
+
+UX: Maybe put an arrow in the direction the user will go when typing.
+
+This makes it so arrows are useful - and make arrow just change direction instead of kick them to the next cell
