@@ -7,9 +7,8 @@ import './TileEdit.less'
 class EditTile extends Component {
   constructor(props) {
     super(props)
-
     this.state = {
-      value: '' // This gets placed in redux state when the user saved it
+      value: props.cellCharacter ? props.cellCharacter : ''
     }
   }
 
@@ -18,54 +17,72 @@ class EditTile extends Component {
       this.inputRef.focus()
     }
   }
+  
+  componentDidUpdate() {
+    if(this.props.direction) {
+      this.inputRef.focus()
+    }
+  }
 
-  setTileValue = (event, data) => {
-    const { value } = data
+  highlightOnFocus = (e) => {
+    // If the user clicks into a input that already has a value, highlight it so they dont get 'stuck'
+    e.target.select()
+  }
 
-    if(value.length > 1 ) {
-      return 
-    } 
+  handleKeyDown = (e, target) => {
+    
+  }
+
+
+  changeTileValue = (e, target = { value: '' }) => {
+    const { value } = target
+
+    if(value.length > 1 ) { return } 
 
     if(/^[A-Za-z_]+$|^$/.test(value)) {
-      this.setState({ value: value.toUpperCase() })
+      this.setState({ value: value.toUpperCase() }, () => {
+        this.handleSubmitTile()
+      })
     }
   }
 
   handleSubmitTile = (e) => {
-    e.preventDefault()
-    this.props.changeTileValue(this.state.value)
-  }
-
-  handleArrowPress = (e) => {
-    console.log("arrow press", e);
+    if(e) { e.preventDefault() }
+    this.props.handleTileSubmit(this.state.value)
   }
 
   render() {
     return (
       <Table.Cell>
         <form className="ui form" onSubmit={ this.handleSubmitTile }>
-          <Input 
-            value={ this.state.value } 
-            onChange={ this.setTileValue } 
-            ref={ (ref) => { this.inputRef = ref }}
-            onKeyDown={ this.handleArrowPress }
-          />
-          <span>
-            <Button 
-              type="button"
-              className={ classNames("btn-tile-submit right-arrow", { "muted" : true }) }
-              onClick={ this.handleMoveRight }
-            > 
-              <i className="fas fa-arrow-right"></i> 
-            </Button>
-            <Button 
-              type="button"
-              className="btn-tile-submit down-arrow" 
-              onClick={ this.handleMoveDown }
-            >  
-                <i className="fas fa-arrow-down"></i>  
-              </Button>
-          </span>
+          { // Force user to select a direction clicking tile
+            this.props.direction ? (
+              <Input
+                onFocus={ this.highlightOnFocus }
+                value={ this.state.value } 
+                onChange={ this.changeTileValue } 
+                ref={ (ref) => { this.inputRef = ref }}
+                onKeyDown={ this.handleKeyDown }
+              />
+            ) : (
+              <span className="direction-button-wrapper">
+                <Button 
+                  type="button"
+                  className="btn-tile-submit right-arrow"
+                  onClick={ () => this.props.handleSetMoveDirection('right') }
+                > 
+                  <i className="fas fa-arrow-right"></i> 
+                </Button>
+                <Button 
+                  type="button"
+                  className="btn-tile-submit down-arrow"
+                  onClick={ () => this.props.handleSetMoveDirection('down') }
+                >  
+                    <i className="fas fa-arrow-down"></i>  
+                  </Button>
+              </span>
+            )
+          }
         </form>
       </Table.Cell>
     )

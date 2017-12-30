@@ -74,7 +74,7 @@ class DisplayTile extends Component {
   render() {
     // The reason for [0] is: for display purposes, if this has two chars to designate 'empty' or 'existing' tile, 
     // we only want to display the first character. so 'Z_'[0] will display 'Z'
-    let char = this.props.cellCharacter[0] 
+    let char = this.props.cellCharacter ? this.props.cellCharacter[0] : ''
     let playedTile = this.props.cellCharacter ? true : false
 
     return (

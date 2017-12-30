@@ -1,12 +1,12 @@
-import { MAKE_TILE_EDITABLE } from '../constants/actions'
+import { 
+  MAKE_TILE_EDITABLE
+} from '../constants/actions'
 
 const defaultState = {
   editableTilecoordinates: {
     editableX: null,
     editableY: null
-  },
-  moveDirection: 'right',
-  newTileValue: ''
+  }
 }
 
 // Note: when updating a tile value, we edit the coordinate on the board directly, 

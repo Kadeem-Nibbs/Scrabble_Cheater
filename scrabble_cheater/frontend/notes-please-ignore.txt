@@ -1,0 +1,21 @@
+Enter value and click direction:
+  need to 
+  SET_MOVE_DIRECTION
+
+  then 
+
+  CHANGE_COORDINATE_VALUE
+
+  then
+
+  MAKE_TILE_EDITABLE
+
+Move arrow key any direction:
+  if tile Value:
+    need to:
+      CHANGE_COORDINATE_VALUE
+      then
+      MAKE_TILE_EDITABLE
+  if no tile value:
+    need to:
+      MAKE_TILE_EDITABLE

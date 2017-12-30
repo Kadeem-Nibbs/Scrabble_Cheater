@@ -3,7 +3,13 @@ import { connect } from 'react-redux'
 import { Table, Form, Input, Button } from 'semantic-ui-react'
 import classNames from 'classnames'
 
-import { makeTileEditable } from '../../../_actions'
+import { 
+  setMoveDirection,
+  resetDirectionAndMakeTileEditable, 
+  changeValueMoveToNextTile, 
+  changeValueMoveToNextTileWithArrowKeys,
+} from '../../../_actions'
+
 import TileDisplay from './TileDisplay'
 import TileEdit from './TileEdit'
 
@@ -30,15 +36,15 @@ class TileContainer extends Component {
   //   }
   // }
 
-  componentWillReceiveProps(nextProps, nextState) {
-    if(nextProps.cellCharacter && !this.state.newTileValue) {
-      // So when a user is adding new letters to the board, 
-      // if a one is added via menu, it stays when they are auto placed into it
-      this.setState({ 
-        newTileValue: nextProps.cellCharacter
-      })
-    }
-  }
+  // componentWillReceiveProps(nextProps, nextState) {
+  //   if(nextProps.cellCharacter && !this.state.newTileValue) {
+  //     // So when a user is adding new letters to the board, 
+  //     // if a one is added via menu, it stays when they are auto placed into it
+  //     this.setState({ 
+  //       newTileValue: nextProps.cellCharacter
+  //     })
+  //   }
+  // }
 
   shouldCellUpdate = (props) => {
     // This is super expensive. Need to make this way better. 
@@ -96,7 +102,15 @@ class TileContainer extends Component {
     console.log("TileContainer :: render");
     if(this.props.tileIsEditable) {
       return (
-        <TileEdit />
+        <TileEdit 
+          cellCharacter={ this.props.cellCharacter }
+          direction={ this.props.direction }
+
+          handleTileSubmit={ this.props.handleTileSubmit }
+          handleSubmitWithArrowKey={ this.props.handleSubmitWithArrowKey }
+
+          handleSetMoveDirection={ this.props.handleSetMoveDirection }
+        />
       )
 
     } else {
@@ -116,24 +130,37 @@ class TileContainer extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   const { x, y } = ownProps.coordinates
-
   const { editableX, editableY } = state.tile.editableTilecoordinates
 
   return {
     gameType: state.board.gameType,
     cellCharacter: state.board.boardData[y][x],
-    tileIsEditable: editableX === x && editableY === y
+    tileIsEditable: editableX === x && editableY === y,
+    direction: state.board.direction
 
     // coordinatesToHighlight: [{ x: 10, y: 10 }, { x: 10, y: 11 }, { x: 10, y: 12 }],
-
   }
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    handleMakeTileEditable: (coordinates) => {
-      dispatch(makeTileEditable(ownProps.coordinates))
-    }
+    handleSelectDirection: () => {
+
+    },
+    handleMakeTileEditable: () => {
+      dispatch(resetDirectionAndMakeTileEditable(ownProps.coordinates))
+    },
+    handleTileSubmit: (value) => {
+      dispatch(changeValueMoveToNextTile(ownProps.coordinates, value))
+    },
+    handleSubmitWithArrowKey: (value, direction) => {
+      // using left / right arrow keys to submit value
+      dispatch(changeValueMoveToNextTileWithArrowKeys(ownProps.coordinates, value, direction))
+    },
+    handleSetMoveDirection: (direction) => {
+      dispatch(setMoveDirection(direction))
+    },
+    
   }
 }
 

@@ -7,9 +7,22 @@
 // This makes using new CSS classes in components to change styles (instead of !important) crucial, 
 //  and _never_ using !important in global styles. 
 
+// less allows us to do the following for chaining new classes, so it works nicely for specificity
+
+//   .some-class {
+//     &.some-chained-class {   // (added via state changes or whatever)
+//       //
+//     }  
+//   }
+
+
+
+// Semantic-ui overrides
 @import "buttons";
 
 /*IDEA: make the tiles being placed on the board look the same as when you're editing a tile - makes sense ? */
+
+// Spacers
 
 .mt-24px {
   margin-top: 24px !important;
@@ -26,6 +39,8 @@
 .mb-15px {
   margin-bottom: 15px !important;
 }
+
+// Fixed cols
 
 .fixed-width-left-col {
   width: 482px!important;
@@ -164,6 +179,8 @@ div.blank-tile {
   box-shadow: inset 0px 0px 10px #d8d8d8;
 }
 
+// this makes it looks uuugly
+.ui.input input[type=text]::selection {  background: transparent }
 
 
 .big-underscore {
