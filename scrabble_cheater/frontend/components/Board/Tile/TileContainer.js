@@ -36,6 +36,10 @@ class TileContainer extends Component {
   //   }
   // }
 
+  shouldComponentUpdate(nextProps) {
+    return nextProps.tileIsEditable || (nextProps.tileIsEditable !== this.props.tileIsEditable)
+  }
+
   // componentWillReceiveProps(nextProps, nextState) {
   //   if(nextProps.cellCharacter && !this.state.newTileValue) {
   //     // So when a user is adding new letters to the board, 
@@ -99,7 +103,6 @@ class TileContainer extends Component {
   // }
 
   render() {
-    console.log("TileContainer :: render");
     if(this.props.tileIsEditable) {
       return (
         <TileEdit 

@@ -30,6 +30,7 @@ class EditTile extends Component {
     e.target.select()
   }
 
+
   handleKeyDown = (e) => {
     if(e.key === 'ArrowRight') {
       this.props.handleSubmitWithArrowKey('right', this.state.value)
@@ -60,6 +61,7 @@ class EditTile extends Component {
   }
 
   render() {
+    console.log('TileEdit :: render ');
     return (
       <Table.Cell>
         <form className="ui form" onSubmit={ this.handleSubmitTile }>

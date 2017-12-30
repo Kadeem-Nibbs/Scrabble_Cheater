@@ -68,26 +68,27 @@ class BoardContainer extends Component {
 
   // For clicking outside of tile area
   componentDidMount() {
-    document.addEventListener('mousedown', this.handleClickOutside);
+    // document.addEventListener('mousedown', this.handleClickOutside);
   }
 
   componentWillUnmount() {
-    document.removeEventListener('mousedown', this.handleClickOutside);
+    // document.removeEventListener('mousedown', this.handleClickOutside);
   }
 
   handleClickOutside = (e) => {
 
     // Disable for a sec
     // making all the tiles re-render like every time - fix this
-    // if (this.wrapperRef && !this.wrapperRef.contains(e.target)) {
-    //   this.setState({
-    //     editableTileCoordinates: {
-    //       x: null,
-    //       y: null
-    //     },
-    //     moveDirection: null
-    //   })
-    // }
+    if (this.wrapperRef && !this.wrapperRef.contains(e.target)) {
+      console.log('hi');
+      // this.setState({
+      //   editableTileCoordinates: {
+      //     x: null,
+      //     y: null
+      //   },
+      //   moveDirection: null
+      // })
+    }
   }
 
   addWordToTable = (wordInfo, wordIndexInSuggestedWords) => {
