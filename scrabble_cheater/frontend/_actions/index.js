@@ -27,14 +27,13 @@ const makeTileEditable = (coordinates) => ({
   coordinates
 })
 
-// Thunks
-//// Edit tile and move onto next tile
 const changeCoordinateValue = (coordinates, value) => ({
   type: CHANGE_COORDINATE_VALUE,
   value,
   coordinates
 })
 
+// Thunks
 export const changeValueMoveToNextTile = (coordinates, value) => {
   return (dispatch, getState) => {
     const direction = getState().board.direction
