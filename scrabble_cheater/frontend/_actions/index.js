@@ -37,25 +37,25 @@ const changeCoordinateValue = (coordinates, value) => ({
 
 export const changeValueMoveToNextTile = (coordinates, value) => {
   return (dispatch, getState) => {
-    dispatch(changeCoordinateValue(coordinates, value))
-
+    const direction = getState().board.direction
+    
     let newEditCoordinates
-    if(getState().board.direction === 'right') {
+    if(direction === 'right') {
       newEditCoordinates = { ...coordinates, x: coordinates.x + 1 }
-    } else { // must be down
+    } else if (direction === 'left') {
+      newEditCoordinates = { ...coordinates, x: coordinates.x - 1 }
+    } else if (direction === 'down') {
       newEditCoordinates = { ...coordinates, y: coordinates.y + 1 }
+    } else if (direction === 'up') {
+      newEditCoordinates = { ...coordinates, y: coordinates.y - 1 }
     }
 
-    dispatch(makeTileEditable(newEditCoordinates))
+    Promise.resolve(dispatch(changeCoordinateValue(coordinates, value)))
+              .then(dispatch(makeTileEditable(newEditCoordinates)))
   }
 }
 
-export const changeValueMoveToNextTileWithArrowKeys = (direction, coordinates, value) => {
-  return (dispatch, getState) => {
-    // setMoveDirection
-  }
-}
-
+// For new clicks on tiles
 export const resetDirectionAndMakeTileEditable = (coordinates) => {
   return (dispatch, getState) => {
     // Is this right ?
@@ -63,5 +63,15 @@ export const resetDirectionAndMakeTileEditable = (coordinates) => {
               .then(dispatch(makeTileEditable(coordinates)))
   }
 }
+
+// For using arrow keys
+export const changeValueMoveToNextTileWithArrowKeys = (coordinates, direction, value) => {
+  return (dispatch, getState) => {
+    Promise.resolve(dispatch(setMoveDirection(direction)))
+              .then(dispatch(changeValueMoveToNextTile(coordinates, value)))
+    
+  }
+}
+
 
 

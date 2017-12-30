@@ -46,57 +46,57 @@ class TileContainer extends Component {
   //   }
   // }
 
-  shouldCellUpdate = (props) => {
-    // This is super expensive. Need to make this way better. 
-    // Maybe go back to using the cell# instead of x/y coords for faster lookup
+  // shouldCellUpdate = (props) => {
+  //   // This is super expensive. Need to make this way better. 
+  //   // Maybe go back to using the cell# instead of x/y coords for faster lookup
 
 
-    // TODO: Hold a flat version of this or something in props an do a compare against that so you dont have to 
-    //   use forEach on every hover :: this is stupid expensive
+  //   // TODO: Hold a flat version of this or something in props an do a compare against that so you dont have to 
+  //   //   use forEach on every hover :: this is stupid expensive
 
-    let update = false
-    props.coordinatesToHighlight.forEach((coordinate) => {
-      if((coordinate.x === this.props.coordinates.x) && (coordinate.y === this.props.coordinates.y)) {
-        update = true
-      }
-    })
+  //   let update = false
+  //   props.coordinatesToHighlight.forEach((coordinate) => {
+  //     if((coordinate.x === this.props.coordinates.x) && (coordinate.y === this.props.coordinates.y)) {
+  //       update = true
+  //     }
+  //   })
 
-    return update
-  }
+  //   return update
+  // }
 
-  handleFocus = (e) => {
-    e.target.select()
-  }
+  // handleFocus = (e) => {
+  //   e.target.select()
+  // }
 
-  handleSubmitTile = (e) => {
-    if(e) { 
-      // incase user hits enter without choosting a direction
-      e.preventDefault()  
-    }
-    const direction = this.props.moveDirection ? this.props.moveDirection : this.state.direction
-    this.props.handleTileValueChanged(this.state.newTileValue, this.props.coordinates, direction)
-  }
+  // handleSubmitTile = (e) => {
+  //   if(e) { 
+  //     // incase user hits enter without choosting a direction
+  //     e.preventDefault()  
+  //   }
+  //   const direction = this.props.moveDirection ? this.props.moveDirection : this.state.direction
+  //   this.props.handleTileValueChanged(this.state.newTileValue, this.props.coordinates, direction)
+  // }
 
-  handleMoveRight = () => {
-    this.setState({ direction: 'right' }, () => this.handleSubmitTile() )
-  }
+  // handleMoveRight = () => {
+  //   this.setState({ direction: 'right' }, () => this.handleSubmitTile() )
+  // }
 
-  handleMoveDown = () => {
-    this.setState({ direction: 'down' }, () => this.handleSubmitTile() )
-  }
+  // handleMoveDown = () => {
+  //   this.setState({ direction: 'down' }, () => this.handleSubmitTile() )
+  // }
 
-  handleArrowPress = (e) => {
-    if(e.key === 'ArrowDown') {
-      this.handleMoveDown()
-    } else if(e.key === 'ArrowRight') {
-      this.handleMoveRight()
-    } 
+  // handleArrowPress = (e) => {
+  //   if(e.key === 'ArrowDown') {
+  //     this.handleMoveDown()
+  //   } else if(e.key === 'ArrowRight') {
+  //     this.handleMoveRight()
+  //   } 
 
-    if(!this.state.direction && e.key === 'Enter') {
-      // submit is picked up by form's onSubmit so don't need to handle submit tile also
-      this.setState({ direction: 'right' })
-    }
-  }
+  //   if(!this.state.direction && e.key === 'Enter') {
+  //     // submit is picked up by form's onSubmit so don't need to handle submit tile also
+  //     this.setState({ direction: 'right' })
+  //   }
+  // }
 
   render() {
     console.log("TileContainer :: render");
@@ -144,18 +144,15 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    handleSelectDirection: () => {
-
-    },
     handleMakeTileEditable: () => {
       dispatch(resetDirectionAndMakeTileEditable(ownProps.coordinates))
     },
     handleTileSubmit: (value) => {
       dispatch(changeValueMoveToNextTile(ownProps.coordinates, value))
     },
-    handleSubmitWithArrowKey: (value, direction) => {
+    handleSubmitWithArrowKey: (direction, value) => {
       // using left / right arrow keys to submit value
-      dispatch(changeValueMoveToNextTileWithArrowKeys(ownProps.coordinates, value, direction))
+      dispatch(changeValueMoveToNextTileWithArrowKeys(ownProps.coordinates, direction, value))
     },
     handleSetMoveDirection: (direction) => {
       dispatch(setMoveDirection(direction))

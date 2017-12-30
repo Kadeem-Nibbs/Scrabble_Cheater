@@ -29,10 +29,17 @@ class EditTile extends Component {
     e.target.select()
   }
 
-  handleKeyDown = (e, target) => {
-    
+  handleKeyDown = (e) => {
+    if(e.key === 'ArrowRight') {
+      this.props.handleSubmitWithArrowKey('right', this.state.value)
+    } else if (e.key === 'ArrowDown') {
+      this.props.handleSubmitWithArrowKey('down', this.state.value)
+    } else if (e.key === 'ArrowUp') {
+      this.props.handleSubmitWithArrowKey('up', this.state.value)
+    } else if (e.key === 'ArrowLeft') {
+      this.props.handleSubmitWithArrowKey('left', this.state.value)
+    }
   }
-
 
   changeTileValue = (e, target = { value: '' }) => {
     const { value } = target
