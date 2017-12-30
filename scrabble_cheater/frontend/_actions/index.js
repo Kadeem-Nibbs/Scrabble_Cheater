@@ -55,7 +55,7 @@ export const changeValueMoveToNextTile = (coordinates, value) => {
   }
 }
 
-// For new clicks on tiles
+// For new clicks on tiles, set direction
 export const resetDirectionAndMakeTileEditable = (coordinates) => {
   return (dispatch, getState) => {
     // Is this right ?
@@ -64,7 +64,7 @@ export const resetDirectionAndMakeTileEditable = (coordinates) => {
   }
 }
 
-// For using arrow keys
+// For using arrow keys to set direction
 export const changeValueMoveToNextTileWithArrowKeys = (coordinates, direction, value) => {
   return (dispatch, getState) => {
     Promise.resolve(dispatch(setMoveDirection(direction)))

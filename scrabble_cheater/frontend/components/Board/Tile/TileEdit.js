@@ -61,7 +61,7 @@ class EditTile extends Component {
   render() {
     return (
       <Table.Cell>
-        <form className="ui form" onSubmit={ this.handleSubmitTile }>
+        <form className="ui form" onSubmit={ this.handleSubmitTile } onKeyDown={ this.handleKeyDown }>
           { // Force user to select a direction clicking tile
             this.props.direction ? (
               <Input
@@ -69,7 +69,6 @@ class EditTile extends Component {
                 value={ this.state.value } 
                 onChange={ this.changeTileValue } 
                 ref={ (ref) => { this.inputRef = ref }}
-                onKeyDown={ this.handleKeyDown }
               />
             ) : (
               <span className="direction-button-wrapper">
