@@ -76,15 +76,18 @@ class BoardContainer extends Component {
   }
 
   handleClickOutside = (e) => {
-    if (this.wrapperRef && !this.wrapperRef.contains(e.target)) {
-      this.setState({
-        editableTileCoordinates: {
-          x: null,
-          y: null
-        },
-        moveDirection: null
-      })
-    }
+
+    // Disable for a sec
+    // making all the tiles re-render like every time - fix this
+    // if (this.wrapperRef && !this.wrapperRef.contains(e.target)) {
+    //   this.setState({
+    //     editableTileCoordinates: {
+    //       x: null,
+    //       y: null
+    //     },
+    //     moveDirection: null
+    //   })
+    // }
   }
 
   addWordToTable = (wordInfo, wordIndexInSuggestedWords) => {
@@ -139,8 +142,6 @@ class BoardContainer extends Component {
     }
 
     currentRack = currentRack.join('') // get rid of undefined's and turn into string
-    console.log('currentRack', currentRack);
-
     this.setState({ 
       tableData: newData,
       suggestedWords: newSuggestedWordsList,
@@ -250,19 +251,4 @@ class BoardContainer extends Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => {
-  return { 
-    boardData: state.board.boardData,
-    gameType: state.board.gameType
-  }
-}
-
-const mapDispatchToProps = (dispatch, ownProps) => {
-  return {
-    // dispatchToggleGameType: () => {
-    //   dispatch(toggleGameType())
-    // }
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(BoardContainer)
+export default BoardContainer

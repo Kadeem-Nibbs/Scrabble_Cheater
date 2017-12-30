@@ -3,51 +3,39 @@ import { connect } from 'react-redux'
 import { Table, Form, Input, Button } from 'semantic-ui-react'
 import classNames from 'classnames'
 
-import DisplayTile from './DisplayTile'
-import EditTile from './EditTile'
+import { makeTileEditable } from '../../../_actions'
+import TileDisplay from './TileDisplay'
+import TileEdit from './TileEdit'
 
 class TileContainer extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      newTileValue: '',
-      direction: null
-    }
-  }
 
-  componentDidUpdate() {
-    if(this.inputRef) {
-      this.inputRef.focus()
-    }
-  }
+  // shouldComponentUpdate(nextProps) {
+  //   if(this.props.gameType !== nextProps.gameType) {
+  //     return true
+  //   }
 
-  shouldComponentUpdate(nextProps) {
-    if(this.props.gameType !== nextProps.gameType) {
-      return true
-    }
-
-    // Update if this Tile is marked as editable or remove from being editable
-    if(nextProps.tileIsEditable || nextProps.tileIsEditable !== this.props.tileIsEditable) {
-      return true
-    }
+  //   // Update if this Tile is marked as editable or remove from being editable
+  //   if(nextProps.tileIsEditable || nextProps.tileIsEditable !== this.props.tileIsEditable) {
+  //     return true
+  //   }
     
-    // This seems super expensive to have in shouldComponentUpdate
-    const oldTile = this.shouldCellUpdate(this.props)
-    const newTile = this.shouldCellUpdate(nextProps)
+  //   // This seems super expensive to have in shouldComponentUpdate
+  //   const oldTile = this.shouldCellUpdate(this.props)
+  //   const newTile = this.shouldCellUpdate(nextProps)
 
-    if(oldTile || newTile) {
-      return true
-    } else {
-      return false
-    }
-  }
+  //   if(oldTile || newTile) {
+  //     return true
+  //   } else {
+  //     return false
+  //   }
+  // }
 
   componentWillReceiveProps(nextProps, nextState) {
-    if(nextProps.cellChar && !this.state.newTileValue) {
+    if(nextProps.cellCharacter && !this.state.newTileValue) {
       // So when a user is adding new letters to the board, 
       // if a one is added via menu, it stays when they are auto placed into it
       this.setState({ 
-        newTileValue: nextProps.cellChar 
+        newTileValue: nextProps.cellCharacter
       })
     }
   }
@@ -68,33 +56,6 @@ class TileContainer extends Component {
     })
 
     return update
-  }
-
-  handleClick = (e) => {
-    e.preventDefault()
-    const newClick = true
-    this.props.handleMakeTileEditable(this.props.coordinates, newClick) 
-  }
-
-  updateStateWithTileValue = (event, data) => {
-    const { value } = data
-
-    if(value.length == 0) {
-      this.setState({ newTileValue: ''})
-    } else if(value.length > 1 ) {
-      return 
-    } 
-
-
-    if(/^[A-Za-z_]+$/.test(value)) {
-      this.setState({ newTileValue: value.toUpperCase() }, () => {
-        if(this.state.direction || this.props.moveDirection) {
-          this.handleSubmitTile()
-        }
-      })
-    } else {
-      return
-    }
   }
 
   handleFocus = (e) => {
@@ -132,15 +93,20 @@ class TileContainer extends Component {
   }
 
   render() {
+    console.log("TileContainer :: render");
     if(this.props.tileIsEditable) {
       return (
-        <EditTile />
+        <TileEdit />
       )
 
     } else {
       return (
-        <DisplayTile
+        <TileDisplay
+          gameType={ this.props.gameType }
           coordinates={ this.props.coordinates }
+          cellCharacter={ this.props.cellCharacter }
+
+          handleMakeTileEditable={ this.props.handleMakeTileEditable }
         />
       )
     }
@@ -149,19 +115,27 @@ class TileContainer extends Component {
 
 
 const mapStateToProps = (state, ownProps) => {
+  const { x, y } = ownProps.coordinates
+
+  const { editableX, editableY } = state.tile.editableTilecoordinates
+
   return {
     gameType: state.board.gameType,
-    coordinatesToHighlight: [{x: 1, y:1}, {x:2, y: 1}, {x:3, y:1}] // TEMP dummy code
+    cellCharacter: state.board.boardData[y][x],
+    tileIsEditable: editableX === x && editableY === y
+
+    // coordinatesToHighlight: [{ x: 10, y: 10 }, { x: 10, y: 11 }, { x: 10, y: 12 }],
 
   }
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    // dispatchToggleGameType: () => {
-    //   dispatch(toggleGameType())
-    // }
+    handleMakeTileEditable: (coordinates) => {
+      dispatch(makeTileEditable(ownProps.coordinates))
+    }
   }
 }
+
 
 export default connect(mapStateToProps, mapDispatchToProps)(TileContainer)

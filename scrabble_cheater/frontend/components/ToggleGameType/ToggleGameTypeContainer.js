@@ -9,7 +9,7 @@ class ToggleGameTypeContainer extends Component {
     return(
       <ToggleGameType
         gameType={ this.props.gameType }
-        dispatchToggleGameType={ this.props.dispatchToggleGameType }
+        toggleGameType={ this.props.toggleGameType }
       />
     )
   }
@@ -21,19 +21,8 @@ const mapStateToProps = (state, ownProps) => {
   }
 }
 
-// const mapDispatchToProps = (dispatch, ownProps) => {
-//   return {
-//     dispatchToggleGameType: () => {
-//       console.log('CLICK')
-
-//       return dispatch(toggleGameType())
-//     }
-//   }
-// }
-
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  dispatchToggleGameType: () => {
-    console.log('CLICK')
+  toggleGameType: () => {
     dispatch(toggleGameType())
   }
 })

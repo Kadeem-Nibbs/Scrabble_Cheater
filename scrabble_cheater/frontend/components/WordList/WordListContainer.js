@@ -17,19 +17,20 @@ class WordListContainer extends Component {
   } 
 }
 
-const mapStateToProps = (state, ownProps) => {
-  return { 
-    suggestedWords: state.board.suggestedWords,
-    wordHoveredKey: state.board.wordHoveredKey
-  }
-}
+// const mapStateToProps = (state, ownProps) => {
+//   return { 
+//     suggestedWords: state.board.suggestedWords,
+//     wordHoveredKey: state.board.wordHoveredKey
+//   }
+// }
 
-const mapDispatchToProps = (dispatch, ownProps) => {
-  return {
-    // dispatchToggleGameType: () => {
-    //   dispatch(toggleGameType())
-    // }
-  }
-}
+// const mapDispatchToProps = (dispatch, ownProps) => {
+//   return {
+//     // dispatchToggleGameType: () => {
+//     //   dispatch(toggleGameType())
+//     // }
+//   }
+// }
 
-export default connect(mapStateToProps, mapDispatchToProps)(WordListContainer)
+// export default connect(mapStateToProps, mapDispatchToProps)(WordListContainer)
+export default WordListContainer

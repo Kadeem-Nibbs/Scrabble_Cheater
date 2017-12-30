@@ -12,7 +12,7 @@ class ToggleGameType extends Component {
           <div className="mt-10px">
             <Radio
               slider
-              onMouseDown={ this.props.dispatchToggleGameType }
+              onMouseDown={ this.props.toggleGameType }
             />
           </div>
           <div className="mt-10px">

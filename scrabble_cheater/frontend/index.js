@@ -5,7 +5,8 @@ import { createStore } from 'redux'
 import { Provider } from 'react-redux'
 import reducers from './_reducers'
 
-import './styles.less'
+import './global-styles/all'
+
 import App from './components/App.js'
 
 const store = createStore(reducers)

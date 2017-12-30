@@ -4,11 +4,6 @@ import {
   UPDATE_RACK
 } from '../constants/actions'
 
-export const makeTileEditable = (coordinates) => ({
-  type: MAKE_TILE_EDITABLE,
-  coordinates
-})
-
 export const toggleGameType = () => {
   return { type: TOGGLE_GAME_TYPE }
 }
@@ -16,6 +11,11 @@ export const toggleGameType = () => {
 export const updateRack = (value) => ({
   type: UPDATE_RACK,
   value
+})
+
+export const makeTileEditable = (coordinates) => ({
+  type: MAKE_TILE_EDITABLE,
+  coordinates
 })
 
 // export const setVisibilityFilter = (filter) => ({

@@ -71,6 +71,7 @@ class Board extends Component {
               <Table.Row key={ rowNumber }>
                 { 
                   times(NUMBER_OF_COLS, (colNumber) => {
+                    console.log('Board :: tile render');
                     return(
                       <TileContainer
                         coordinates={ { y: rowNumber, x: colNumber } }
@@ -88,20 +89,4 @@ class Board extends Component {
   }
 }
 
-// move to BoardContainer
-const mapStateToProps = (state, ownProps) => {
-  return { 
-    boardData: state.board.boardData,
-    gameType: state.board.gameType
-  }
-}
-
-const mapDispatchToProps = (dispatch, ownProps) => {
-  return {
-    // dispatchToggleGameType: () => {
-    //   dispatch(toggleGameType())
-    // }
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Board)
+export default Board

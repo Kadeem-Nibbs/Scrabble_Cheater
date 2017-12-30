@@ -6,8 +6,8 @@ class Rack extends Component {
   handleRackChange = (e, target) => {
     const rack = target.value || ''
 
+    // Don't allow weird chars
     if(/^[A-Za-z_]+$|^$/.test(rack) && rack.length <= 7) { 
-      // Don't allow weird chars
       this.props.handleUpdateRack(rack.toUpperCase())
     }
   }
@@ -21,7 +21,7 @@ class Rack extends Component {
               placeholder="Enter your rack..."
               className="rack"
               value={ this.props.rack }
-              onChange={ (e, target) => this.handleRackChange(e, target) } 
+              onChange={ this.handleRackChange } 
             />
           </Grid.Column>
           <Grid.Column width={ 8 }>

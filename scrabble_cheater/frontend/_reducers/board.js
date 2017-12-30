@@ -1,4 +1,7 @@
-import { TOGGLE_GAME_TYPE } from '../constants/actions'
+import { 
+  TOGGLE_GAME_TYPE,
+  CHANGE_COORDINATE_VALUE
+} from '../constants/actions'
 
 import { 
   WORDS_WITH_FRIENDS, 
@@ -11,15 +14,9 @@ const blankBoard = new Array(15).fill([], 0, 15).map((elem, i) => {
   return new Array(15).fill('', 0, 15)
 })
 
-// TODO: move to its own state
-const suggestedWords = null
-const wordHoveredKey = null
-
 const defaultState = {
   gameType: WORDS_WITH_FRIENDS,
-  boardData: blankBoard,
-  suggestedWords,
-  wordHoveredKey
+  boardData: blankBoard
 }
 
 const board = (state = defaultState, action) => {
@@ -31,6 +28,9 @@ const board = (state = defaultState, action) => {
         ...state,
         gameType
       }
+    case CHANGE_COORDINATE_VALUE:
+      // need coordinates and new tile value, and update 
+      
 
     default:
       return state
