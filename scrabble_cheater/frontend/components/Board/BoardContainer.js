@@ -25,26 +25,26 @@ import Board from './Board'
 
 // Server expects data in this format
 
-const initialState = {
-  coordinatesToHighlight: [],
-  wordChars: '',
-  rack: '',
-  editableTileCoordinates: {
-    x: null,
-    y: null
-  },
-  moveDirection: null, // will be either 'down' or 'right'
-  tableData: null,
-  wordHoveredKey: null,
-  loading: false,
-  suggestedWords: null
-}
+// const initialState = {
+//   coordinatesToHighlight: [],
+//   wordChars: '',
+//   rack: '',
+//   editableTileCoordinates: {
+//     x: null,
+//     y: null
+//   },
+//   moveDirection: null, // will be either 'down' or 'right'
+//   tableData: null,
+//   wordHoveredKey: null,
+//   loading: false,
+//   suggestedWords: null
+// }
 
 // Todo: push some of this logic into this into WordListContainer and TileContainer so this file is less huge
 class BoardContainer extends Component {
   constructor(props) {
     super(props)
-    this.state = { ...initialState, tableData: this.props.boardState }
+    // this.state = { ...initialState, tableData: this.props.boardState }
 
     this.wrapperRef = null
 
@@ -54,17 +54,17 @@ class BoardContainer extends Component {
     // } // do this somewhere else
   }
 
-  componentWillReceiveProps(nextProps) {
-    if(nextProps.loading !== this.props.loading) {
-      this.setState({ 
-        loading: nextProps.loading 
-      })
-    }
+  // componentWillReceiveProps(nextProps) {
+  //   if(nextProps.loading !== this.props.loading) {
+  //     this.setState({ 
+  //       loading: nextProps.loading 
+  //     })
+  //   }
 
-    if(this.props.suggestedWords) {
-      this.setState({ suggestedWords: this.props.suggestedWords })
-    }
-  }
+  //   if(this.props.suggestedWords) {
+  //     this.setState({ suggestedWords: this.props.suggestedWords })
+  //   }
+  // }
 
   // For clicking outside of tile area
   componentDidMount() {
@@ -172,66 +172,66 @@ class BoardContainer extends Component {
     this.props.socket.emit('analyze_board', JSON.stringify(tableData))
   }
 
-  handleMakeTileEditable = (tileCoordinates, newClick) => {
-    // If this is being called from <Tile />, its a new click so the user hasn't
-    //   set a direction yet.
-    if(newClick) {
-      this.setState({ 
-        moveDirection: null,
-        editableTileCoordinates: tileCoordinates 
-      })
-    } else {
-      // If this is being called from handleTileValueChanged(), keep going the same direction
-      this.setState({  editableTileCoordinates: tileCoordinates  })
-    }
-  }
+  // handleMakeTileEditable = (tileCoordinates, newClick) => {
+  //   // If this is being called from <Tile />, its a new click so the user hasn't
+  //   //   set a direction yet.
+  //   if(newClick) {
+  //     this.setState({ 
+  //       moveDirection: null,
+  //       editableTileCoordinates: tileCoordinates 
+  //     })
+  //   } else {
+  //     // If this is being called from handleTileValueChanged(), keep going the same direction
+  //     this.setState({  editableTileCoordinates: tileCoordinates  })
+  //   }
+  // }
 
-  handleTileValueChanged = (newTileValue, tileCoordinates, moveDirection) => {
-    // Calculate row 
-    const row = tileCoordinates.y
-    const newRowStateRow = this.state.tableData[row]
-    const newState = this.state.tableData
-    newRowStateRow[tileCoordinates.x] = newTileValue.toUpperCase()
-    newState[row] = newRowStateRow
+  // handleTileValueChanged = (newTileValue, tileCoordinates, moveDirection) => {
+  //   // Calculate row 
+  //   const row = tileCoordinates.y
+  //   const newRowStateRow = this.state.tableData[row]
+  //   const newState = this.state.tableData
+  //   newRowStateRow[tileCoordinates.x] = newTileValue.toUpperCase()
+  //   newState[row] = newRowStateRow
 
-    // Allow user to select a move direction before inputs a value
-    if(!newTileValue && moveDirection) {
-      this.setState({ moveDirection }, () => {
-        this.handleMakeTileEditable(tileCoordinates)
-      })
-      return
-    }
+  //   // Allow user to select a move direction before inputs a value
+  //   if(!newTileValue && moveDirection) {
+  //     this.setState({ moveDirection }, () => {
+  //       this.handleMakeTileEditable(tileCoordinates)
+  //     })
+  //     return
+  //   }
 
-    this.setState({
-      editableTileCoordinates: {
-        x: null,
-        y: null
-      },
-      tableData: newState,
-      wordChars: '',
-      initialRack: '',
-      moveDirection: moveDirection
-    }, () => {
+  //   this.setState({
+  //     editableTileCoordinates: {
+  //       x: null,
+  //       y: null
+  //     },
+  //     tableData: newState,
+  //     wordChars: '',
+  //     initialRack: '',
+  //     moveDirection: moveDirection
+  //   }, () => {
 
-      const newTileCoordinates = Object.assign({}, tileCoordinates)
-      // If horizontal
-      if(this.state.moveDirection === 'right') {
-        if(tileCoordinates.x === 14) {
-          return
-        } else {
-          newTileCoordinates.x = tileCoordinates.x + 1
-        }
-      } else if(this.state.moveDirection === 'down') {
-        if(tileCoordinates.y === 14) {
-          return 
-        } else {
-          newTileCoordinates.y = tileCoordinates.y + 1
-        }
-      }
+  //     const newTileCoordinates = Object.assign({}, tileCoordinates)
+  //     // If horizontal
+  //     if(this.state.moveDirection === 'right') {
+  //       if(tileCoordinates.x === 14) {
+  //         return
+  //       } else {
+  //         newTileCoordinates.x = tileCoordinates.x + 1
+  //       }
+  //     } else if(this.state.moveDirection === 'down') {
+  //       if(tileCoordinates.y === 14) {
+  //         return 
+  //       } else {
+  //         newTileCoordinates.y = tileCoordinates.y + 1
+  //       }
+  //     }
 
-      this.handleMakeTileEditable(newTileCoordinates)
-    })
-  }
+  //     this.handleMakeTileEditable(newTileCoordinates)
+  //   })
+  // }
 
   handleHighlightWordOnHover = (coordinatesToHighlight, i) => {
     this.setState({ 

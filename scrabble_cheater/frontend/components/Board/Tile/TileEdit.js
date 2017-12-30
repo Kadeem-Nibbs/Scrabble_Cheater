@@ -25,7 +25,8 @@ class EditTile extends Component {
   }
 
   highlightOnFocus = (e) => {
-    // If the user clicks into a input that already has a value, highlight it so they dont get 'stuck'
+    // If the user clicks into a input that already has a value, 
+    // highlight it so they dont get 'stuck'
     e.target.select()
   }
 

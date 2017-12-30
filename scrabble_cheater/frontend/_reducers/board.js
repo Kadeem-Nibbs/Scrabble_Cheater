@@ -43,9 +43,6 @@ const board = (state = defaultState, action) => {
       const newBoardData = state.boardData.slice()
       newBoardData[y][x] = action.value
 
-      // prior to this need to dispatch direction set
-      // then dispatch editable tile - need thunk
-
       return {
         ...state,
         boardData: newBoardData
