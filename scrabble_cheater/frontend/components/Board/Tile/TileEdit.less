@@ -1,6 +1,7 @@
 .direction-button-wrapper {    
   background: #333;
-  border: none;
+  border-top: 1px solid #fff;
+  border-left: 1px solid #fff;
   border-top-left-radius: 50%;
   border-bottom-left-radius: 0px;
   border-bottom-right-radius: 0px;
@@ -14,21 +15,24 @@
 
 .button.btn-tile-submit { // defaults to 'right-arrow'
   position: absolute;
-  top: 0px;
   height: 25px;
   width: 25px;
   padding: 0;
   border-radius: 50%;
+  border: 1px solid #fff;
 
   &.right-arrow {
-    left: 25px;
+    border-left: none;
+    top: -1px;
+    left: 24px;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
   }
 
-  &.down-arrow { // move for 'down-arrow'
+  &.down-arrow {
+    border-top: none;
     top: 24px;
-    left: 0px;
+    left: -1px;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
   }

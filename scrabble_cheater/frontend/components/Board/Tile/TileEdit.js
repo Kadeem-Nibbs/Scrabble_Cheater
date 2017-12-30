@@ -32,23 +32,28 @@ class EditTile extends Component {
 
 
   handleKeyDown = (e) => {
-    if(e.key === 'ArrowRight') {
-      this.props.handleSubmitWithArrowKey('right', this.state.value)
-    } else if (e.key === 'ArrowDown') {
-      this.props.handleSubmitWithArrowKey('down', this.state.value)
-    } else if (e.key === 'ArrowUp') {
-      this.props.handleSubmitWithArrowKey('up', this.state.value)
-    } else if (e.key === 'ArrowLeft') {
-      this.props.handleSubmitWithArrowKey('left', this.state.value)
-    }
+    // This is disabled until I can iron out the UX 
+    //  its pretty bleh right now and not a high priority
+    // if(e.key === 'ArrowRight') {
+    //   this.props.handleSubmitWithArrowKey('right', this.state.value)
+    // } else if (e.key === 'ArrowDown') {
+    //   this.props.handleSubmitWithArrowKey('down', this.state.value)
+    // } else if (e.key === 'ArrowUp') {
+    //   this.props.handleSubmitWithArrowKey('up', this.state.value)
+    // } else if (e.key === 'ArrowLeft') {
+    //   this.props.handleSubmitWithArrowKey('left', this.state.value)
+    // }
   }
 
   changeTileValue = (e, target = { value: '' }) => {
     const { value } = target
 
     if(value.length > 1 ) { return } 
+    if(value.length === 0 ) {
+      this.setState({ value: value.toUpperCase() })
+    }
 
-    if(/^[A-Za-z_]+$|^$/.test(value)) {
+    if(/^[A-Za-z_]+$/.test(value)) {
       this.setState({ value: value.toUpperCase() }, () => {
         this.handleSubmitTile()
       })
@@ -56,12 +61,12 @@ class EditTile extends Component {
   }
 
   handleSubmitTile = (e) => {
+    console.log('??');
     if(e) { e.preventDefault() }
     this.props.handleTileSubmit(this.state.value)
   }
 
   render() {
-    console.log('TileEdit :: render ');
     return (
       <Table.Cell>
         <form className="ui form" onSubmit={ this.handleSubmitTile }>

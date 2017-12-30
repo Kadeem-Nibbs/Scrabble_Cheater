@@ -27,3 +27,8 @@ Handle backspace:
 UX: Maybe put an arrow in the direction the user will go when typing.
 
 This makes it so arrows are useful - and make arrow just change direction instead of kick them to the next cell
+
+:: Main things left to do
+
+1) reduxify rack
+2) make 'delete' hit up redux-undo
