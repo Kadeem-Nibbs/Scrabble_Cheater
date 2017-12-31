@@ -31,8 +31,8 @@ class TileDisplay extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if(nextProps.letterToHighlight) {
-      this.setHighlightStyles()
+    if(nextProps.letterToHighlight !== '') {
+      this.setHighlightStyles(nextProps.letterToHighlight)
     }
 
     if(nextProps.letterToHighlight === '' && this.state.highlightCell) {
@@ -52,12 +52,12 @@ class TileDisplay extends Component {
     return false
   }
 
-  setHighlightStyles = () => {
+  setHighlightStyles = (letterToHighlight) => {
     let onBoard = false
     let blankTile = false
     const highlightCell = true
 
-    const letter = this.props.letterToHighlight
+    const letter = letterToHighlight
 
     if(letter[1] === '#') {
       onBoard = true 
@@ -82,7 +82,7 @@ class TileDisplay extends Component {
   }
 
   render() {
-    // The reason for [0] is: for display purposes, if this has two chars to designate 'empty' or 'existing' tile, 
+    // The reason for [0] is for display purposes, if this has two chars to designate 'empty' or 'existing' tile, 
     // we only want to display the first character. so 'Z_'[0] will display 'Z'
     let letter = ''
     if(this.props.letterToHighlight) {

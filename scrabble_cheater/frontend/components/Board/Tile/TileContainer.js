@@ -110,7 +110,6 @@ class TileContainer extends Component {
       return true
     }
 
-
     if(this.props.letterToHighlight !== nextProps.letterToHighlight) {
       return true
     }
@@ -119,7 +118,6 @@ class TileContainer extends Component {
   }
 
   render() {
-    // console.log('Tile Container :: Render', this.props.letterToHighlight);
     if(this.props.tileIsEditable) {
       return (
         <TileEdit
@@ -149,9 +147,9 @@ class TileContainer extends Component {
 }
 
 const getHighlightedletter = (x, y, coordinatesToHighlight) => {
-    return coordinatesToHighlight.find((coordinate) => {
-      return x === coordinate.x && y === coordinate.y
-    })
+  return coordinatesToHighlight.find((coordinate) => {
+    return x === coordinate.x && y === coordinate.y
+  })
 }
 
 const mapStateToProps = (state, ownProps) => {
@@ -184,11 +182,6 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     undoTilePlacement: () => {
       dispatch(UndoActionCreators.undo()) 
     }
-    // handleSubmitWithArrowKey: (direction, value) => {
-    //   // using left / right arrow keys to submit value
-    //   dispatch(changeValueMoveToNextTileWithArrowKeys(ownProps.coordinates, direction, value))
-    // },
-    
   }
 }
 
