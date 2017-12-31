@@ -114,6 +114,10 @@ class TileContainer extends Component {
       return true
     }
 
+    if(this.props.cellCharacter !== nextProps.cellCharacter) {
+      return true
+    }
+
     return false
   }
 
