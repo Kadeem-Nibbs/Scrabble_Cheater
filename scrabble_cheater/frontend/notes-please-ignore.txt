@@ -32,3 +32,10 @@ This makes it so arrows are useful - and make arrow just change direction instea
 
 1) reduxify rack
 2) make 'delete' hit up redux-undo
+
+
+[] note which tiles on the board were played with blank tiles (so send back Z_)
+[] make it so that you can't enter more than 7 characters for the rack, and no more than two blank tiles
+
+
+[] make it so when you click on a tile you can press right or down arrow key

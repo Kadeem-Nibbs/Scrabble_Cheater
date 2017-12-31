@@ -6,7 +6,7 @@ import { some } from 'lodash'
 
 import { scores } from  '../../../constants/board'
 
-class DisplayTile extends Component {
+class TileDisplay extends Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -28,9 +28,11 @@ class DisplayTile extends Component {
     if(this.props.gameType !== prevProps.gameType) {
       this.setSpecialScoreTiles()
     }
+  }
 
-    if(this.props.coordinatesToHighlight && this.props.cellCharacter == 2) {
-      this.setSpecialCssClass()
+  componentWillReceiveProps(nextProps) {
+    if(nextProps.letterToHighlight) {
+      this.setHighlightStyles()
     }
   }
 
@@ -41,25 +43,26 @@ class DisplayTile extends Component {
     return false
   }
 
-  setSpecialCssClas = () => {
+  setHighlightStyles = () => {
     let onBoard = false
     let blankTile = false
-    let highlightCell = false
+    const highlightCell = true
 
-    if(some(this.props.coordinatesToHighlight, this.props.coordinates)) {
-      if(charInfo[1] === '#') {
-        onBoard = true 
-      } else if (charInfo[1] === '_') {
-        blankTile = true
-      }
-      highlightCell = true
+    console.log('Tile Display :: coordinatesToHighlight', this.props.letterToHighlight);
 
-      this.setState({
-        onBoard,
-        blankTile,
-        highlightCell
-      })
+    const letter = this.props.letterToHighlight
+
+    if(letter[1] === '#') {
+      onBoard = true 
+    } else if (letter[1] === '_') {
+      blankTile = true
     }
+
+    this.setState({
+      onBoard,
+      blankTile,
+      highlightCell
+    })
   }
 
   setSpecialScoreTiles = () => {
@@ -74,7 +77,15 @@ class DisplayTile extends Component {
   render() {
     // The reason for [0] is: for display purposes, if this has two chars to designate 'empty' or 'existing' tile, 
     // we only want to display the first character. so 'Z_'[0] will display 'Z'
-    let char = this.props.cellCharacter ? this.props.cellCharacter[0] : ''
+    
+    let letter = ''
+    if(this.props.letterToHighlight) {
+      letter = this.props.letterToHighlight
+    } else if(this.props.cellCharacter){
+       letter = this.props.cellCharacter[0]
+    }
+
+
     let playedTile = this.props.cellCharacter ? true : false
 
     return (
@@ -92,10 +103,10 @@ class DisplayTile extends Component {
         }) }
         onClick={ this.props.handleMakeTileEditable }
       >
-        <span><div className={ classNames({ 'blank-tile': this.state.blankTile })}>{char}</div></span>
+        <span><div className={ classNames({ 'blank-tile': this.state.blankTile })}>{letter}</div></span>
       </Table.Cell>
     )
   } 
 }
 
-export default DisplayTile
+export default TileDisplay

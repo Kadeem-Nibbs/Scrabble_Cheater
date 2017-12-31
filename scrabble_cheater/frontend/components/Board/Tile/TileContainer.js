@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { ActionCreators as UndoActionCreators } from 'redux-undo'
 import { Table, Form, Input, Button } from 'semantic-ui-react'
 import classNames from 'classnames'
+import { isEqual, some } from 'lodash'
 
 import { 
   setMoveDirection,
@@ -36,18 +37,6 @@ class TileContainer extends Component {
   //     return false
   //   }
   // }
-
-  shouldComponentUpdate(nextProps) {
-    // Dont re-render everytime a user selects a tile as editable
-    if(this.props.gameType !== nextProps.gameType) {
-      return true
-    }
-    if(nextProps.tileIsEditable || (nextProps.tileIsEditable !== this.props.tileIsEditable)) {
-      return true
-    }
-
-    return true
-  }
 
   // componentWillReceiveProps(nextProps, nextState) {
   //   if(nextProps.cellCharacter && !this.state.newTileValue) {
@@ -111,7 +100,26 @@ class TileContainer extends Component {
   //   }
   // }
 
+  shouldComponentUpdate(nextProps) {
+    // This should be taken care of by mapStateToProps but it doesn't figure this out properly
+    if(nextProps.tileIsEditable || (nextProps.tileIsEditable !== this.props.tileIsEditable)) {
+      return true
+    }
+
+    if(this.props.gameType !== nextProps.gameType) {
+      return true
+    }
+
+
+    if(this.props.letterToHighlight !== nextProps.letterToHighlight) {
+      return true
+    }
+
+    return false
+  }
+
   render() {
+    // console.log('Tile Container :: Render', this.props.letterToHighlight);
     if(this.props.tileIsEditable) {
       return (
         <TileEdit
@@ -131,6 +139,7 @@ class TileContainer extends Component {
           gameType={ this.props.gameType }
           coordinates={ this.props.coordinates }
           cellCharacter={ this.props.cellCharacter }
+          letterToHighlight={ this.props.letterToHighlight }
 
           handleMakeTileEditable={ this.props.handleMakeTileEditable }
         />
@@ -139,18 +148,25 @@ class TileContainer extends Component {
   } 
 }
 
+const getHighlightedletter = (x, y, coordinatesToHighlight) => {
+    return coordinatesToHighlight.find((coordinate) => {
+      return x === coordinate.x && y === coordinate.y
+    })
+}
 
 const mapStateToProps = (state, ownProps) => {
   const { x, y } = ownProps.coordinates
   const { editableX, editableY } = state.tile.present
+  const coordinatesToHighlight = state.wordList.wordCoordinates
+  
+  const tileHighlightInfo = coordinatesToHighlight.length ? getHighlightedletter(x, y, coordinatesToHighlight) : null
 
   return {
     gameType: state.gameType.gameType,
     cellCharacter: state.board.present.boardData[y][x],
     tileIsEditable: editableX === x && editableY === y,
-    direction: state.direction.direction
-
-    // coordinatesToHighlight: [{ x: 10, y: 10 }, { x: 10, y: 11 }, { x: 10, y: 12 }],
+    direction: state.direction.direction,
+    letterToHighlight: tileHighlightInfo ? tileHighlightInfo.letter : ''
   }
 }
 

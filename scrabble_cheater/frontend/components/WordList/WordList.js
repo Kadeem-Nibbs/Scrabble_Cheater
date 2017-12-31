@@ -30,7 +30,7 @@ class WordList extends Component {
         coordinates.push({
           x: xCoordinate++, 
           y: y,
-          char: wordArray[i]
+          letter: wordArray[i]
         })
       }
     } else {
@@ -42,7 +42,7 @@ class WordList extends Component {
         coordinates.push({
           x: x, 
           y: yCoordinate++,
-          char: wordArray[i]
+          letter: wordArray[i]
         })
       }
     }
@@ -51,20 +51,19 @@ class WordList extends Component {
   }
 
   handleWordOver = (e, wordInfo, i) => {
-    const coordinatesToHighlight = this.getCoordinatesToHighlight(wordInfo)
+    const wordCoordinates = this.getCoordinatesToHighlight(wordInfo)
     let wordHoveredKey = i
     this.setState({ wordHoveredKey })
-
-    this.props.handleHighlightWordOnHover(coordinatesToHighlight)
+    this.props.handleHighlightWordOnHover(wordCoordinates)
   }
 
   handleWordOut = () => {
-    this.props.handleHighlightWordOnHover([], null)
+    this.props.handleHighlightWordOnHover([])
   }
 
   handleAddWordToTable = (wordInfo, i) => {
     this.props.addWordToTable(wordInfo, i)
-    this.handleWordOut() // un-highlight word added
+    this.handleWordOut() // un-highlight word added (could make a thunk ?)
   }
 
   render() {

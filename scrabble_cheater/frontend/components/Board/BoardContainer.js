@@ -228,12 +228,12 @@ class BoardContainer extends Component {
   //   })
   // }
 
-  handleHighlightWordOnHover = (coordinatesToHighlight, i) => {
-    this.setState({ 
-      coordinatesToHighlight: coordinatesToHighlight,
-      wordHoveredKey: i
-    })
-  }
+  // handleHighlightWordOnHover = (coordinatesToHighlight, i) => {
+  //   this.setState({ 
+  //     coordinatesToHighlight: coordinatesToHighlight,
+  //     wordHoveredKey: i
+  //   })
+  // }
 
   render() {
     return (

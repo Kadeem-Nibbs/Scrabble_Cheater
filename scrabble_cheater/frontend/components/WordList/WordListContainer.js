@@ -3,12 +3,14 @@ import { Grid, Input, Button } from 'semantic-ui-react'
 
 import { connect } from 'react-redux'
 
+import { highlightWordOnBoard } from '../../_actions'
+
 import WordList from './WordList'
 class WordListContainer extends Component {
   render() {  
     return(
       <WordList 
-        words={ this.props.suggestedWords } 
+        words={ this.props.suggestedWords }
 
         addWordToTable={ this.props.addWordToTable } // need to do 
         handleHighlightWordOnHover={ this.props.handleHighlightWordOnHover } // doing
@@ -25,8 +27,8 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    handleHighlightWordOnHover:() => {
-      
+    handleHighlightWordOnHover:(wordCoordinates) => {
+      dispatch(highlightWordOnBoard(wordCoordinates))
     }
   }
 }

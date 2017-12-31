@@ -5,7 +5,8 @@ import {
   SET_MOVE_DIRECTION,
   CHANGE_COORDINATE_VALUE,
   RECEIVED_SUGGESTED_WORDS,
-  SENT_TABLE_DATA
+  SENT_TABLE_DATA,
+  HIGHLIGHT_SUGGESTED_WORD
 } from '../constants/actions'
 
 // Board
@@ -21,6 +22,12 @@ export const updateRack = (letters) => ({
 export const setMoveDirection = (direction) => ({
   type: SET_MOVE_DIRECTION,
   direction
+})
+
+// WordsList
+export const highlightWordOnBoard = (wordCoordinates) => ({
+  type: HIGHLIGHT_SUGGESTED_WORD,
+  wordCoordinates
 })
 
 // Tile
