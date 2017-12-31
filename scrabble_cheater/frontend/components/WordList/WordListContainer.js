@@ -9,28 +9,27 @@ class WordListContainer extends Component {
     return(
       <WordList 
         words={ this.props.suggestedWords } 
-        addWordToTable={ this.addWordToTable }
+
+        addWordToTable={ this.props.addWordToTable }
         wordHoveredKey={ this.props.wordHoveredKey }
-        handleHighlightWordOnHover={ this.handleHighlightWordOnHover }
+        handleHighlightWordOnHover={ this.props.handleHighlightWordOnHover }
       />
     )
   } 
 }
 
-// const mapStateToProps = (state, ownProps) => {
-//   return { 
-//     suggestedWords: state.board.present.suggestedWords,
-//     wordHoveredKey: state.board.present.wordHoveredKey
-//   }
-// }
+const mapStateToProps = (state, ownProps) => {
+  return { 
+    suggestedWords: state.getWords.suggestedWords
+  }
+}
 
-// const mapDispatchToProps = (dispatch, ownProps) => {
-//   return {
-//     // dispatchToggleGameType: () => {
-//     //   dispatch(toggleGameType())
-//     // }
-//   }
-// }
+const mapDispatchToProps = (dispatch, ownProps) => {
+  return {
+    handleSomething:() => {
+      // dispatch(updateRack(value))
+    }
+  }
+}
 
-// export default connect(mapStateToProps, mapDispatchToProps)(WordListContainer)
-export default WordListContainer
+export default connect(mapStateToProps, mapDispatchToProps)(WordListContainer)

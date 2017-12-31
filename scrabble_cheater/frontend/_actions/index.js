@@ -15,7 +15,7 @@ export const toggleGameType = () => {
 
 export const updateRack = (value) => ({
   type: UPDATE_RACK,
-  value
+  rack: value
 })
 
 export const setMoveDirection = (direction) => ({
@@ -91,7 +91,7 @@ export const submitTableData = (socket) => {
     const tableData = {
       gameType: getState().gameType.gameType,
       board: getState().board.present.boardData,
-      rack: getState().rack.value
+      rack: getState().getWords.rack
     }
 
     // Note: component socketIoHOC will receive the data and trigger receiveTableData

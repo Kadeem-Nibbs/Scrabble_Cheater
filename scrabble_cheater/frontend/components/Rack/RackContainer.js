@@ -25,7 +25,7 @@ class RackContainer extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   return { 
-    rack: state.rack.value
+    rack: state.getWords.rack
   }
 }
 

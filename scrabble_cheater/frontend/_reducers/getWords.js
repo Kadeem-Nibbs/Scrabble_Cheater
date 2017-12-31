@@ -1,17 +1,17 @@
 import { UPDATE_RACK, RECEIVED_SUGGESTED_WORDS, SENT_TABLE_DATA } from '../constants/actions'
 
 const defaultState = {
-  value: '',
+  rack: '',
   suggestedWords: [],
   loading: false
 }
 
-const rack = (state = defaultState, action) => {
+const getWords = (state = defaultState, action) => {
   switch (action.type) {
     case UPDATE_RACK:      
       return {
         ...state,
-        value: action.value
+        rack: action.rack
       }
     case SENT_TABLE_DATA: 
       return {
@@ -19,7 +19,6 @@ const rack = (state = defaultState, action) => {
         loading: true
       }
     case RECEIVED_SUGGESTED_WORDS:
-    console.log('suggestedWords', action.suggestedWords);
       return {
         ...state,
         suggestedWords: action.suggestedWords,
@@ -31,4 +30,4 @@ const rack = (state = defaultState, action) => {
   }
 }
 
-export default rack
+export default getWords
