@@ -1,28 +1,3 @@
-Enter value and click direction:
-  CHANGE_COORDINATE_VALUE
-
-  then
-
-  MAKE_TILE_EDITABLE
-
-Move arrow key any direction:
-  if tile Value:
-    need to:
-      CHANGE_COORDINATE_VALUE
-      then
-      MAKE_TILE_EDITABLE
-  if no tile value:
-    need to:
-      MAKE_TILE_EDITABLE
-
-handleChangeCoordinateValue
-  => need to fire off 
-    MAKE_TILE_EDITABLE for next file
-  
-
-Handle backspace:
-  use redux-undo and return to prior states
-
 
 UX: Maybe put an arrow in the direction the user will go when typing.
 
@@ -32,12 +7,15 @@ This makes it so arrows are useful - and make arrow just change direction instea
 
 DONE) reduxify rack
 DONE) make 'delete' hit up redux-undo
-1) play word
-2) remove played words from rack
+1) [wordlist] keep word hover on board when + is hovered over
+2) [wordlist] play word
+3) [rack] remove played words from rack
+5) [board] note which tiles on the board (that style on the board) were played with blank tiles (so send back Z_, this this already happens?)
+6) [rack] make it so that you can enter no more than two blank tiles
+7) [board] make it so when you click on a tile you can press right or down arrow key
+8) [organize code] split up actions to different files (index got too big)
+9) [style] style redo / undo buttons
+10) remove all the commented out code
+11) ?? done ??
+12) one day in the distant future organize CSS better
 
-
-[] note which tiles on the board were played with blank tiles (so send back Z_)
-[] make it so that you can't enter more than 7 characters for the rack, and no more than two blank tiles
-
-
-[] make it so when you click on a tile you can press right or down arrow key

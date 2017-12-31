@@ -19,7 +19,7 @@ class EditTile extends Component {
       this.inputRef.focus()
     }
   }
-  
+
   componentDidUpdate() {
     if(this.props.direction) {
       this.inputRef.focus()
@@ -43,12 +43,10 @@ class EditTile extends Component {
 
   changeTileValue = (e, target = { value: '' }) => {
     const { value } = target
-
+    console.log('??');
     if(value.length > 1 ) { return } 
     if(value.length === 0 ) {
-      this.setState({ value: '' }, () => {
-        this.handleSubmitTile()
-      })
+      this.setState({ value: '' })
     }
 
     if(/^[A-Za-z_]+$/.test(value)) {

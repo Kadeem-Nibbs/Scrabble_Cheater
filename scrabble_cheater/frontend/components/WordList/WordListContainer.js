@@ -7,7 +7,7 @@ import { highlightWordOnBoard } from '../../_actions'
 
 import WordList from './WordList'
 class WordListContainer extends Component {
-  render() {  
+  render() {
     return(
       <WordList 
         words={ this.props.suggestedWords }

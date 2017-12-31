@@ -1,11 +1,8 @@
 import React, { Component } from 'react'
 import classNames from 'classnames'
-
 import { connect } from 'react-redux'
 
-import { 
-  resetDirectionAndMakeTileEditable
-} from '../../_actions'
+import {  resetDirectionAndMakeTileEditable } from '../../_actions'
 
 import { 
   Container, 
@@ -20,10 +17,6 @@ import {
   Popup, 
   Radio
 } from 'semantic-ui-react'
-
-
-import socketIoHOC from '../socketIoHOC'
-import TileContainer from './Tile/TileContainer'
 
 import Board from './Board'
 

@@ -60,7 +60,9 @@ export const changeValueMoveToNextTile = (coordinates, value) => {
       newEditCoordinates = { ...coordinates, y: coordinates.y - 1 }
     }
 
+
     dispatch(changeCoordinateValue(coordinates, value))
+    
     dispatch(makeTileEditable(newEditCoordinates))
   }
 }
