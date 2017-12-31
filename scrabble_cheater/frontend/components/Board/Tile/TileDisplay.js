@@ -45,13 +45,6 @@ class TileDisplay extends Component {
     }
   }
 
-  checkForBonusTile = (bonusScoreArray) => {
-    return bonusScoreArray.some((elem) => { 
-      return (elem[0] === this.props.coordinates.y) && (elem[1] === this.props.coordinates.x) 
-    })
-    return false
-  }
-
   setHighlightStyles = (letterToHighlight) => {
     let onBoard = false
     let blankTile = false
@@ -70,6 +63,13 @@ class TileDisplay extends Component {
       blankTile,
       highlightCell
     })
+  }
+
+  checkForBonusTile = (bonusScoreArray) => {
+    return bonusScoreArray.some((elem) => { 
+      return (elem[0] === this.props.coordinates.y) && (elem[1] === this.props.coordinates.x) 
+    })
+    return false
   }
 
   setSpecialScoreTiles = () => {

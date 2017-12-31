@@ -46,7 +46,9 @@ class EditTile extends Component {
 
     if(value.length > 1 ) { return } 
     if(value.length === 0 ) {
-      this.setState({ value: value.toUpperCase() })
+      this.setState({ value: '' }, () => {
+        this.handleSubmitTile()
+      })
     }
 
     if(/^[A-Za-z_]+$/.test(value)) {

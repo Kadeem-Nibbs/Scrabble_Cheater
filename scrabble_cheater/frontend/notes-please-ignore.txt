@@ -30,8 +30,10 @@ This makes it so arrows are useful - and make arrow just change direction instea
 
 :: Main things left to do
 
-1) reduxify rack
-2) make 'delete' hit up redux-undo
+DONE) reduxify rack
+DONE) make 'delete' hit up redux-undo
+1) play word
+2) remove played words from rack
 
 
 [] note which tiles on the board were played with blank tiles (so send back Z_)
