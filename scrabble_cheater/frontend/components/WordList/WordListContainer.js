@@ -10,9 +10,8 @@ class WordListContainer extends Component {
       <WordList 
         words={ this.props.suggestedWords } 
 
-        addWordToTable={ this.props.addWordToTable }
-        wordHoveredKey={ this.props.wordHoveredKey }
-        handleHighlightWordOnHover={ this.props.handleHighlightWordOnHover }
+        addWordToTable={ this.props.addWordToTable } // need to do 
+        handleHighlightWordOnHover={ this.props.handleHighlightWordOnHover } // doing
       />
     )
   } 
@@ -26,8 +25,8 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    handleSomething:() => {
-      // dispatch(updateRack(value))
+    handleHighlightWordOnHover:() => {
+      
     }
   }
 }

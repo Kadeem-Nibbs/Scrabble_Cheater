@@ -1,18 +1,12 @@
-import { UPDATE_RACK, RECEIVED_SUGGESTED_WORDS, SENT_TABLE_DATA } from '../constants/actions'
+import { RECEIVED_SUGGESTED_WORDS, SENT_TABLE_DATA } from '../constants/actions'
 
 const defaultState = {
-  rack: '',
   suggestedWords: [],
   loading: false
 }
 
 const getWords = (state = defaultState, action) => {
   switch (action.type) {
-    case UPDATE_RACK:      
-      return {
-        ...state,
-        rack: action.rack
-      }
     case SENT_TABLE_DATA: 
       return {
         ...state,

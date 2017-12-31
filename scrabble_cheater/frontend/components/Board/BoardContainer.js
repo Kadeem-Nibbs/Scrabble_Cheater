@@ -151,21 +151,21 @@ class BoardContainer extends Component {
   }
 
   // handle table data
-  handleSendTableData = (e) => {
-    if(e){ e.preventDefault() }
+  // handleSendTableData = (e) => {
+  //   if(e){ e.preventDefault() }
 
 
-    this.props.toggleLoadingState()
+  //   this.props.toggleLoadingState()
 
-    // should be false for spaces / special chars besides _
-    const tableData =  {
-      gameType: this.props.gameType,
-      board: this.state.tableData,
-      rack: this.state.rack
-    }
+  //   // should be false for spaces / special chars besides _
+  //   const tableData =  {
+  //     gameType: this.props.gameType,
+  //     board: this.state.tableData,
+  //     rack: this.state.rack
+  //   }
 
-    this.props.socket.emit('analyze_board', JSON.stringify(tableData))
-  }
+  //   this.props.socket.emit('analyze_board', JSON.stringify(tableData))
+  // }
 
   // handleMakeTileEditable = (tileCoordinates, newClick) => {
   //   // If this is being called from <Tile />, its a new click so the user hasn't

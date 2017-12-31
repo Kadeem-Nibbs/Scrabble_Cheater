@@ -4,11 +4,11 @@ import { Grid, Input, Button, Loader } from 'semantic-ui-react'
 
 class Rack extends Component {
   handleRackChange = (e, target) => {
-    const rack = target.value || ''
+    const letters = target.value || ''
 
     // Don't allow weird chars
-    if(/^[A-Za-z_]+$|^$/.test(rack) && rack.length <= 7) { 
-      this.props.handleUpdateRack(rack.toUpperCase())
+    if(/^[A-Za-z_]+$|^$/.test(letters) && letters.length <= 7) { 
+      this.props.handleUpdateRack(letters.toUpperCase())
     }
   }
 

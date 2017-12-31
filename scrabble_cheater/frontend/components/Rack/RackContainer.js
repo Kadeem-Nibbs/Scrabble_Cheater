@@ -17,6 +17,7 @@ class RackContainer extends Component {
       <Rack 
         rack={ this.props.rack }
         loading={ this.props.loading }
+
         handleUpdateRack={ this.props.handleUpdateRack }
         submitRack={ this.props.submitRack }
       />
@@ -26,15 +27,15 @@ class RackContainer extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   return { 
-    rack: state.getWords.rack,
+    rack: state.rack.letters,
     loading: state.getWords.loading
   }
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    handleUpdateRack:(value) => {
-      dispatch(updateRack(value))
+    handleUpdateRack:(letters) => {
+      dispatch(updateRack(letters))
     },
     submitRack:() => {
       dispatch(submitTableData(ownProps.socket))

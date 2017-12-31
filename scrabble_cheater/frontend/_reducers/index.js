@@ -11,14 +11,16 @@ import board from './board'
 import getWords from './getWords'
 import tile from './tile'
 import gameType from './gameType'
+import rack from './rack'
 import direction from './direction'
 
 const wordsAppReducers = combineReducers({
   board: undoable(board, { filter: includeAction(CHANGE_COORDINATE_VALUE) }),
   tile: undoable(tile, { filter: includeAction(CHANGE_COORDINATE_VALUE) }),
   getWords,
+  rack,
   gameType,
-  direction
+  direction,
 })
 
 export default wordsAppReducers

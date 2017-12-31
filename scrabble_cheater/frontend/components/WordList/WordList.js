@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import classNames from 'classnames'
 
+import { times } from 'lodash'
 import { Menu, Label, Button } from 'semantic-ui-react'
 
 class WordList extends Component {
@@ -49,14 +50,12 @@ class WordList extends Component {
     return coordinates
   }
 
-  handleWordOver = (wordInfo, i) => {
-    // y x coordinates 
+  handleWordOver = (e, wordInfo, i) => {
     const coordinatesToHighlight = this.getCoordinatesToHighlight(wordInfo)
-
     let wordHoveredKey = i
+    this.setState({ wordHoveredKey })
 
-    // need to pass this up on props
-    this.props.handleHighlightWordOnHover(coordinatesToHighlight, wordHoveredKey)
+    this.props.handleHighlightWordOnHover(coordinatesToHighlight)
   }
 
   handleWordOut = () => {
@@ -68,56 +67,46 @@ class WordList extends Component {
     this.handleWordOut() // un-highlight word added
   }
 
-
-  buildList = () => {
-    const wordList = []
-    this.props.words.forEach((wordInfo, i) => {
-      const word = wordInfo[0]
-      const points = wordInfo[3]
-
-      wordList.push(
-        <Menu.Item
-          className={ classNames({ 'active': this.props.wordHoveredKey === i}) }
-          key={ i }
-          onMouseEnter={ this.handleWordOver.bind(this, wordInfo, i) }
-          onMouseDown={ this.handleWordOver.bind(this, wordInfo, i) }
-        >
-          {`${ word } is worth ${points} points`}
-           <Label 
-            onClick={ this.handleAddWordToTable.bind(this, wordInfo, i) }
-            onMouseEnter={ this.handleWordOver.bind(this, wordInfo, i) } /* todo: this is lazy and expensive: fix */
-          >
-              <i 
-                className="fa fa-plus-circle" 
-                aria-hidden="true"
-                onMouseEnter={ this.handleWordOver.bind(this, wordInfo, i) } /* todo: this is lazy and expensive: fix */
-              ></i>
-           </Label>
-        </Menu.Item>
-      )
-    })
-
-    return wordList
-  }
-
   render() {
-    if(!this.props.words) {
-      return null
-    }
     return(
       <Menu 
         vertical 
         className="scrollable"
         onMouseOut={ this.handleWordOut }
       >
-        { this.props.words && this.props.words.length === 0 ? // this doesn't seem right
-          (
+        { 
+          this.props.words && this.props.words.length === 0 ?
+          (    
             <Menu.Item>
               No possible words with this rack
             </Menu.Item>
-          ) : null
+          
+          ) : (
+          
+          this.props.words.map((wordInfo, i) => {
+            const word = wordInfo[0]
+            const points = wordInfo[3]
+
+            return(
+                <Menu.Item
+                  className={ classNames({ 'active': this.state.wordHoveredKey === i }) }
+                  key={ i }
+                  onMouseEnter={ (e) => this.handleWordOver(e, wordInfo, i) }
+                  onMouseDown={ (e) => this.handleWordOver(e, wordInfo, i)}
+                >
+                  {`${ word } is worth ${points} points`}
+                   <Label onClick={ this.handleAddWordToTable.bind(this, wordInfo, i) }>
+                      <i 
+                        className="fa fa-plus-circle" 
+                        aria-hidden="true"
+                      ></i>
+                   </Label>
+                </Menu.Item>
+              )
+            })
+          )
         }
-        { this.buildList() }
+        
       </Menu>
     )
   }
