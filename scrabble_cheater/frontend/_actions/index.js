@@ -27,11 +27,13 @@ const makeTileEditable = (coordinates) => ({
   coordinates
 })
 
-const changeCoordinateValue = (coordinates, value) => ({
-  type: CHANGE_COORDINATE_VALUE,
-  value,
-  coordinates
-})
+const changeCoordinateValue = (coordinates, value) => {
+  return {
+    type: CHANGE_COORDINATE_VALUE,
+    value,
+    coordinates
+  }
+}
 
 // Thunks
 export const changeValueMoveToNextTile = (coordinates, value) => {
@@ -49,8 +51,8 @@ export const changeValueMoveToNextTile = (coordinates, value) => {
       newEditCoordinates = { ...coordinates, y: coordinates.y - 1 }
     }
 
-    Promise.resolve(dispatch(changeCoordinateValue(coordinates, value)))
-              .then(dispatch(makeTileEditable(newEditCoordinates)))
+    dispatch(changeCoordinateValue(coordinates, value))
+    dispatch(makeTileEditable(newEditCoordinates))
   }
 }
 
@@ -59,9 +61,9 @@ export const resetDirectionAndMakeTileEditable = (coordinates) => {
   return (dispatch, getState) => {
     let { x, y } = coordinates
     let direction = null
-
     const currentBoard = getState().board.present.boardData
-    console.log('currentBoard', currentBoard);
+
+
     // Keep the same direction if the tile is already populated
     // as this is probably the user going back and correctly a typo
     if(currentBoard && currentBoard[y]) {
@@ -69,8 +71,8 @@ export const resetDirectionAndMakeTileEditable = (coordinates) => {
       direction = currentTile.length ? getState().direction.direction : null
     }
 
-    Promise.resolve(dispatch(setMoveDirection(direction)))
-              .then(dispatch(makeTileEditable(coordinates)))
+    dispatch(setMoveDirection(direction))
+    dispatch(makeTileEditable(coordinates))
   }
 }
 
