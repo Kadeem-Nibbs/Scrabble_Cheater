@@ -61,9 +61,10 @@ export const resetDirectionAndMakeTileEditable = (coordinates) => {
     let direction = null
 
     const currentBoard = getState().board.present.boardData
+    console.log('currentBoard', currentBoard);
     // Keep the same direction if the tile is already populated
     // as this is probably the user going back and correctly a typo
-    if(currentBoard) {
+    if(currentBoard && currentBoard[y]) {
       const currentTile = currentBoard[y][x]
       direction = currentTile.length ? getState().direction.direction : null
     }
