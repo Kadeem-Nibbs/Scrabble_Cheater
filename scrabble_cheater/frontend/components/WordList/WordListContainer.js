@@ -19,8 +19,8 @@ class WordListContainer extends Component {
 
 // const mapStateToProps = (state, ownProps) => {
 //   return { 
-//     suggestedWords: state.board.suggestedWords,
-//     wordHoveredKey: state.board.wordHoveredKey
+//     suggestedWords: state.board.present.suggestedWords,
+//     wordHoveredKey: state.board.present.wordHoveredKey
 //   }
 // }
 

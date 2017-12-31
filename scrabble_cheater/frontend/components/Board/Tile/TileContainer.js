@@ -144,10 +144,10 @@ const mapStateToProps = (state, ownProps) => {
   const { editableX, editableY } = state.tile.editableTilecoordinates
 
   return {
-    gameType: state.board.gameType,
-    cellCharacter: state.board.boardData[y][x],
+    gameType: state.gameType.gameType,
+    cellCharacter: state.board.present.boardData[y][x],
     tileIsEditable: editableX === x && editableY === y,
-    direction: state.board.direction
+    direction: state.direction.direction
 
     // coordinatesToHighlight: [{ x: 10, y: 10 }, { x: 10, y: 11 }, { x: 10, y: 12 }],
   }
@@ -156,6 +156,7 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     handleMakeTileEditable: () => {
+      console.log('handleMakeTileEditable');
       dispatch(resetDirectionAndMakeTileEditable(ownProps.coordinates))
     },
     handleTileSubmit: (value) => {
@@ -171,6 +172,5 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     
   }
 }
-
 
 export default connect(mapStateToProps, mapDispatchToProps)(TileContainer)

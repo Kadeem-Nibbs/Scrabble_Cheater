@@ -36,8 +36,8 @@ const changeCoordinateValue = (coordinates, value) => ({
 // Thunks
 export const changeValueMoveToNextTile = (coordinates, value) => {
   return (dispatch, getState) => {
-    const direction = getState().board.direction
-    
+    const direction = getState().direction.direction
+
     let newEditCoordinates
     if(direction === 'right') {
       newEditCoordinates = { ...coordinates, x: coordinates.x + 1 }
@@ -64,13 +64,13 @@ export const resetDirectionAndMakeTileEditable = (coordinates) => {
 }
 
 // For using arrow keys to set direction
-export const changeValueMoveToNextTileWithArrowKeys = (coordinates, direction, value) => {
-  return (dispatch, getState) => {
-    Promise.resolve(dispatch(setMoveDirection(direction)))
-              .then(dispatch(changeValueMoveToNextTile(coordinates, value)))
+// export const changeValueMoveToNextTileWithArrowKeys = (coordinates, direction, value) => {
+//   return (dispatch, getState) => {
+//     Promise.resolve(dispatch(setMoveDirection(direction)))
+//               .then(dispatch(changeValueMoveToNextTile(coordinates, value)))
     
-  }
-}
+//   }
+// }
 
 
 

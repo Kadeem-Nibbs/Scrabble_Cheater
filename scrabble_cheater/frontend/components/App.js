@@ -8,6 +8,7 @@ import ToggleGameTypeContainer from './ToggleGameType/ToggleGameTypeContainer'
 import HeaderRight from './Headers/HeaderRight'
 import RackContainer from './Rack/RackContainer'
 import WordListContainer from './WordList/WordListContainer'
+import UndoRedo from './UndoRedo/UndoRedo'
 
 class App extends Component {
   render() {  
@@ -19,6 +20,7 @@ class App extends Component {
             <HeaderLeft />
             <BoardContainer />
             <ToggleGameTypeContainer />
+            <UndoRedo />
 
           </Grid.Column>
         <Grid.Column className="mt-24px fixed-width-right-col">

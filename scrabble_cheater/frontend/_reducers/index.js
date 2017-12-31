@@ -1,15 +1,22 @@
-import { combineReducers } from 'redux'
-import undoable from 'redux-undo'
+import { 
+  CHANGE_COORDINATE_VALUE
+} from '../constants/actions'
 
-console.log('undoable', undoable);
+import { combineReducers } from 'redux'
+import undoable, { includeAction } from 'redux-undo'
+
 import board from './board'
 import rack from './rack'
 import tile from './tile'
+import gameType from './gameType'
+import direction from './direction'
 
 const wordsAppReducers = combineReducers({
-  board,
+  board: undoable(board, { filter: includeAction(CHANGE_COORDINATE_VALUE) }),
   rack,
-  tile
+  tile,
+  gameType,
+  direction
 })
 
 export default wordsAppReducers

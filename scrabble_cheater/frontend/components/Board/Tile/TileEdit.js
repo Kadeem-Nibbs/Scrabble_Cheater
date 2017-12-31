@@ -61,7 +61,6 @@ class EditTile extends Component {
   }
 
   handleSubmitTile = (e) => {
-    console.log('??');
     if(e) { e.preventDefault() }
     this.props.handleTileSubmit(this.state.value)
   }

@@ -17,7 +17,7 @@ class ToggleGameTypeContainer extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   return { 
-    gameType: state.board.gameType
+    gameType: state.gameType.gameType
   }
 }
 
