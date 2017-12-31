@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
+
 import { Table, Input, Button } from 'semantic-ui-react'
 import classNames from 'classnames'
+
 
 import './TileEdit.less'
 
@@ -32,6 +34,9 @@ class EditTile extends Component {
 
 
   handleKeyDown = (e) => {
+    if (e.keyCode === 8) {
+      this.props.undoTilePlacement()
+    }
     // This is disabled until I can iron out the UX 
     //  its pretty bleh right now and not a high priority
     // if(e.key === 'ArrowRight') {

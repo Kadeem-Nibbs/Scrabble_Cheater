@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { ActionCreators as UndoActionCreators } from 'redux-undo'
 import { Table, Form, Input, Button } from 'semantic-ui-react'
 import classNames from 'classnames'
 
@@ -118,7 +119,7 @@ class TileContainer extends Component {
           direction={ this.props.direction }
 
           handleTileSubmit={ this.props.handleTileSubmit }
-          handleSubmitWithArrowKey={ this.props.handleSubmitWithArrowKey }
+          undoTilePlacement={ this.props.undoTilePlacement }
 
           handleSetMoveDirection={ this.props.handleSetMoveDirection }
         />
@@ -141,7 +142,7 @@ class TileContainer extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   const { x, y } = ownProps.coordinates
-  const { editableX, editableY } = state.tile.editableTilecoordinates
+  const { editableX, editableY } = state.tile.present
 
   return {
     gameType: state.gameType.gameType,
@@ -162,13 +163,16 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     handleTileSubmit: (value) => {
       dispatch(changeValueMoveToNextTile(ownProps.coordinates, value))
     },
-    handleSubmitWithArrowKey: (direction, value) => {
-      // using left / right arrow keys to submit value
-      dispatch(changeValueMoveToNextTileWithArrowKeys(ownProps.coordinates, direction, value))
-    },
     handleSetMoveDirection: (direction) => {
       dispatch(setMoveDirection(direction))
     },
+    undoTilePlacement: () => {
+      dispatch(UndoActionCreators.undo()) 
+    }
+    // handleSubmitWithArrowKey: (direction, value) => {
+    //   // using left / right arrow keys to submit value
+    //   dispatch(changeValueMoveToNextTileWithArrowKeys(ownProps.coordinates, direction, value))
+    // },
     
   }
 }

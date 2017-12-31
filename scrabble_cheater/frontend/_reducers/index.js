@@ -13,8 +13,8 @@ import direction from './direction'
 
 const wordsAppReducers = combineReducers({
   board: undoable(board, { filter: includeAction(CHANGE_COORDINATE_VALUE) }),
+  tile: undoable(tile, { filter: includeAction(CHANGE_COORDINATE_VALUE) }),
   rack,
-  tile,
   gameType,
   direction
 })
