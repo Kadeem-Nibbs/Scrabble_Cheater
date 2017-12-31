@@ -114,7 +114,7 @@ class TileContainer extends Component {
   render() {
     if(this.props.tileIsEditable) {
       return (
-        <TileEdit 
+        <TileEdit
           cellCharacter={ this.props.cellCharacter }
           direction={ this.props.direction }
 
@@ -157,7 +157,6 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     handleMakeTileEditable: () => {
-      console.log('handleMakeTileEditable');
       dispatch(resetDirectionAndMakeTileEditable(ownProps.coordinates))
     },
     handleTileSubmit: (value) => {

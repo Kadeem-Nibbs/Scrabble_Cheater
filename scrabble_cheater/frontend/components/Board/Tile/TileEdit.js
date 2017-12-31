@@ -34,20 +34,11 @@ class EditTile extends Component {
 
 
   handleKeyDown = (e) => {
-    if (e.keyCode === 8) {
+    // If the current tile has a value it means the user has 
+    // clicked into an older tile to edit it, so don't trigger undo!
+    if (e.keyCode === 8 && this.state.value === '') {
       this.props.undoTilePlacement()
     }
-    // This is disabled until I can iron out the UX 
-    //  its pretty bleh right now and not a high priority
-    // if(e.key === 'ArrowRight') {
-    //   this.props.handleSubmitWithArrowKey('right', this.state.value)
-    // } else if (e.key === 'ArrowDown') {
-    //   this.props.handleSubmitWithArrowKey('down', this.state.value)
-    // } else if (e.key === 'ArrowUp') {
-    //   this.props.handleSubmitWithArrowKey('up', this.state.value)
-    // } else if (e.key === 'ArrowLeft') {
-    //   this.props.handleSubmitWithArrowKey('left', this.state.value)
-    // }
   }
 
   changeTileValue = (e, target = { value: '' }) => {

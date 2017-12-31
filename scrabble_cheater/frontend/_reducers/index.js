@@ -1,5 +1,7 @@
 import { 
-  CHANGE_COORDINATE_VALUE
+  CHANGE_COORDINATE_VALUE,
+  SET_MOVE_DIRECTION,
+  MAKE_TILE_EDITABLE
 } from '../constants/actions'
 
 import { combineReducers } from 'redux'

@@ -57,8 +57,18 @@ export const changeValueMoveToNextTile = (coordinates, value) => {
 // For new clicks on tiles, set direction
 export const resetDirectionAndMakeTileEditable = (coordinates) => {
   return (dispatch, getState) => {
-    // Is this right ?
-    Promise.resolve(dispatch(setMoveDirection(null)))
+    let { x, y } = coordinates
+    let direction = null
+
+    // const currentBoard = getState().board.present.boardData
+    // // Keep the same direction if the tile is already populated
+    // // as this is probably the user going back and correctly a typo
+    // if(currentBoard) {
+    //   const currentTile = currentBoard[y][x]
+    //   direction = currentTile.length ? getState().direction.direction : null
+    // }
+
+    Promise.resolve(dispatch(setMoveDirection(direction)))
               .then(dispatch(makeTileEditable(coordinates)))
   }
 }
