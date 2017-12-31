@@ -103,16 +103,3 @@ export const receivedTableData = (suggestedWords) => ({
   type: RECEIVED_SUGGESTED_WORDS,
   suggestedWords
 })
-
-
-// For using arrow keys to set direction
-// export const changeValueMoveToNextTileWithArrowKeys = (coordinates, direction, value) => {
-//   return (dispatch, getState) => {
-//     Promise.resolve(dispatch(setMoveDirection(direction)))
-//               .then(dispatch(changeValueMoveToNextTile(coordinates, value)))
-    
-//   }
-// }
-
-
-

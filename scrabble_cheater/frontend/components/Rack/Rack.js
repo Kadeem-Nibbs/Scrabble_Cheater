@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Grid, Input, Button } from 'semantic-ui-react'
+import { Grid, Input, Button, Loader } from 'semantic-ui-react'
 
 class Rack extends Component {
   handleRackChange = (e, target) => {

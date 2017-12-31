@@ -7,15 +7,16 @@ import Rack from './Rack'
 
 class RackContainer extends Component {
   componentWillReceiveProps(nextProps) {
-    console.log('nextProps.suggestedWords', nextProps.suggestedWords);
     if(nextProps.suggestedWords) {
       this.props.receiveRack(nextProps.suggestedWords)
     }
   }
+
   render() {  
     return(
       <Rack 
         rack={ this.props.rack }
+        loading={ this.props.loading }
         handleUpdateRack={ this.props.handleUpdateRack }
         submitRack={ this.props.submitRack }
       />
@@ -25,7 +26,8 @@ class RackContainer extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   return { 
-    rack: state.getWords.rack
+    rack: state.getWords.rack,
+    loading: state.getWords.loading
   }
 }
 
@@ -38,6 +40,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(submitTableData(ownProps.socket))
     },
     receiveRack:(suggestedWords) => {
+      // triggered by socketIoHOC receiving data from API
       dispatch(receivedTableData(suggestedWords))
     }
   }
