@@ -12,9 +12,14 @@ class Rack extends Component {
     }
   }
 
+  handleSubmit = (e) => {
+    e.preventDefault()
+    this.props.submitRack()
+  }
+
   render() {
     return(
-      <form onSubmit={ this.props.handleSendTableData }>
+      <form onSubmit={ this.handleSubmit }>
         <Grid>
           <Grid.Column width={ 8 }>
             <Input 
@@ -29,6 +34,7 @@ class Rack extends Component {
               className="btn-get-word"
               type="submit"
               disabled={ this.props.loading }
+              onClick={ this.handleSubmit }
             >
               { this.props.loading ? (<Loader size='tiny' active inline />) : 'Get Words' }
             </Button>

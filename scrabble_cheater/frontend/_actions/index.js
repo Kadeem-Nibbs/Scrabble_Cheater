@@ -3,7 +3,9 @@ import {
   TOGGLE_GAME_TYPE,
   UPDATE_RACK,
   SET_MOVE_DIRECTION,
-  CHANGE_COORDINATE_VALUE
+  CHANGE_COORDINATE_VALUE,
+  RECEIVED_SUGGESTED_WORDS,
+  SENT_TABLE_DATA
 } from '../constants/actions'
 
 // Board
@@ -75,6 +77,33 @@ export const resetDirectionAndMakeTileEditable = (coordinates) => {
     dispatch(makeTileEditable(coordinates))
   }
 }
+
+// Rack / table data emit stuff
+const sentTableData = () => ({
+  type: SENT_TABLE_DATA
+})
+
+export const submitTableData = (socket) => {
+  return (dispatch, getState) => {
+
+    dispatch(sentTableData({ loading: true }))
+
+    const tableData = {
+      gameType: getState().gameType.gameType,
+      board: getState().board.present.boardData,
+      rack: getState().rack.value
+    }
+
+    // Note: component socketIoHOC will receive the data and trigger receiveTableData
+    socket.emit('analyze_board', JSON.stringify(tableData))
+  }
+}
+
+export const receivedTableData = (suggestedWords) => ({
+  type: RECEIVED_SUGGESTED_WORDS,
+  suggestedWords
+})
+
 
 // For using arrow keys to set direction
 // export const changeValueMoveToNextTileWithArrowKeys = (coordinates, direction, value) => {

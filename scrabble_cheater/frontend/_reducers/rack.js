@@ -1,7 +1,9 @@
-import { UPDATE_RACK } from '../constants/actions'
+import { UPDATE_RACK, RECEIVED_SUGGESTED_WORDS, SENT_TABLE_DATA } from '../constants/actions'
 
 const defaultState = {
-  value: ''
+  value: '',
+  suggestedWords: [],
+  loading: false
 }
 
 const rack = (state = defaultState, action) => {
@@ -10,6 +12,18 @@ const rack = (state = defaultState, action) => {
       return {
         ...state,
         value: action.value
+      }
+    case SENT_TABLE_DATA: 
+      return {
+        ...state,
+        loading: true
+      }
+    case RECEIVED_SUGGESTED_WORDS:
+    console.log('suggestedWords', action.suggestedWords);
+      return {
+        ...state,
+        suggestedWords: action.suggestedWords,
+        loading: false
       }
 
     default:
