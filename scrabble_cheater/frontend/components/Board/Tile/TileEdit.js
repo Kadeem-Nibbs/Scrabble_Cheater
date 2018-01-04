@@ -43,7 +43,6 @@ class EditTile extends Component {
 
   changeTileValue = (e, target = { value: '' }) => {
     const { value } = target
-    console.log('??');
     if(value.length > 1 ) { return } 
     if(value.length === 0 ) {
       this.setState({ value: '' })

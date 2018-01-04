@@ -7,7 +7,10 @@ class HeaderLeft extends Component {
       <Header as='h2'>
         Get solutions for board games!
         <Header.Subheader>
-          You can use this to generate answers for Words with friends or Scrabble!
+          Generate answers for Words with friends or Scrabble! 
+        </Header.Subheader>
+        <Header.Subheader className="mt-10px mb-15px">
+          <h5>Click on a tile below, select a direction, and enter a word.</h5>
         </Header.Subheader>
       </Header>
     )

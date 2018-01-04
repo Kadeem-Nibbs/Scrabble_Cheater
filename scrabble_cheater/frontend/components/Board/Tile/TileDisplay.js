@@ -6,6 +6,8 @@ import { some } from 'lodash'
 
 import { scores } from  '../../../constants/board'
 
+import './TileDisplay.less'
+
 class TileDisplay extends Component {
   constructor(props) {
     super(props)
@@ -108,6 +110,9 @@ class TileDisplay extends Component {
         }) }
         onClick={ this.props.handleMakeTileEditable }
       >
+        <div className="hidden-preload-arrows">
+          <i className="fas fa-arrow-down"></i><i className="fas fa-arrow-right"></i>
+        </div>
         <span><div className={ classNames({ 'blank-tile': this.state.blankTile })}>{letter}</div></span>
       </Table.Cell>
     )
