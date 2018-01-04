@@ -50,14 +50,15 @@ class WordList extends Component {
     return coordinates
   }
 
-  handleWordOver = (e, wordInfo, i) => {
+  handleMouseEnter = (e, wordInfo, i) => {
+    e.preventDefault()
     const wordCoordinates = this.getCoordinatesToHighlight(wordInfo)
     let wordHoveredKey = i
     this.setState({ wordHoveredKey })
     this.props.handleHighlightWordOnHover(wordCoordinates)
   }
 
-  handleWordOut = () => {
+  handleMouseLeave = (e) => {
     this.props.handleHighlightWordOnHover([])
   }
 
@@ -71,7 +72,7 @@ class WordList extends Component {
       <Menu 
         vertical 
         className="scrollable"
-        onMouseOut={ this.handleWordOut }
+        onMouseLeave={ this.handleWordOut }
       >
         { 
           this.props.words && this.props.words.length === 0 ?
@@ -90,8 +91,7 @@ class WordList extends Component {
                 <Menu.Item
                   className={ classNames({ 'active': this.state.wordHoveredKey === i }) }
                   key={ i }
-                  onMouseEnter={ (e) => this.handleWordOver(e, wordInfo, i) }
-                  onMouseDown={ (e) => this.handleWordOver(e, wordInfo, i)}
+                  onMouseEnter={ (e) => this.handleMouseEnter(e, wordInfo, i) }
                 >
                   {`${ word } is worth ${points} points`}
                    <Label onClick={ this.handleAddWordToTable.bind(this, wordInfo, i) }>
