@@ -83,71 +83,71 @@ class BoardContainer extends Component {
     }
   }
 
-  addWordToTable = (wordInfo, wordIndexInSuggestedWords) => {
-    // add to table data and update suggested words
-    const newData = this.state.tableData.slice()
+  // addWordToTable = (wordInfo, wordIndexInSuggestedWords) => {
+  //   // add to table data and update suggested words
+  //   const newData = this.state.tableData.slice()
 
-    const firstY = wordInfo[1][0][0]
-    const secondY = wordInfo[1][1][0]
+  //   const firstY = wordInfo[1][0][0]
+  //   const secondY = wordInfo[1][1][0]
 
-    const firstX = wordInfo[1][0][1]
-    const secondX = wordInfo[1][1][1]
+  //   const firstX = wordInfo[1][0][1]
+  //   const secondX = wordInfo[1][1][1]
     
-    const yDistance = secondY - firstY
-    const xDistance = secondX - firstX
+  //   const yDistance = secondY - firstY
+  //   const xDistance = secondX - firstX
 
-    if(firstY === secondY)  {
+  //   if(firstY === secondY)  {
 
-      for(let i = 0; i <= xDistance; i++) {
-        newData[firstY][firstX + i] = wordInfo[2][i].length === 2 ? wordInfo[2][i].split('')[0] : wordInfo[2][i]
-      }
+  //     for(let i = 0; i <= xDistance; i++) {
+  //       newData[firstY][firstX + i] = wordInfo[2][i].length === 2 ? wordInfo[2][i].split('')[0] : wordInfo[2][i]
+  //     }
 
-    } else if (firstX === secondX) {
+  //   } else if (firstX === secondX) {
       
-      for(let i = 0; i <= yDistance; i++) {
-        newData[firstY + i][firstX] = wordInfo[2][i].length === 2 ? wordInfo[2][i].split('')[0] : wordInfo[2][i]
-      }
-    }
+  //     for(let i = 0; i <= yDistance; i++) {
+  //       newData[firstY + i][firstX] = wordInfo[2][i].length === 2 ? wordInfo[2][i].split('')[0] : wordInfo[2][i]
+  //     }
+  //   }
 
-    const newSuggestedWordsList = this.state.suggestedWords.slice()
-    delete newSuggestedWordsList[wordIndexInSuggestedWords]
+  //   const newSuggestedWordsList = this.state.suggestedWords.slice()
+  //   delete newSuggestedWordsList[wordIndexInSuggestedWords]
 
-    // todo: split out into array
-    let currentRack = this.state.rack.split('').slice()
-    let wordPlayed = wordInfo[2].slice()
+  //   // todo: split out into array
+  //   let currentRack = this.state.rack.split('').slice()
+  //   let wordPlayed = wordInfo[2].slice()
 
-    // todo: yeesh this is all unreadable, refactor when less rushed
-    for(let i = wordPlayed.length; i--;) {
-      if(wordPlayed[i].length === 2 && wordPlayed[i][1] !== '_') {
-        delete wordPlayed[i] // delete tiles that are already on board
-      }
-    }
+  //   // todo: yeesh this is all unreadable, refactor when less rushed
+  //   for(let i = wordPlayed.length; i--;) {
+  //     if(wordPlayed[i].length === 2 && wordPlayed[i][1] !== '_') {
+  //       delete wordPlayed[i] // delete tiles that are already on board
+  //     }
+  //   }
 
-    wordPlayed = wordPlayed.join('').split('').slice() // get rid of empty cells
+  //   wordPlayed = wordPlayed.join('').split('').slice() // get rid of empty cells
 
-    for(let j = wordPlayed.length; j--;) {
-      if(currentRack.includes(wordPlayed[j])) {
-        let indexOfCellToRemove = currentRack.indexOf(wordPlayed[j])
+  //   for(let j = wordPlayed.length; j--;) {
+  //     if(currentRack.includes(wordPlayed[j])) {
+  //       let indexOfCellToRemove = currentRack.indexOf(wordPlayed[j])
 
-        delete currentRack[indexOfCellToRemove]
-        delete wordPlayed[j]
-      }
-    }
+  //       delete currentRack[indexOfCellToRemove]
+  //       delete wordPlayed[j]
+  //     }
+  //   }
 
-    currentRack = currentRack.join('') // get rid of undefined's and turn into string
+  //   currentRack = currentRack.join('') // get rid of undefined's and turn into string
 
-    this.setState({ 
-      tableData: newData,
-      suggestedWords: newSuggestedWordsList,
-      rack: currentRack
-    }, () => {
-      if(currentRack.length) {
-        this.handleSendTableData()
-      } else {
-        this.setState({ suggestedWords: null })
-      }
-    })
-  }
+  //   this.setState({ 
+  //     tableData: newData,
+  //     suggestedWords: newSuggestedWordsList,
+  //     rack: currentRack
+  //   }, () => {
+  //     if(currentRack.length) {
+  //       this.handleSendTableData()
+  //     } else {
+  //       this.setState({ suggestedWords: null })
+  //     }
+  //   })
+  // }
 
   // handle table data
   // handleSendTableData = (e) => {

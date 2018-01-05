@@ -1,5 +1,6 @@
 import { 
-  CHANGE_COORDINATE_VALUE
+  CHANGE_COORDINATE_VALUE,
+  PLAY_WORD
 } from '../constants/actions'
 
 import { cloneDeep } from 'lodash'
@@ -17,16 +18,43 @@ const defaultState = {
 }
 
 const board = (state = defaultState, action) => {
+  const newTiles = cloneDeep(state.tiles)
+
   switch (action.type) {
     case CHANGE_COORDINATE_VALUE:
       const  { x, y } = action.coordinates
-      const newBoard = cloneDeep(state.tiles)
     
-      newBoard[y][x] = action.value
+      newTiles[y][x] = action.value
 
       return {
         ...state,
-        tiles: newBoard
+        tiles: newTiles
+      }
+    case PLAY_WORD: 
+      const wordInfo = action.wordInfo
+      const firstY = wordInfo[1][0][0]
+      const secondY = wordInfo[1][1][0]
+
+      const firstX = wordInfo[1][0][1]
+      const secondX = wordInfo[1][1][1]
+      
+      const yDistance = secondY - firstY
+      const xDistance = secondX - firstX
+
+      if(firstY === secondY)  {
+        for(let i = 0; i <= xDistance; i++) {
+          newTiles[firstY][firstX + i] = wordInfo[2][i].length === 2 ? wordInfo[2][i].split('')[0] : wordInfo[2][i]
+        }
+
+      } else if (firstX === secondX) {
+        for(let i = 0; i <= yDistance; i++) {
+          newTiles[firstY + i][firstX] = wordInfo[2][i].length === 2 ? wordInfo[2][i].split('')[0] : wordInfo[2][i]
+        }
+      }
+
+      return {
+        ...state,
+        tiles: newTiles
       }
     default:
       return state

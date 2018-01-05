@@ -3,7 +3,7 @@ import { Grid, Input, Button } from 'semantic-ui-react'
 
 import { connect } from 'react-redux'
 
-import { highlightWordOnBoard } from '../../_actions/rackWordlist'
+import { highlightWordOnBoard, playWordAndResetRack } from '../../_actions/rackWordlist'
 
 import WordList from './WordList'
 class WordListContainer extends Component {
@@ -12,7 +12,7 @@ class WordListContainer extends Component {
       <WordList 
         words={ this.props.suggestedWords }
 
-        handlePlayWord={ this.props.handlePlayWord } // need to do 
+        handlePlayWord={ this.props.handlePlayWord }  // need to do 
         handleHighlightWordOnHover={ this.props.handleHighlightWordOnHover } // doing
       />
     )
@@ -30,8 +30,9 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     handleHighlightWordOnHover:(wordCoordinates) => {
       dispatch(highlightWordOnBoard(wordCoordinates))
     },
-    handlePlayWord:(wordList, i ) => {
-      dispatch(playWord(wordInfo))
+    handlePlayWord:(wordInfo) => {
+      console.log('wordInfo', wordInfo);
+      dispatch(playWordAndResetRack(wordInfo))
     }
   }
 }
