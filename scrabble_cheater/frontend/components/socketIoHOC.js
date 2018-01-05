@@ -6,7 +6,7 @@ export default (WrappedComponent) => {
     constructor(props) {
       super(props)
       // TODO: Move this in .env at some point
-      this.socket = io('http://104.131.69.97:4000')
+      this.socket = io()
 
       this.state = {
         suggestedWords: null

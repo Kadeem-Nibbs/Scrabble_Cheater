@@ -1,5 +1,6 @@
 :: Main things left to do
 
+0) move back to using template file for Flask so this shit works, or figure out more complicated way? (just use template)
 DONE) rewrite all components to use redux / higher order component pattern
 DONE) reduxify rack
 DONE) make 'delete' hit up redux-undo

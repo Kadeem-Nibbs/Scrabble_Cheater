@@ -7,13 +7,14 @@
   "scripts": {
     "dev": "parcel index.html --out-dir dev --open",
     "build": "parcel build index.html --out-dir dist",
-    "serve": "node server.js",
-    "build-and-serve": "npm run build && npm run serve",
+    "serve-local": "NODE_ENV=local node server.js",
+    "serve-digitalocean": "NODE_ENV=production node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "classnames": "^2.2.5",
     "express": "^4.16.2",
+    "http-proxy-middleware": "^0.17.4",
     "less": "^2.7.3",
     "lodash": "^4.17.4",
     "react": "^16.2.0",
