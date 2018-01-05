@@ -15,11 +15,11 @@ app.use(express.static(__dirname + '/dist'))
 
 var wsProxy = proxy('/', {
   target: 'http://www.wordswithfiends.com',
-    // pathRewrite: {
-    //  '^/websocket' : '/socket',        // rewrite path.
-    //  '^/removepath' : ''               // remove path.
-    // },
-  changeOrigin: true,                     // for vhosted sites, changes host header to match to target's host
+    pathRewrite: {
+     // '^/websocket' : '/socket',        // rewrite path.
+     '^/removepath' : ''               // remove path.
+    },
+  changeOrigin: false,                     // for vhosted sites, changes host header to match to target's host
   ws: true,                               // enable websocket proxy
   logLevel: 'debug'
 })
