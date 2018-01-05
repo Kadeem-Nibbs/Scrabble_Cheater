@@ -13,7 +13,11 @@ socketio = SocketIO(app)
 # def before_request():
 #     pass
 #
+@socketio.on('connect')
+    print "CONNECTED"
 
+@socketio.on('my event')
+    print "my event"
 
 @socketio.on('analyze_board')
 def display_highest_scoring_words(game_data_json):

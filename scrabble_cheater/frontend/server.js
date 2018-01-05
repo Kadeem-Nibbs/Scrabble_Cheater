@@ -14,7 +14,7 @@ app.use('/dist', express.static('dist'))
 app.use(express.static(__dirname + '/dist'))
 
 var wsProxy = proxy('/', {
-  target: 'http://www.wordswithfiends.com',
+  target: 'http://0.0.0.0.com:4000',
     pathRewrite: {
      // '^/websocket' : '/socket',        // rewrite path.
      '^/removepath' : ''               // remove path.
