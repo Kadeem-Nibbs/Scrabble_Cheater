@@ -7,15 +7,15 @@ This makes it so arrows are useful - and make arrow just change direction instea
 
 DONE) reduxify rack
 DONE) make 'delete' hit up redux-undo
-1) [wordlist] keep word hover on board when + is hovered over
-2) [wordlist] play word
-3) [rack] remove played words from rack
-5) [board] note which tiles on the board (that style on the board) were played with blank tiles (so send back Z_, this this already happens?)
-6) [rack] make it so that you can enter no more than two blank tiles
+DONE) [wordlist] keep word hover on board when + is hovered over
+3) [wordlist] play word
+4) [rack] remove played words from rack
+5) [rack] make it so that you can enter no more than two blank tiles
+6) [board] note which tiles on the board (that style on the board) were played with blank tiles (so send back Z_, is this already stored in redux state?)
 7) [board] make it so when you click on a tile you can press right or down arrow key
+  - make it show input under direction arrows so you can capture that
 8) [organize code] split up actions to different files (index got too big)
 9) [style] style redo / undo buttons
-10) remove all the commented out code
-11) ?? done ??
-12) one day in the distant future organize CSS better
-
+10) [organize css] urg
+DONE) [bug] fix  undo button dispatching 'set direction' action
+12) remove all the commented out code

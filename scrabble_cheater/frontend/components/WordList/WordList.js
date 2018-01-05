@@ -64,7 +64,7 @@ class WordList extends Component {
 
   handleAddWordToTable = (wordInfo, i) => {
     this.props.addWordToTable(wordInfo, i)
-    this.handleWordOut() // un-highlight word added (could make a thunk ?)
+    this.handleMouseLeave() // un-highlight word added (could make a thunk ?)
   }
 
   render() {
@@ -72,7 +72,7 @@ class WordList extends Component {
       <Menu 
         vertical 
         className="scrollable"
-        onMouseLeave={ this.handleWordOut }
+        onMouseLeave={ this.handleMouseLeave }
       >
         { 
           this.props.words && this.props.words.length === 0 ?
