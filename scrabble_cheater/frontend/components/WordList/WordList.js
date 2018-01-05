@@ -63,7 +63,7 @@ class WordList extends Component {
   }
 
   handleAddWordToTable = (wordInfo, i) => {
-    this.props.addWordToTable(wordInfo, i)
+    this.props.handleAddWordToTable(wordInfo, i)
     this.handleMouseLeave() // un-highlight word added (could make a thunk ?)
   }
 

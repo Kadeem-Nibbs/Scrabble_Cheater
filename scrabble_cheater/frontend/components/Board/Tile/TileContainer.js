@@ -8,9 +8,8 @@ import { isEqual, some } from 'lodash'
 import { 
   setMoveDirection,
   resetDirectionAndMakeTileEditable, 
-  changeValueMoveToNextTile, 
-  changeValueMoveToNextTileWithArrowKeys
-} from '../../../_actions'
+  changeValueMoveToNextTile
+} from '../../../_actions/tileBoard'
 
 import TileDisplay from './TileDisplay'
 import TileEdit from './TileEdit'

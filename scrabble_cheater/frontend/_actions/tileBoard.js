@@ -1,39 +1,18 @@
 import { 
   MAKE_TILE_EDITABLE, 
   TOGGLE_GAME_TYPE,
-  UPDATE_RACK,
   SET_MOVE_DIRECTION,
-  CHANGE_COORDINATE_VALUE,
-  RECEIVED_SUGGESTED_WORDS,
-  SENT_TABLE_DATA,
-  HIGHLIGHT_SUGGESTED_WORD
+  CHANGE_COORDINATE_VALUE
 } from '../constants/actions'
 
-// Board
+
 export const toggleGameType = () => {
   return { type: TOGGLE_GAME_TYPE }
 }
 
-export const updateRack = (letters) => ({
-  type: UPDATE_RACK,
-  letters
-})
-
 export const setMoveDirection = (direction) => ({
   type: SET_MOVE_DIRECTION,
   direction
-})
-
-// WordsList
-export const highlightWordOnBoard = (wordCoordinates) => ({
-  type: HIGHLIGHT_SUGGESTED_WORD,
-  wordCoordinates
-})
-
-// Tile
-const makeTileEditable = (coordinates) => ({
-  type: MAKE_TILE_EDITABLE,
-  coordinates
 })
 
 const changeCoordinateValue = (coordinates, value) => {
@@ -44,12 +23,10 @@ const changeCoordinateValue = (coordinates, value) => {
   }
 }
 
-// Websocket receive 
-export const receivedTableData = (suggestedWords) => ({
-  type: RECEIVED_SUGGESTED_WORDS,
-  suggestedWords
+const makeTileEditable = (coordinates) => ({
+  type: MAKE_TILE_EDITABLE,
+  coordinates
 })
-
 
 // Thunks
 export const changeValueMoveToNextTile = (coordinates, value) => {
@@ -79,37 +56,7 @@ export const resetDirectionAndMakeTileEditable = (coordinates) => {
     let { x, y } = coordinates
     const currentBoard = getState().board.present.boardData
 
-
-    // Keep the same direction if the tile is already populated
-    // as this is probably the user going back and correctly a typo
-    // ACTUALLY maybe not, think about this
-    // if(currentBoard && currentBoard[y]) {
-    //   const currentTile = currentBoard[y][x]
-    //   direction = currentTile.length ? getState().direction.direction : null
-    // }
-
     dispatch(setMoveDirection(null))
     dispatch(makeTileEditable(coordinates))
-  }
-}
-
-// Rack / table data emit stuff
-const sentTableData = () => ({
-  type: SENT_TABLE_DATA
-})
-
-export const submitTableData = (socket) => {
-  return (dispatch, getState) => {
-
-    dispatch(sentTableData({ loading: true }))
-
-    const tableData = {
-      gameType: getState().gameType.gameType,
-      board: getState().board.present.boardData,
-      rack: getState().rack.letters
-    }
-
-    // Note: component socketIoHOC will receive the data and trigger receiveTableData
-    socket.emit('analyze_board', JSON.stringify(tableData))
   }
 }

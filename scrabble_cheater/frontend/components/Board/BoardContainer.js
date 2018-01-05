@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import classNames from 'classnames'
 import { connect } from 'react-redux'
 
-import {  resetDirectionAndMakeTileEditable } from '../../_actions'
+import {  resetDirectionAndMakeTileEditable } from '../../_actions/tileBoard'
 
 import { BTN_UNDO, BTN_REDO } from '../../constants/board'
 
@@ -135,6 +135,7 @@ class BoardContainer extends Component {
     }
 
     currentRack = currentRack.join('') // get rid of undefined's and turn into string
+
     this.setState({ 
       tableData: newData,
       suggestedWords: newSuggestedWordsList,

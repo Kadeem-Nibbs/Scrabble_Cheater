@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Label, Radio } from 'semantic-ui-react'
 import { WORDS_WITH_FRIENDS, SCRABBLE } from '../../constants/board'
 
-import { toggleGameType } from '../../_actions'
+import { toggleGameType } from '../../_actions/tileBoard'
 
 class ToggleGameType extends Component {
   render() {

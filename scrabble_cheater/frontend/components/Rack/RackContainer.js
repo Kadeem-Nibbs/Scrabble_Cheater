@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { updateRack, submitTableData, receivedTableData } from '../../_actions'
+
+import { updateRack } from '../../_actions/rackWordlist'
+import { submitTableData, receivedTableData } from '../../_actions/websockets'
 
 import socketIoHOC from '../socketIoHOC'
 import Rack from './Rack'

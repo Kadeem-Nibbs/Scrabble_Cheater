@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import { toggleGameType } from '../../_actions'
+import { toggleGameType } from '../../_actions/tileBoard'
 import ToggleGameType from './ToggleGameType'
 
 class ToggleGameTypeContainer extends Component {
