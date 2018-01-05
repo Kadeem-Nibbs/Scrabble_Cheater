@@ -14,7 +14,7 @@ DONE) [wordlist] keep word hover on board when + is hovered over
 6) [board] note which tiles on the board (that style on the board) were played with blank tiles (so send back Z_, is this already stored in redux state?)
 7) [board] make it so when you click on a tile you can press right or down arrow key
   - make it show input under direction arrows so you can capture that
-8) [organize code] split up actions to different files (index got too big)
+DONE) [organize code] split up actions to different files (index got too big)
 9) [style] style redo / undo buttons
 10) [organize css] urg
 DONE) [bug] fix  undo button dispatching 'set direction' action

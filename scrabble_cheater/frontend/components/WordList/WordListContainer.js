@@ -12,7 +12,7 @@ class WordListContainer extends Component {
       <WordList 
         words={ this.props.suggestedWords }
 
-        handleAddWordToTable={ this.props.handleAddWordToTable } // need to do 
+        handlePlayWord={ this.props.handlePlayWord } // need to do 
         handleHighlightWordOnHover={ this.props.handleHighlightWordOnHover } // doing
       />
     )
@@ -21,7 +21,7 @@ class WordListContainer extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   return { 
-    suggestedWords: state.getWords.suggestedWords
+    suggestedWords: state.websockets.suggestedWords
   }
 }
 
@@ -30,8 +30,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     handleHighlightWordOnHover:(wordCoordinates) => {
       dispatch(highlightWordOnBoard(wordCoordinates))
     },
-    handleAddWordToTable:(wordList, i ) => {
-      console.log('add word', wordList, i);
+    handlePlayWord:(wordList, i ) => {
+      dispatch(playWord(wordInfo))
     }
   }
 }

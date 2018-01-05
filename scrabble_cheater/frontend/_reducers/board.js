@@ -13,20 +13,20 @@ const blankBoard = new Array(15).fill([], 0, 15).map((elem, i) => {
 })
 
 const defaultState = {
-  boardData: blankBoard
+  tiles: blankBoard
 }
 
 const board = (state = defaultState, action) => {
   switch (action.type) {
     case CHANGE_COORDINATE_VALUE:
       const  { x, y } = action.coordinates
-      const newBoard = cloneDeep(state.boardData)
+      const newBoard = cloneDeep(state.tiles)
     
       newBoard[y][x] = action.value
 
       return {
         ...state,
-        boardData: newBoard
+        tiles: newBoard
       }
     default:
       return state

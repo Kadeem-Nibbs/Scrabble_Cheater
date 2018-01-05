@@ -1,5 +1,6 @@
 import { 
-  MAKE_TILE_EDITABLE
+  MAKE_TILE_EDITABLE,
+  SET_MOVE_DIRECTION
 } from '../constants/actions'
 
 const defaultState = {
@@ -14,6 +15,11 @@ const tile = (state = defaultState, action) => {
         ...state,
         editableX: action.coordinates.x,
         editableY: action.coordinates.y
+      }
+    case SET_MOVE_DIRECTION:
+      return {
+        ...state,
+        direction: action.direction
       }
     default:
       return state

@@ -16,7 +16,7 @@ export const submitTableData = (socket) => {
 
     const tableData = {
       gameType: getState().gameType.gameType,
-      board: getState().board.present.boardData,
+      board: getState().board.present.tiles,
       rack: getState().rack.letters
     }
 

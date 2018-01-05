@@ -62,8 +62,8 @@ class WordList extends Component {
     this.props.handleHighlightWordOnHover([])
   }
 
-  handleAddWordToTable = (wordInfo, i) => {
-    this.props.handleAddWordToTable(wordInfo, i)
+  handleAddWord = (wordInfo) => {
+    this.props.handlePlayWord(wordInfo)
     this.handleMouseLeave() // un-highlight word added (could make a thunk ?)
   }
 
@@ -94,7 +94,7 @@ class WordList extends Component {
                   onMouseEnter={ (e) => this.handleMouseEnter(e, wordInfo, i) }
                 >
                   {`${ word } is worth ${points} points`}
-                   <Label onClick={ this.handleAddWordToTable.bind(this, wordInfo, i) }>
+                   <Label onClick={ this.handleAddWord.bind(this, wordInfo) }>
                       <i 
                         className="fa fa-plus-circle" 
                         aria-hidden="true"

@@ -31,7 +31,7 @@ const makeTileEditable = (coordinates) => ({
 // Thunks
 export const changeValueMoveToNextTile = (coordinates, value) => {
   return (dispatch, getState) => {
-    const direction = getState().direction.direction
+    const direction = getState().tile.present.direction
 
     let newEditCoordinates
     if(direction === 'right') {
@@ -44,7 +44,6 @@ export const changeValueMoveToNextTile = (coordinates, value) => {
       newEditCoordinates = { ...coordinates, y: coordinates.y - 1 }
     }
 
-
     dispatch(changeCoordinateValue(coordinates, value))
     dispatch(makeTileEditable(newEditCoordinates))
   }
@@ -54,7 +53,7 @@ export const changeValueMoveToNextTile = (coordinates, value) => {
 export const resetDirectionAndMakeTileEditable = (coordinates) => {
   return (dispatch, getState) => {
     let { x, y } = coordinates
-    const currentBoard = getState().board.present.boardData
+    const currentBoard = getState().board.present.tiles
 
     dispatch(setMoveDirection(null))
     dispatch(makeTileEditable(coordinates))

@@ -164,9 +164,9 @@ const mapStateToProps = (state, ownProps) => {
 
   return {
     gameType: state.gameType.gameType,
-    cellCharacter: state.board.present.boardData[y][x],
+    cellCharacter: state.board.present.tiles[y][x],
     tileIsEditable: editableX === x && editableY === y,
-    direction: state.direction.direction,
+    direction: state.tile.present.direction,
     letterToHighlight: tileHighlightInfo ? tileHighlightInfo.letter : ''
   }
 }

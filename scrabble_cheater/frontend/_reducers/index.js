@@ -8,20 +8,18 @@ import { combineReducers } from 'redux'
 import undoable, { includeAction } from 'redux-undo'
 
 import board from './board'
-import getWords from './getWords'
+import websockets from './websockets'
 import tile from './tile'
 import gameType from './gameType'
 import rack from './rack'
-import direction from './direction'
 import wordList from './wordList'
 
 const wordsAppReducers = combineReducers({
   board: undoable(board, { filter: includeAction(CHANGE_COORDINATE_VALUE) }),
   tile: undoable(tile, { filter: includeAction(CHANGE_COORDINATE_VALUE) }),
-  getWords,
+  websockets,
   rack,
   gameType,
-  direction,
   wordList
 })
 
