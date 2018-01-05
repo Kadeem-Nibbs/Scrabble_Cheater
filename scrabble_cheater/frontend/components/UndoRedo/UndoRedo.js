@@ -1,27 +1,34 @@
 import React, { Component } from 'react'
 import { ActionCreators as UndoActionCreators } from 'redux-undo'
 import { connect } from 'react-redux'
+import classNames from 'classnames'
+import { Button } from 'semantic-ui-react'
 
 import { BTN_UNDO, BTN_REDO } from '../../constants/board'
 
+import './UndoRedo.less'
 class UndoRedo extends Component {
   render() {
     return(
-      <p>
-        <button 
-          className={ BTN_UNDO }
-          disabled={!this.props.canUndo}
-          onClick={this.props.onUndo} 
-        >
-          Undo
-        </button>
-        <button 
-          className={ BTN_REDO }
-          disabled={!this.props.canRedo}
-          onClick={this.props.onRedo}
-        >
-          Redo
-        </button>
+      <p className="undo-redo">
+        <span className={ classNames({ 'disabled': !this.props.canUndo } ) }>
+          <Button 
+            className={ BTN_UNDO }
+            disabled={!this.props.canUndo}
+            onClick={this.props.onUndo} 
+          >
+            Undo
+          </Button>
+        </span>
+        <span className={ classNames({ 'disabled': !this.props.canRedo } ) }>
+          <Button 
+            className={ BTN_REDO }
+            disabled={ !this.props.canRedo }
+            onClick={ this.props.onRedo }
+          >
+            Redo
+          </Button>
+        </span>
       </p>
     )
   }
