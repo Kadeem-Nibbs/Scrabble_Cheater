@@ -23,7 +23,7 @@ class App extends Component {
             <UndoRedo />
 
           </Grid.Column>
-        <Grid.Column className="mt-24px fixed-width-right-col">
+        <Grid.Column className="mt-34px fixed-width-right-col">
 
             <HeaderRight />
             <RackContainer />

@@ -1,8 +1,3 @@
-
-UX: Maybe put an arrow in the direction the user will go when typing.
-
-This makes it so arrows are useful - and make arrow just change direction instead of kick them to the next cell
-
 :: Main things left to do
 
 DONE) reduxify rack
@@ -19,3 +14,5 @@ DONE) [organize code] split up actions to different files (index got too big)
 10) [organize css] urg
 DONE) [bug] fix  undo button dispatching 'set direction' action
 12) remove all the commented out code
+13) add unit tests
+14) ?? done 
