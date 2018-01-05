@@ -14,9 +14,11 @@ socketio = SocketIO(app)
 #     pass
 #
 @socketio.on('connect')
+def wtf():
     print "CONNECTED"
 
 @socketio.on('my event')
+def lol():
     print "my event"
 
 @socketio.on('analyze_board')

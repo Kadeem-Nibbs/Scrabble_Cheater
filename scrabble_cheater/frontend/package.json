@@ -7,8 +7,7 @@
   "scripts": {
     "dev": "parcel index.html --out-dir dev --open",
     "build": "parcel build index.html --out-dir dist",
-    "serve-local": "NODE_ENV=local npm run build && node server.js",
-    "serve-digitalocean": "NODE_ENV=production npm run build && node server.js",
+    "serve": "npm run build && node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
