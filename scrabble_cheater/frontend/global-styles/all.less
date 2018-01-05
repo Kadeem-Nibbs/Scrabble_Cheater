@@ -1,24 +1,56 @@
-/* TODO: switch to LESS so i can override semnatic UI variables cleanly instead of !important life */
-/* Only reasonable use of important is on these */
+// Note: We are importing semnatic-ui styles from a CDN in index.html, and overriding the styles here. 
+// Use the lowest level of specificity needed to overrwrite semnatic-ui's base styles.
 
+// Not using !important is important because all global styles are imported here, 
+//  but individual components may also have their own less file.
+
+// This makes using new CSS classes in components to change styles (instead of !important) crucial, 
+//  and _never_ using !important in global styles. 
+
+// less allows us to do the following for chaining new classes, so it works nicely for specificity
+
+//   .some-class {
+//     &.some-chained-class {   // (added via state changes or whatever)
+//       //
+//     }  
+//   }
+
+
+// TODO: clean up this mess
+
+// Semantic-ui overrides
+@import "buttons";
 
 /*IDEA: make the tiles being placed on the board look the same as when you're editing a tile - makes sense ? */
 
-.mt-24px {
-  margin-top: 24px !important;
-}
+// Spacers
 
+// top
 .mt-50px {
   margin-top: 50px !important;
+}
+
+.mt-34px {
+  margin-top: 34px !important;
 }
 
 .mt-10px {
   margin-top: 10px !important;
 }
 
-.mb-10px {
-  margin-bottom: 10px !important;
+// bottom
+
+.mb-15px {
+  margin-bottom: 15px !important;
 }
+
+// Negative margin
+.mb--10px {
+  margin-bottom: -10px !important;
+}
+
+
+// Fixed cols
 
 .fixed-width-left-col {
   width: 482px!important;
@@ -135,14 +167,6 @@ div.blank-tile {
 
 /*.scrabble-container .ui.table tbody tr td.selectable.played-tile*/
 
-.section-toggle-game {
-  /*float: right;*/
-  height: auto;
-  width: 180px;
-  /*text-align: right;*/
-  margin-right: 25px;
-}
-
 
 .scrabble-container {
   /* Set fixed min width so table doesn't get crumpled - can fix for mobile later */
@@ -151,18 +175,15 @@ div.blank-tile {
   font-size: 1em;
 }
 
-.scrabble-container .ui.input input[type=text] {
+.ui.input input[type=text] {
   padding: 3px 0;
   text-align: center;
   box-shadow: inset 0px 0px 10px #d8d8d8;
 }
 
-.ui.icon.button.info-popover {
-  margin-left: 8px;
-  font-size: 1.1rem;
-  border-radius: .2rem;
-  padding: 2px 1px;
-}
+// this makes it looks uuugly
+.ui.input input[type=text]::selection {  background: #e2e2e2 }
+
 
 .big-underscore {
   font-size: 2rem;
@@ -236,27 +257,4 @@ div.blank-tile {
 .ui.table tr.highlight-word-location,
 .ui.table td.highlight-word-location {
   box-shadow: 0px 0px 0px red inset;
-}
-
-.ui.button {
-  background: #333;
-  color: #fff;
-}
-.ui.button:hover {
-  background: #000;
-  color: #fff;
-}
-
-.ui.button.btn-tile-submit {
-  position: absolute;
-  top: 0;
-  left: 30px;
-  height: 25px;
-  width: 25px;
-  padding: 0;
-}
-.ui.button.btn-tile-submit.down-arrow,
-.ui.button.btn-tile-submit.move-down {
-  top: 26px;
-  left: 2px;
 }

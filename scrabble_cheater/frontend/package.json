@@ -5,7 +5,7 @@
   "repository": "https://github.com/Kadeem-Nibbs/Scrabble_Cheater",
   "license": "MIT",
   "scripts": {
-    "watch": "parcel index.html --out-dir dev --open",
+    "dev": "parcel index.html --out-dir dev --open",
     "build": "parcel build index.html --out-dir dist",
     "serve": "node server.js",
     "build-and-serve": "npm run build && npm run serve",
@@ -15,6 +15,7 @@
     "classnames": "^2.2.5",
     "express": "^4.16.2",
     "less": "^2.7.3",
+    "lodash": "^4.17.4",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "react-redux": "^5.0.6",
@@ -27,6 +28,7 @@
   },
   "devDependencies": {
     "babel-preset-env": "^1.6.1",
+    "babel-preset-es2015": "^6.24.1",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
     "parcel-bundler": "^1.2.1"

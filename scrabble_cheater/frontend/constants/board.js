@@ -12,3 +12,14 @@ export const scores = {
     doubleLetterScore: [[3, 0],[11, 0],[6, 2],[8, 2],[0, 3],[7, 3],[14, 3],[2, 6],[6, 6],[8, 6],[12, 6],[3, 7],[11, 7],[2, 8],[6, 8],[8, 8],[12, 8],[0, 11],[7, 11],[14, 11],[6, 12],[8, 12],[3, 14],[11, 14]]
   }
 }
+
+export const WORDS_WITH_FRIENDS = 'wwf'
+export const SCRABBLE = 'scrabble'
+
+export const NUMBER_OF_ROWS = 15
+export const NUMBER_OF_COLS = 15
+export const TOTAL_TILES = NUMBER_OF_ROWS * NUMBER_OF_COLS
+
+// classNames
+export const BTN_UNDO = 'btn-undo'
+export const BTN_REDO = 'btn-redo'

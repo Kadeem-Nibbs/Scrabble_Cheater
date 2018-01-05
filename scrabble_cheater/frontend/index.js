@@ -1,13 +1,23 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-import './styles.less'
+import { createStore, applyMiddleware } from 'redux'
+import { Provider } from 'react-redux'
+import thunk from 'redux-thunk'
 
-import Board from './components/Board/BoardContainer'
+import reducers from './_reducers'
+
+import './global-styles/all'
+
+import App from './components/App.js'
+
+const store = createStore(reducers, applyMiddleware(thunk))
 
 const Root = () => {
   return (
-    <Board />
+    <Provider store={ store }>
+      <App />
+    </Provider>
   )
 }
 
