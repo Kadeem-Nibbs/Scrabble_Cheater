@@ -71,7 +71,6 @@ class Board extends Component {
               <Table.Row key={ rowNumber }>
                 { 
                   times(NUMBER_OF_COLS, (colNumber) => {
-                    console.log('Board :: tile render');
                     return(
                       <TileContainer
                         coordinates={ { y: rowNumber, x: colNumber } }

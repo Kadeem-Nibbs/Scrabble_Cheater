@@ -31,7 +31,7 @@ const board = (state = defaultState, action) => {
         tiles: newTiles
       }
     case PLAY_WORD: 
-      const wordInfo = action.wordInfo
+      const { wordInfo } = action
       const firstY = wordInfo[1][0][0]
       const secondY = wordInfo[1][1][0]
 

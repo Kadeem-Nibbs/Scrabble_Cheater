@@ -68,6 +68,20 @@ class WordList extends Component {
   }
 
   render() {
+    if(this.props.hideSuggestedWords) {
+      return(
+        <Menu 
+          vertical 
+          className="scrollable"
+        >
+          <Menu.Item>
+            <h4 className="mb--10px">Word Added!</h4>
+            <h5>Update the Rack with your new letters, and Get Words!</h5>
+          </Menu.Item>
+        </Menu>
+      )
+    }
+
     return(
       <Menu 
         vertical 

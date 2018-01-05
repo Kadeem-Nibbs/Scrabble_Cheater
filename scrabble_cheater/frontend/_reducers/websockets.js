@@ -18,7 +18,6 @@ const getWords = (state = defaultState, action) => {
         suggestedWords: action.suggestedWords,
         loading: false
       }
-
     default:
       return state
   }

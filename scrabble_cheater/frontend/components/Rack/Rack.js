@@ -23,7 +23,7 @@ class Rack extends Component {
         <Grid>
           <Grid.Column width={ 8 }>
             <Input 
-              placeholder="Enter your rack..."
+              placeholder="Enter your letters..."
               className="rack"
               value={ this.props.rack }
               onChange={ this.handleRackChange } 

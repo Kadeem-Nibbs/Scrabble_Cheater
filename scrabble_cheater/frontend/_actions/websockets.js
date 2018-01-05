@@ -4,6 +4,8 @@ import {
 } from '../constants/actions'
 
 
+import { showSuggestedWords } from './rackWordlist'
+
 // Send
 const sentTableData = () => ({
   type: SENT_TABLE_DATA
@@ -11,9 +13,8 @@ const sentTableData = () => ({
 
 export const submitTableData = (socket) => {
   return (dispatch, getState) => {
-
+    dispatch(showSuggestedWords())
     dispatch(sentTableData({ loading: true }))
-
     const tableData = {
       gameType: getState().gameType.gameType,
       board: getState().board.present.tiles,

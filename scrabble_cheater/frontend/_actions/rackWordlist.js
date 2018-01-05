@@ -3,7 +3,8 @@ import {
   HIGHLIGHT_SUGGESTED_WORD,
   PLAY_WORD,
   REMOVE_PLAYED_LETTERS_FROM_RACK,
-  CLEAR_SUGGESTED_WORDS
+  HIDE_SUGGESTED_WORDS,
+  SHOW_SUGGESTED_WORDS
 } from '../constants/actions'
 
 
@@ -25,56 +26,30 @@ const playWord = (wordInfo) => ({
   wordInfo
 })
 
-const resetRack = () => ({
-  type: REMOVE_PLAYED_LETTERS_FROM_RACK
+const resetRack = (wordPlayed, currentRack) => ({
+  type: REMOVE_PLAYED_LETTERS_FROM_RACK,
+  wordPlayed, 
+  currentRack
 })
 
-const clearSuggestedWords = () => ({
-  type: CLEAR_SUGGESTED_WORDS
+const hideSuggestedWords = () => ({
+  type: HIDE_SUGGESTED_WORDS
+})
+
+// Used by ./websockets
+export const showSuggestedWords = () => ({
+  type: SHOW_SUGGESTED_WORDS
 })
 
 // Playword Thunk
 export const playWordAndResetRack = (wordInfo) => {
   return (dispatch, getState) => {
 
-    console.log('getState()', getState());
-
     dispatch(playWord(wordInfo))
 
-    const playedWords = 'abcde'
-    dispatch(resetRack(playedWords))
-    dispatch(clearSuggestedWords())
+    const wordPlayed = wordInfo[2]
+    const currentRack = getState().rack.letters
+    dispatch(resetRack(wordPlayed, currentRack))
+    dispatch(hideSuggestedWords())
   }
 }
-
-
-// () => {
-//       // Wordlist - just reset it all 
-//     const newSuggestedWordsList = this.state.suggestedWords.slice()
-//     delete newSuggestedWordsList[wordIndexInSuggestedWords]
-
-//     // Recalculate rack
-//     // Todo: split out into array
-//     let currentRack = this.state.rack.split('').slice()
-//     let wordPlayed = wordInfo[2].slice()
-
-//     // todo: yeesh this is all unreadable, refactor when less rushed
-//     for(let i = wordPlayed.length; i--;) {
-//       if(wordPlayed[i].length === 2 && wordPlayed[i][1] !== '_') {
-//         delete wordPlayed[i] // delete tiles that are already on board
-//       }
-//     }
-
-//     wordPlayed = wordPlayed.join('').split('').slice() // get rid of empty cells
-
-//     for(let j = wordPlayed.length; j--;) {
-//       if(currentRack.includes(wordPlayed[j])) {
-//         let indexOfCellToRemove = currentRack.indexOf(wordPlayed[j])
-
-//         delete currentRack[indexOfCellToRemove]
-//         delete wordPlayed[j]
-//       }
-//     }
-
-//     currentRack = currentRack.join('') // get rid of undefined's and turn into string
-// }
