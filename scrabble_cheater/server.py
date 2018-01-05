@@ -6,12 +6,14 @@ from scrabble_cheater import Board, WordFinder, init_dictionary, init_trie, WORD
 import json
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'jfldaur3892309jlksf'
 socketio = SocketIO(app)
 
 # @app.before_request
 # def before_request():
 #     pass
 #
+
 
 @socketio.on('analyze_board')
 def display_highest_scoring_words(game_data_json):
@@ -29,4 +31,4 @@ def display_highest_scoring_words(game_data_json):
 if __name__ == "__main__":
     init_dictionary(WORD_FILE)
     init_trie(dictionary)
-    socketio.run(app)
+    socketio.run(app, port=4000)
