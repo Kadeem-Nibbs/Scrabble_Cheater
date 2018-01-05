@@ -158,7 +158,7 @@ const getHighlightedletter = (x, y, coordinatesToHighlight) => {
 const mapStateToProps = (state, ownProps) => {
   const { x, y } = ownProps.coordinates
   const { editableX, editableY } = state.tile.present
-  const coordinatesToHighlight = state.wordList.wordCoordinates
+  const coordinatesToHighlight = state.wordList.present.wordCoordinates
   
   const tileHighlightInfo = coordinatesToHighlight.length ? getHighlightedletter(x, y, coordinatesToHighlight) : null
 

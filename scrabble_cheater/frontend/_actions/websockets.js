@@ -18,7 +18,7 @@ export const submitTableData = (socket) => {
     const tableData = {
       gameType: getState().gameType.gameType,
       board: getState().board.present.tiles,
-      rack: getState().rack.letters
+      rack: getState().rack.present.letters
     }
 
     // Note: component socketIoHOC will receive the data and trigger receiveTableData

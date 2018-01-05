@@ -48,7 +48,7 @@ export const playWordAndResetRack = (wordInfo) => {
     dispatch(playWord(wordInfo))
 
     const wordPlayed = wordInfo[2]
-    const currentRack = getState().rack.letters
+    const currentRack = getState().rack.present.letters
     dispatch(resetRack(wordPlayed, currentRack))
     dispatch(hideSuggestedWords())
   }

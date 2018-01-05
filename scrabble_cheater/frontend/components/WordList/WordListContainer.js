@@ -23,7 +23,7 @@ class WordListContainer extends Component {
 const mapStateToProps = (state, ownProps) => {
   return { 
     suggestedWords: state.websockets.suggestedWords,
-    hideSuggestedWords: state.wordList.wordAdded
+    hideSuggestedWords: state.wordList.present.wordAdded
   }
 }
 

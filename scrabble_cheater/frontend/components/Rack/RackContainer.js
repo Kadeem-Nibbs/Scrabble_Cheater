@@ -29,7 +29,7 @@ class RackContainer extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   return { 
-    rack: state.rack.letters,
+    rack: state.rack.present.letters,
     loading: state.websockets.loading
   }
 }

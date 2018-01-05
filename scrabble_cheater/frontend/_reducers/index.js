@@ -1,5 +1,6 @@
 import { 
   CHANGE_COORDINATE_VALUE,
+  PLAY_WORD,
   SET_MOVE_DIRECTION,
   MAKE_TILE_EDITABLE
 } from '../constants/actions'
@@ -15,12 +16,12 @@ import rack from './rack'
 import wordList from './wordList'
 
 const wordsAppReducers = combineReducers({
-  board: undoable(board, { filter: includeAction(CHANGE_COORDINATE_VALUE) }),
-  tile: undoable(tile, { filter: includeAction(CHANGE_COORDINATE_VALUE) }),
+  board: undoable(board, { filter: includeAction([CHANGE_COORDINATE_VALUE, PLAY_WORD]) }),
+  tile: undoable(tile, { filter: includeAction([CHANGE_COORDINATE_VALUE, PLAY_WORD]) }),
+  rack: undoable(rack, { filter: includeAction([CHANGE_COORDINATE_VALUE, PLAY_WORD]) }),
+  wordList: undoable(wordList, { filter: includeAction([CHANGE_COORDINATE_VALUE, PLAY_WORD]) }),
   websockets,
-  rack,
-  gameType,
-  wordList
+  gameType
 })
 
 export default wordsAppReducers
