@@ -11,10 +11,11 @@ DONE) [organize code] split up actions to different files (index got too big)
 DONE) [style] style redo / undo buttons
 DONE) [bug] fix  undo button dispatching 'set direction' action
 DONE)[cleanup] remove all the commented out code
-11) [rack] make it so that you can enter no more than two blank tiles
-12) [board] note which tiles on the board (that style on the board) were played with blank tiles (so send back Z_, is this already stored in redux state?)
-13) [board] make it so when you click on a tile you can press right or down arrow key
+11) [wordlist] when you click undo, clear (or hide) the wordlist as its useless now. Make them re-fetch.
+12) [rack] make it so that you can enter no more than two blank tiles
+13) [board] note which tiles on the board (that style on the board) were played with blank tiles (so send back Z_, is this already stored in redux state?)
+14) [board] make it so when you click on a tile you can press right or down arrow key
   - make it show input under direction arrows so you can capture that
-14) [organize css] urg
-15) [test] add unit tests
-16) ?? done 
+15) [organize css] urg
+16) [test] add unit tests
+17) ?? done 

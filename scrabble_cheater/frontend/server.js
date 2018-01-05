@@ -14,8 +14,7 @@ app.use(express.static(__dirname + '/dist'))
 var wsProxy = proxy('/', {
   target: 'http://0.0.0.0:4000',
   changeOrigin: false,
-  ws: true,
-  logLevel: 'debug'
+  ws: true
 })
 
 app.use(wsProxy)
