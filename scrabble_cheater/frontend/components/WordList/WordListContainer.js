@@ -1,6 +1,4 @@
 import React, { Component } from 'react'
-import { Grid, Input, Button } from 'semantic-ui-react'
-
 import { connect } from 'react-redux'
 
 import { highlightWordOnBoard, playWordAndResetRack } from '../../_actions/rackWordlist'

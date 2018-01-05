@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import classNames from 'classnames'
 
 import { times } from 'lodash'
-import { Menu, Label, Button } from 'semantic-ui-react'
+import { Menu, Label } from 'semantic-ui-react'
 
 class WordList extends Component {
   constructor(props) {

@@ -2,13 +2,10 @@ import React, { Component } from 'react'
 import classNames from 'classnames'
 import { connect } from 'react-redux'
 
+import { BTN_UNDO, BTN_REDO } from '../../constants/board'
 import {  resetDirectionAndMakeTileEditable } from '../../_actions/tileBoard'
 
-import { BTN_UNDO, BTN_REDO } from '../../constants/board'
-
-import { 
-
-} from 'semantic-ui-react'
+import { Table } from 'semantic-ui-react'
 
 import Board from './Board'
 

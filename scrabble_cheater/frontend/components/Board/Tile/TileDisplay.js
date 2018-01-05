@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Table, Form, Input, Button } from 'semantic-ui-react'
+import { Table } from 'semantic-ui-react'
 import classNames from 'classnames'
 import { connect } from 'react-redux'
 import { some } from 'lodash'
