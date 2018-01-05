@@ -13,7 +13,17 @@ if(process.env.NODE_ENV === 'local') {
 app.use('/dist', express.static('dist'))
 app.use(express.static(__dirname + '/dist'))
 
-var wsProxy = proxy('ws://www.wordswithfiends.com:4000', { changeOrigin:true })
+var wsProxy = proxy('/', {
+  target: 'http://www.wordswithfiends.com',
+    // pathRewrite: {
+    //  '^/websocket' : '/socket',        // rewrite path.
+    //  '^/removepath' : ''               // remove path.
+    // },
+  changeOrigin: true,                     // for vhosted sites, changes host header to match to target's host
+  ws: true,                               // enable websocket proxy
+  logLevel: 'debug'
+})
+
 app.use(wsProxy)
 var server = app.listen(port)
 server.on('upgrade', wsProxy.upgrade)
