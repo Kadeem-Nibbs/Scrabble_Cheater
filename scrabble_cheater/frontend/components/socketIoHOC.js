@@ -5,6 +5,7 @@ export default (WrappedComponent) => {
   class socketIoHOC extends Component {
     constructor(props) {
       super(props)
+      // TODO: Move this in .env at some point
       this.socket = io('localhost:5000')
 
       this.state = {

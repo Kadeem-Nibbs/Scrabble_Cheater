@@ -36,13 +36,9 @@ export const changeValueMoveToNextTile = (coordinates, value) => {
     let newEditCoordinates
     if(direction === 'right') {
       newEditCoordinates = { ...coordinates, x: coordinates.x + 1 }
-    } else if (direction === 'left') {
-      newEditCoordinates = { ...coordinates, x: coordinates.x - 1 }
     } else if (direction === 'down') {
       newEditCoordinates = { ...coordinates, y: coordinates.y + 1 }
-    } else if (direction === 'up') {
-      newEditCoordinates = { ...coordinates, y: coordinates.y - 1 }
-    }
+    } 
 
     dispatch(changeCoordinateValue(coordinates, value))
     dispatch(makeTileEditable(newEditCoordinates))
