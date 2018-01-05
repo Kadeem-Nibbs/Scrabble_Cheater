@@ -9,7 +9,7 @@ import {
   setMoveDirection,
   resetDirectionAndMakeTileEditable, 
   changeValueMoveToNextTile, 
-  changeValueMoveToNextTileWithArrowKeys,
+  changeValueMoveToNextTileWithArrowKeys
 } from '../../../_actions'
 
 import TileDisplay from './TileDisplay'

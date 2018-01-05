@@ -44,6 +44,13 @@ const changeCoordinateValue = (coordinates, value) => {
   }
 }
 
+// Websocket receive 
+export const receivedTableData = (suggestedWords) => ({
+  type: RECEIVED_SUGGESTED_WORDS,
+  suggestedWords
+})
+
+
 // Thunks
 export const changeValueMoveToNextTile = (coordinates, value) => {
   return (dispatch, getState) => {
@@ -62,7 +69,6 @@ export const changeValueMoveToNextTile = (coordinates, value) => {
 
 
     dispatch(changeCoordinateValue(coordinates, value))
-    
     dispatch(makeTileEditable(newEditCoordinates))
   }
 }
@@ -71,7 +77,6 @@ export const changeValueMoveToNextTile = (coordinates, value) => {
 export const resetDirectionAndMakeTileEditable = (coordinates) => {
   return (dispatch, getState) => {
     let { x, y } = coordinates
-    let direction = null
     const currentBoard = getState().board.present.boardData
 
 
@@ -83,7 +88,7 @@ export const resetDirectionAndMakeTileEditable = (coordinates) => {
     //   direction = currentTile.length ? getState().direction.direction : null
     // }
 
-    dispatch(setMoveDirection(direction))
+    dispatch(setMoveDirection(null))
     dispatch(makeTileEditable(coordinates))
   }
 }
@@ -108,8 +113,3 @@ export const submitTableData = (socket) => {
     socket.emit('analyze_board', JSON.stringify(tableData))
   }
 }
-
-export const receivedTableData = (suggestedWords) => ({
-  type: RECEIVED_SUGGESTED_WORDS,
-  suggestedWords
-})

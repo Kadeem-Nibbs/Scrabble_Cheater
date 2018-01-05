@@ -4,6 +4,8 @@ import { connect } from 'react-redux'
 
 import {  resetDirectionAndMakeTileEditable } from '../../_actions'
 
+import { BTN_UNDO, BTN_REDO } from '../../constants/board'
+
 import { 
   Container, 
   Grid, 
@@ -73,7 +75,10 @@ class BoardContainer extends Component {
   }
 
   handleClickOutside = (e) => {
-    if (this.wrapperRef && !this.wrapperRef.contains(e.target)) {
+    // We dont want to trigger this if the user is clicking an 'undo' button
+    const undoButton = e.target.className === BTN_UNDO || e.target.className === BTN_REDO
+
+    if (this.wrapperRef && !this.wrapperRef.contains(e.target) && !undoButton) {
       this.props.stopEditingTiles()
     }
   }
@@ -241,7 +246,7 @@ class BoardContainer extends Component {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    stopEditingTiles: () => {
+    stopEditingTiles: (e) => {
       dispatch(resetDirectionAndMakeTileEditable({ x: null, y: null}))
     }
   }

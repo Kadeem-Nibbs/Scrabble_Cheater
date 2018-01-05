@@ -19,3 +19,7 @@ export const SCRABBLE = 'scrabble'
 export const NUMBER_OF_ROWS = 15
 export const NUMBER_OF_COLS = 15
 export const TOTAL_TILES = NUMBER_OF_ROWS * NUMBER_OF_COLS
+
+// classNames
+export const BTN_UNDO = 'btn-undo'
+export const BTN_REDO = 'btn-redo'
