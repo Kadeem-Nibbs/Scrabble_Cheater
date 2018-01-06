@@ -6,6 +6,18 @@ class Rack extends Component {
   handleRackChange = (e, target) => {
     const letters = target.value || ''
 
+    // Only alow 2 underscores
+    // TODO: could probably do this more elegantly, google stuff when you're not on plane
+    let underscoreCount = 0
+    for(let i = 0; i < letters.length; i++) {
+      if(letters[i] === '_'){ 
+        underscoreCount++ 
+        if(underscoreCount === 3) {
+          return
+        }
+      }
+    }
+
     // Don't allow weird chars
     if(/^[A-Za-z_]+$|^$/.test(letters) && letters.length <= 7) { 
       this.props.handleUpdateRack(letters.toUpperCase())

@@ -80,7 +80,7 @@ class EditTile extends Component {
     return (
       <Table.Cell>
         <form className="ui form" onSubmit={ this.handleSubmitTile }>
-          { // Force user to select a direction clicking tile
+          { // Force user to select a direction
             this.props.direction ? (
               <Input
                 onFocus={ this.highlightOnFocus }
