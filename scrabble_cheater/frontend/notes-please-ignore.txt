@@ -11,9 +11,17 @@ DONE) [organize code] split up actions to different files (index got too big)
 DONE) [style] style redo / undo buttons
 DONE) [bug] fix  undo button dispatching 'set direction' action
 DONE)[cleanup] remove all the commented out code
-11) [wordlist] when you click undo, clear (or hide) the wordlist as its useless now. Make them re-fetch.
+11) [UX bug wordlist] when you click undo, clear (or hide) the wordlist as its useless now. Make them re-fetch.
+  - maybe only includeAction 'rack change' whatever that action is (i dont think this would work but try)
 12) [rack] make it so that you can enter no more than two blank tiles
 13) [board] note which tiles on the board (that style on the board) were played with blank tiles (so send back Z_, is this already stored in redux state?)
+- will have to change logic to here https://github.com/Kadeem-Nibbs/Scrabble_Cheater/pull/9/files#diff-228da414c318c6c651b9876adfad84b6R25
+to also include _ tiles since they are going to persist. need to change API for blank + existing tiles.
+
+- change // highlight it so they dont get 'stuck' to // UX improvement: highlight it so they dont get 'stuck' visually
+- change // Force user to select a direction clicking tile to // Force user to select a direction
+- add comment https://github.com/Kadeem-Nibbs/Scrabble_Cheater/pull/9/files#diff-d22a49afa2a09b24bf1dcf6815a93354 
+that says 'see undo buttons for pattern for disabling button - need to wrap in span - pull that behaviour out into component if commonly need hover + disabled state buttons'
 14) [board] make it so when you click on a tile you can press right or down arrow key
   - make it show input under direction arrows so you can capture that
 15) [organize css] urg

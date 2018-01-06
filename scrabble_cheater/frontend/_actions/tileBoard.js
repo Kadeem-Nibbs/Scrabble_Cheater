@@ -45,12 +45,12 @@ export const changeValueMoveToNextTile = (coordinates, value) => {
   }
 }
 
-// For new clicks on tiles, set direction
 export const resetDirectionAndMakeTileEditable = (coordinates) => {
   return (dispatch, getState) => {
     let { x, y } = coordinates
     const currentBoard = getState().board.present.tiles
 
+    // For clicks on new tiles, reset direction to null
     dispatch(setMoveDirection(null))
     dispatch(makeTileEditable(coordinates))
   }
