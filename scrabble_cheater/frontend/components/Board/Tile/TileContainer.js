@@ -15,7 +15,6 @@ import TileEdit from './TileEdit'
 
 class TileContainer extends Component {
   shouldComponentUpdate(nextProps) {
-    // This should be taken care of by mapStateToProps but it doesn't figure this out properly
     if(nextProps.tileIsEditable || (nextProps.tileIsEditable !== this.props.tileIsEditable)) {
       return true
     }
