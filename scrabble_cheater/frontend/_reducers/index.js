@@ -20,7 +20,7 @@ const wordsAppReducers = combineReducers({
   tile: undoable(tile, { filter: includeAction([CHANGE_COORDINATE_VALUE, PLAY_WORD]) }),
   rack: undoable(rack, { filter: includeAction([CHANGE_COORDINATE_VALUE, PLAY_WORD]) }),
   wordList: undoable(wordList, { filter: includeAction([CHANGE_COORDINATE_VALUE, PLAY_WORD]) }),
-  websockets,
+  websockets: undoable(websockets, { filter: includeAction([CHANGE_COORDINATE_VALUE, PLAY_WORD]) }),
   gameType
 })
 

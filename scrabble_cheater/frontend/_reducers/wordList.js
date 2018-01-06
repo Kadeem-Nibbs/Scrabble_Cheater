@@ -1,12 +1,9 @@
 import { 
-  HIGHLIGHT_SUGGESTED_WORD,
-  HIDE_SUGGESTED_WORDS,
-  SHOW_SUGGESTED_WORDS
+  HIGHLIGHT_SUGGESTED_WORD
 } from '../constants/actions'
 
 const defaultState = {
-  wordCoordinates: [],
-  wordAdded: false
+  wordCoordinates: null
 }
 
 const wordList = (state = defaultState, action) => {
@@ -15,16 +12,6 @@ const wordList = (state = defaultState, action) => {
       return {
         ...state,
         wordCoordinates: action.wordCoordinates
-      }
-    case HIDE_SUGGESTED_WORDS: 
-      return {
-        ...state,
-        wordAdded: true
-      }
-    case SHOW_SUGGESTED_WORDS: 
-      return {
-        ...state,
-        wordAdded: false
       }
     default:
       return state

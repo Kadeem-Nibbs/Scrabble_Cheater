@@ -68,15 +68,14 @@ class WordList extends Component {
   }
 
   render() {
-    if(this.props.hideSuggestedWords) {
+    if(this.props.suggestedWords === null) {
       return(
         <Menu 
           vertical 
           className="scrollable"
         >
           <Menu.Item>
-            <h4 className="mb--10px">Word Added!</h4>
-            <h5>Update the Rack with your new letters, and Get Words!</h5>
+            <h4>Update the Rack, and Get Words!</h4>
           </Menu.Item>
         </Menu>
       )
@@ -89,7 +88,7 @@ class WordList extends Component {
         onMouseLeave={ this.handleMouseLeave }
       >
         { 
-          this.props.words && this.props.words.length === 0 ?
+          this.props.suggestedWords && this.props.suggestedWords.length === 0 ?
           (    
             <Menu.Item>
               No possible words with this rack
@@ -97,7 +96,7 @@ class WordList extends Component {
           
           ) : (
           
-          this.props.words.map((wordInfo, i) => {
+          this.props.suggestedWords.map((wordInfo, i) => {
             const word = wordInfo[0]
             const points = wordInfo[3]
 

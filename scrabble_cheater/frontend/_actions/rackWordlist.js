@@ -2,11 +2,10 @@ import {
   UPDATE_RACK,
   HIGHLIGHT_SUGGESTED_WORD,
   PLAY_WORD,
-  REMOVE_PLAYED_LETTERS_FROM_RACK,
-  HIDE_SUGGESTED_WORDS,
-  SHOW_SUGGESTED_WORDS
+  REMOVE_PLAYED_LETTERS_FROM_RACK
 } from '../constants/actions'
 
+import { resetSuggestedWords } from './websockets'
 
 // Rack
 export const updateRack = (letters) => ({
@@ -32,24 +31,16 @@ const resetRack = (wordPlayed, currentRack) => ({
   currentRack
 })
 
-const hideSuggestedWords = () => ({
-  type: HIDE_SUGGESTED_WORDS
-})
-
-// Used by ./websockets
-export const showSuggestedWords = () => ({
-  type: SHOW_SUGGESTED_WORDS
-})
-
 // Playword Thunk
-export const playWordAndResetRack = (wordInfo) => {
+export const playWordAndResetRackAndSuggestedWords = (wordInfo) => {
   return (dispatch, getState) => {
 
     dispatch(playWord(wordInfo))
 
     const wordPlayed = wordInfo[2]
     const currentRack = getState().rack.present.letters
+
     dispatch(resetRack(wordPlayed, currentRack))
-    dispatch(hideSuggestedWords())
+    dispatch(resetSuggestedWords())
   }
 }

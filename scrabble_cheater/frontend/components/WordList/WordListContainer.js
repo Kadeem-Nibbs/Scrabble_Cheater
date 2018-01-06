@@ -1,15 +1,14 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import { highlightWordOnBoard, playWordAndResetRack } from '../../_actions/rackWordlist'
+import { highlightWordOnBoard, playWordAndResetRackAndSuggestedWords } from '../../_actions/rackWordlist'
 
 import WordList from './WordList'
 class WordListContainer extends Component {
   render() {
     return(
       <WordList 
-        words={ this.props.suggestedWords }
-        hideSuggestedWords={ this.props.hideSuggestedWords }
+        suggestedWords={ this.props.suggestedWords }
 
         handlePlayWord={ this.props.handlePlayWord }  // need to do 
         handleHighlightWordOnHover={ this.props.handleHighlightWordOnHover } // doing
@@ -20,8 +19,7 @@ class WordListContainer extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   return { 
-    suggestedWords: state.websockets.suggestedWords,
-    hideSuggestedWords: state.wordList.present.wordAdded
+    suggestedWords: state.websockets.present.suggestedWords
   }
 }
 
@@ -31,7 +29,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(highlightWordOnBoard(wordCoordinates))
     },
     handlePlayWord:(wordInfo) => {
-      dispatch(playWordAndResetRack(wordInfo))
+      dispatch(playWordAndResetRackAndSuggestedWords(wordInfo))
     }
   }
 }

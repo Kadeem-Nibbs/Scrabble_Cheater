@@ -1,17 +1,32 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import io from 'socket.io-client'
 
 import { updateRack } from '../../_actions/rackWordlist'
 import { submitTableData, receivedTableData } from '../../_actions/websockets'
 
-import socketIoHOC from '../socketIoHOC'
 import Rack from './Rack'
 
 class RackContainer extends Component {
-  componentWillReceiveProps(nextProps) {
-    if(nextProps.suggestedWords) {
-      this.props.receiveRack(nextProps.suggestedWords)
+  constructor(props) {
+    super(props)
+    if (process.env.NODE_ENV === 'development') {
+      // Development using `yarn dev` 
+      this.socket = io('http://localhost:4000')
+    } else {
+      // Production uses server.js :: proxies websockets
+      this.socket = io()
     }
+
+    this.socket.on('play', (suggestedWords) => {
+      const parsedWords = JSON.parse(suggestedWords)
+
+      this.props.receiveRack(parsedWords)
+    })
+  }
+
+  submitRack = () => {
+    this.props.submitRack(this.socket)
   }
 
   render() {  
@@ -21,7 +36,7 @@ class RackContainer extends Component {
         loading={ this.props.loading }
 
         handleUpdateRack={ this.props.handleUpdateRack }
-        submitRack={ this.props.submitRack }
+        submitRack={ this.submitRack }
       />
     )
   } 
@@ -30,7 +45,7 @@ class RackContainer extends Component {
 const mapStateToProps = (state, ownProps) => {
   return { 
     rack: state.rack.present.letters,
-    loading: state.websockets.loading
+    loading: state.websockets.present.loading
   }
 }
 
@@ -39,8 +54,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     handleUpdateRack:(letters) => {
       dispatch(updateRack(letters))
     },
-    submitRack:() => {
-      dispatch(submitTableData(ownProps.socket))
+    submitRack:(socket) => {
+      dispatch(submitTableData(socket))
     },
     receiveRack:(suggestedWords) => {
       // triggered by socketIoHOC receiving data from API
@@ -49,4 +64,4 @@ const mapDispatchToProps = (dispatch, ownProps) => {
   }
 }
 
-export default socketIoHOC(connect(mapStateToProps, mapDispatchToProps)(RackContainer))
+export default connect(mapStateToProps, mapDispatchToProps)(RackContainer)

@@ -1,10 +1,14 @@
 import { 
   RECEIVED_SUGGESTED_WORDS,
-  SENT_TABLE_DATA
+  SENT_TABLE_DATA,
+  RESET_SUGGESTED_WORDS
 } from '../constants/actions'
 
 
-import { showSuggestedWords } from './rackWordlist'
+// Used by rackWordlist thunk
+export const resetSuggestedWords = () => ({
+  type: RESET_SUGGESTED_WORDS
+})
 
 // Send
 const sentTableData = () => ({
@@ -13,7 +17,6 @@ const sentTableData = () => ({
 
 export const submitTableData = (socket) => {
   return (dispatch, getState) => {
-    dispatch(showSuggestedWords())
     dispatch(sentTableData({ loading: true }))
     const tableData = {
       gameType: getState().gameType.gameType,

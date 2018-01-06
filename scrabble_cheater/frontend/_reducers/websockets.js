@@ -1,12 +1,21 @@
-import { RECEIVED_SUGGESTED_WORDS, SENT_TABLE_DATA } from '../constants/actions'
+import { 
+  RECEIVED_SUGGESTED_WORDS, 
+  SENT_TABLE_DATA,
+  RESET_SUGGESTED_WORDS
+} from '../constants/actions'
 
 const defaultState = {
-  suggestedWords: [],
+  suggestedWords: null,
   loading: false
 }
 
 const getWords = (state = defaultState, action) => {
   switch (action.type) {
+    case RESET_SUGGESTED_WORDS: 
+      return {
+        ...state,
+        suggestedWords: null
+      }
     case SENT_TABLE_DATA: 
       return {
         ...state,

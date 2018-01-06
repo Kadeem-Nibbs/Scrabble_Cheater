@@ -74,7 +74,7 @@ const mapStateToProps = (state, ownProps) => {
   const { editableX, editableY } = state.tile.present
   const coordinatesToHighlight = state.wordList.present.wordCoordinates
   
-  const tileHighlightInfo = coordinatesToHighlight.length ? getHighlightedletter(x, y, coordinatesToHighlight) : null
+  const tileHighlightInfo = coordinatesToHighlight && coordinatesToHighlight.length ? getHighlightedletter(x, y, coordinatesToHighlight) : null
 
   return {
     gameType: state.gameType.gameType,
