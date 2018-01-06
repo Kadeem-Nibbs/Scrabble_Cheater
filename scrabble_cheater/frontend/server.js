@@ -4,9 +4,9 @@ let app = express()
 let port = 80
 
 // Run from terminal: 
-// `NODE_ENV=development npm run serve`
+// `NODE_ENV=local_production_test npm run serve`
 // Use `yarn dev` server for developing: this is to make sure production build works locally
-if(process.env.NODE_ENV === 'development') {
+if(process.env.NODE_ENV === 'local_production_test') {
   port = 3000
 }
 

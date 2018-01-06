@@ -7,6 +7,7 @@ export default (WrappedComponent) => {
       super(props)
 
       if (process.env.NODE_ENV === 'development') {
+        // Development using `yarn dev` 
         this.socket = io('http://localhost:4000')
       } else {
         // Production uses server.js :: proxies websockets
