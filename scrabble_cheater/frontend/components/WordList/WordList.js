@@ -91,7 +91,7 @@ class WordList extends Component {
           this.props.suggestedWords && this.props.suggestedWords.length === 0 ?
           (    
             <Menu.Item>
-              No possible words with this rack
+              <h4>No possible words with this rack</h4>
             </Menu.Item>
           
           ) : (
