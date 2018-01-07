@@ -29,7 +29,7 @@ class EditTile extends Component {
   highlightOnFocus = (e) => {
     // If the user clicks into a input that already has a value, 
     // highlight it so they dont get 'stuck' 
-    // stuck = so they dont have to hit backspace before entering a new leyter
+    // stuck = so they dont have to hit backspace before entering a new letter
     // (TODO: this doesn't highlight the letter on mobile (at least iOS)
     e.target.select()
   }
