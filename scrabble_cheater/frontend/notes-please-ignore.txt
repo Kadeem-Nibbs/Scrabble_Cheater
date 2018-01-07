@@ -21,11 +21,11 @@ to also include _ tiles since they are going to persist.
 that says 'see undo buttons for pattern for disabling button - need to wrap in span - pull that behaviour out into component if commonly need hover + disabled state buttons'
 
 DONE) [board] make it so when you click on a tile you can press right or down arrow key
-  - make it show input under direction arrows so you can capture that
-16) [organize css] urg
-17) [basic code quality] add propTypes
-18) [test] add unit tests 
-19) ?? done 
+16) Allow user to input '_' then the letter (when they are placing things on the board)
+17) [organize css] urg
+18) [basic code quality] add propTypes
+19) [test] add unit tests 
+20) ?? done 
 
 API fixed needed:
 two blank tiels = no results? 
