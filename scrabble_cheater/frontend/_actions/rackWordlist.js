@@ -34,7 +34,6 @@ const resetRack = (wordPlayed, currentRack) => ({
 // Playword Thunk
 export const playWordAndResetRackAndSuggestedWords = (wordInfo) => {
   return (dispatch, getState) => {
-
     dispatch(playWord(wordInfo))
 
     const wordPlayed = wordInfo[2]

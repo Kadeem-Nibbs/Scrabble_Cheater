@@ -64,7 +64,7 @@ class WordList extends Component {
 
   handleAddWord = (wordInfo) => {
     this.props.handlePlayWord(wordInfo)
-    this.handleMouseLeave() // un-highlight word added (could make a thunk ?)
+    this.handleMouseLeave()
   }
 
   render() {
@@ -75,7 +75,7 @@ class WordList extends Component {
           className="scrollable"
         >
           <Menu.Item>
-            <h4>Update the Rack, and Get Words!</h4>
+            <h4>Update your letters, <br /> and Get Words!</h4>
           </Menu.Item>
         </Menu>
       )
@@ -91,7 +91,7 @@ class WordList extends Component {
           this.props.suggestedWords && this.props.suggestedWords.length === 0 ?
           (    
             <Menu.Item>
-              <h4>No possible words with this rack</h4>
+              <h4>No possible words with <br /> these letters.</h4>
             </Menu.Item>
           
           ) : (

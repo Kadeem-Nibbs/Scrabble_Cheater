@@ -43,12 +43,12 @@ const board = (state = defaultState, action) => {
 
       if(firstY === secondY)  {
         for(let i = 0; i <= xDistance; i++) {
-          newTiles[firstY][firstX + i] = wordInfo[2][i].length === 2 ? wordInfo[2][i].split('')[0] : wordInfo[2][i]
+          newTiles[firstY][firstX + i] = wordInfo[2][i]
         }
 
       } else if (firstX === secondX) {
         for(let i = 0; i <= yDistance; i++) {
-          newTiles[firstY + i][firstX] = wordInfo[2][i].length === 2 ? wordInfo[2][i].split('')[0] : wordInfo[2][i]
+          newTiles[firstY + i][firstX] = wordInfo[2][i]
         }
       }
 

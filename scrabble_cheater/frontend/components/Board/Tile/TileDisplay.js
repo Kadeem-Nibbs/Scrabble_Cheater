@@ -45,6 +45,14 @@ class TileDisplay extends Component {
         highlightCell: false
       })
     }
+
+    // If the tile has been previously played, and the tile played is blank, 
+    // display it with underline
+    if(nextProps.cellCharacter[1]  === '_') {
+      this.setState({
+        blankTile: true
+      })
+    }
   }
 
   setHighlightStyles = (letterToHighlight) => {
@@ -94,7 +102,7 @@ class TileDisplay extends Component {
     }
 
     let playedTile = this.props.cellCharacter ? true : false
-
+    console.log('this.state.blankTile', this.state.blankTile);
     return (
       <Table.Cell
         selectable
