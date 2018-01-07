@@ -16,7 +16,7 @@ DONE) [rack] make it so that you can enter no more than two blank tiles
 DONE) [board] note which tiles on the board (that style on the board) were played with blank tiles (so send back Z_, is this already stored in redux state?)
 
 - will have to change logic to here https://github.com/Kadeem-Nibbs/Scrabble_Cheater/pull/9/files#diff-228da414c318c6c651b9876adfad84b6R25
-to also include _ tiles since they are going to persist. need to change API for blank + existing tiles.
+to also include _ tiles since they are going to persist. 
 - add comment https://github.com/Kadeem-Nibbs/Scrabble_Cheater/pull/9/files#diff-d22a49afa2a09b24bf1dcf6815a93354 
 that says 'see undo buttons for pattern for disabling button - need to wrap in span - pull that behaviour out into component if commonly need hover + disabled state buttons'
 
@@ -27,7 +27,5 @@ DONE) [board] make it so when you click on a tile you can press right or down ar
 18) [test] add unit tests 
 19) ?? done 
 
-
-backend 1) two blank tiels = no results? 
-NOPE V actually the board doesn't get sent back just the words, so need to deal w it on the frontend
-backend 2) need another signafier for 'blank AND already exists', something like #_
+API fixed needed:
+two blank tiels = no results? 
