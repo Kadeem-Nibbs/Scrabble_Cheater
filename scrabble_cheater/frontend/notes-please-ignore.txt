@@ -15,11 +15,8 @@ DONE) [Prod bug] websockets dont hit flask server on prod. (solution: proxy requ
 DONE) [rack] make it so that you can enter no more than two blank tiles
 DONE) [board] note which tiles on the board (that style on the board) were played with blank tiles (so send back Z_, is this already stored in redux state?)
 DONE) [board] make it so when you click on a tile you can press right or down arrow key
-17) Allow user to input '_' then the letter (when they are placing things on the board)
+DONE) Allow user to input '_' then the letter (when they are placing things on the board)
 18) [organize css] urg
-19) [basic code quality] add propTypes
+19) [code quality] add propTypes
 20) [test] add unit tests 
 21) ?? done 
-
-API fixed needed:
-two blank tiels = no results? 
