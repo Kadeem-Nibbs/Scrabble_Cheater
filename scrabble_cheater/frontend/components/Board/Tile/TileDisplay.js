@@ -102,7 +102,6 @@ class TileDisplay extends Component {
     }
 
     let playedTile = this.props.cellCharacter ? true : false
-    console.log('this.state.blankTile', this.state.blankTile);
     return (
       <Table.Cell
         selectable

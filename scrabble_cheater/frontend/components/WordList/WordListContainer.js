@@ -10,8 +10,8 @@ class WordListContainer extends Component {
       <WordList 
         suggestedWords={ this.props.suggestedWords }
 
-        handlePlayWord={ this.props.handlePlayWord }  // need to do 
-        handleHighlightWordOnHover={ this.props.handleHighlightWordOnHover } // doing
+        handlePlayWord={ this.props.handlePlayWord }
+        handleHighlightWordOnHover={ this.props.handleHighlightWordOnHover }
       />
     )
   } 

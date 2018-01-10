@@ -1,19 +1,15 @@
 import React, { Component } from 'react'
 import classNames from 'classnames'
 
-import { times } from 'lodash'
-import { Menu, Label } from 'semantic-ui-react'
+import { times, isEqual } from 'lodash'
+import { Menu } from 'semantic-ui-react'
+
+import Item from './Item'
 
 class WordList extends Component {
-  constructor(props) {
-    super(props) 
+  getCoordinatesToHighlight = (itemNumber)  => {
+    const wordInfo = this.props.suggestedWords[itemNumber]
 
-    this.state = {
-      wordHoveredKey: null
-    }
-  }
-
-  getCoordinatesToHighlight = (wordInfo)  => {
     const startOfWord = wordInfo[1][0]
     const endOfWord   = wordInfo[1][1]
     const wordArray = wordInfo[2]
@@ -50,21 +46,19 @@ class WordList extends Component {
     return coordinates
   }
 
-  handleMouseEnter = (e, wordInfo, i) => {
-    e.preventDefault()
-    const wordCoordinates = this.getCoordinatesToHighlight(wordInfo)
-    let wordHoveredKey = i
-    this.setState({ wordHoveredKey })
+  handleItemHover = (itemNumber) => {
+    const wordCoordinates = this.getCoordinatesToHighlight(itemNumber)
     this.props.handleHighlightWordOnHover(wordCoordinates)
   }
 
-  handleMouseLeave = (e) => {
-    this.props.handleHighlightWordOnHover([])
-  }
-
-  handleAddWord = (wordInfo) => {
+  handleAddWord = (itemNumber) => {
+    const wordInfo = this.props.suggestedWords[itemNumber]
     this.props.handlePlayWord(wordInfo)
     this.handleMouseLeave()
+  }
+
+  handleMouseLeave = () => {
+    this.props.handleHighlightWordOnHover([])
   }
 
   render() {
@@ -101,19 +95,14 @@ class WordList extends Component {
             const points = wordInfo[3]
 
             return(
-                <Menu.Item
-                  className={ classNames({ 'active': this.state.wordHoveredKey === i }) }
+                <Item 
                   key={ i }
-                  onMouseEnter={ (e) => this.handleMouseEnter(e, wordInfo, i) }
-                >
-                  {`${ word } is worth ${points} points`}
-                   <Label onClick={ this.handleAddWord.bind(this, wordInfo) }>
-                      <i 
-                        className="fa fa-plus-circle" 
-                        aria-hidden="true"
-                      ></i>
-                   </Label>
-                </Menu.Item>
+                  itemNumber={ i }
+                  handleItemHover={ this.handleItemHover }
+                  handleAddWord={ this.handleAddWord }
+                  word={ word }
+                  points={ points } 
+                />
               )
             })
           )
