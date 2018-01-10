@@ -25,7 +25,8 @@ const rack = (state = defaultState, action) => {
           // delete tiles that are already on board
           delete wordPlayedClone[i]
         } else if(wordPlayedClone[i].length === 2 && wordPlayedClone[i][1] === '_') {
-          // replace blank tiles letters `F_` with just the blank tile `_`
+          // since we are recalculating the rack we dont care what the blank letter
+          // is so, replace blank tiles letters `F_` with just the blank tile `_` 
           wordPlayedClone[i] = '_'
         }
       }

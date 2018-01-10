@@ -49,3 +49,33 @@
     }
   }
 }
+
+// Blank tile tooltip
+.show-blank-tile-tooltip:before {
+  content: "Enter Letter for blank tile";
+  position: absolute;
+  bottom: 28px;
+  left: 10px;
+  margin-bottom: 5px;
+  margin-left: -30px;
+  padding: 6px;
+  width: 180px;
+  border-radius: 3px;
+  background-color: #000;
+  color: #fff;
+  text-align: center;
+  font-size: 14px;
+}
+
+.show-blank-tile-tooltip:after {
+  position: absolute;
+  bottom: 28px;
+  left: 10px;
+  width: 0;
+  border-top: 5px solid #000;
+  border-right: 5px solid transparent;
+  border-left: 5px solid transparent;
+  content: " ";
+  font-size: 0;
+  line-height: 0;
+}

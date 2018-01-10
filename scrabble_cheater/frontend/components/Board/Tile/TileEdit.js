@@ -9,8 +9,17 @@ import './TileEdit.less'
 class EditTile extends Component {
   constructor(props) {
     super(props)
+
+    let value = ''
+    let enteredBlankTile = false
+    if(props.cellCharacter && props.cellCharacter[1] === '_') {
+      value = props.cellCharacter[0]
+      enteredBlankTile = true
+    }
+
     this.state = {
-      value: props.cellCharacter ? props.cellCharacter : ''
+      value,
+      enteredBlankTile
     }
   }
 
@@ -42,7 +51,9 @@ class EditTile extends Component {
     // Bad UX side effect: user has to hit 'enter' to clear the tile if that is their intention.
     // Seems like hitting enter is a natural user motion though so think its fine, 
     //  but maybe TODO: allow backspace to submit clear tile here. Have to rework undo some for that.
-    if (e.keyCode === 8 && this.state.value === '') {
+    if(e.keyCode === 8 && this.state.enteredBlankTile) {
+      this.setState({ enteredBlankTile: false })
+    } else if (e.keyCode === 8 && this.state.value === '') {
       this.props.undoTilePlacement()
     }
   }
@@ -50,11 +61,19 @@ class EditTile extends Component {
   changeTileValue = (e, target = { value: '' }) => {
     const { value } = target
     if(value.length > 1 ) { return } 
+
+    if(value === '_') {
+      this.setState({ 
+        enteredBlankTile: true
+      })
+      return
+    }
+
     if(value.length === 0 ) {
       this.setState({ value: '' })
     }
 
-    if(/^[A-Za-z_]+$/.test(value)) {
+    if(/^[A-Za-z]+$/.test(value)) {
       this.setState({ value: value.toUpperCase() }, () => {
         this.handleSubmitTile()
       })
@@ -63,10 +82,15 @@ class EditTile extends Component {
 
   handleSubmitTile = (e) => {
     if(e) { e.preventDefault() }
-    this.props.handleTileSubmit(this.state.value)
+    if(this.state.value && this.state.enteredBlankTile) {
+      this.props.handleTileSubmit(`${this.state.value}_`)
+    } else {
+      this.props.handleTileSubmit(this.state.value)
+    }
   }
 
   handleCaptureDirectionArrow = (e) => {
+    e.preventDefault()
     if (e.keyCode === 39) { 
       this.props.handleSetMoveDirection('right')
     } else if (e.keyCode === 40) {
@@ -81,6 +105,7 @@ class EditTile extends Component {
           { // Force user to select a direction
             this.props.direction ? (
               <Input
+                className={ classNames({ 'show-blank-tile-tooltip': this.state.enteredBlankTile }) } 
                 onFocus={ this.highlightOnFocus }
                 value={ this.state.value } 
                 onChange={ this.changeTileValue } 
