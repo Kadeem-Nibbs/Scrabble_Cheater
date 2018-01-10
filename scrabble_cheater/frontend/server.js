@@ -1,5 +1,5 @@
 let express = require('express')
-var proxy = require('http-proxy-middleware')
+let proxy = require('http-proxy-middleware')
 let app = express()
 let port = 80
 
@@ -13,12 +13,12 @@ if(process.env.NODE_ENV === 'local_production_test') {
 app.use('/dist', express.static('dist'))
 app.use(express.static(__dirname + '/dist'))
 
-var wsProxy = proxy('/', {
+let wsProxy = proxy('/', {
   target: 'http://0.0.0.0:4000',
   changeOrigin: false,
   ws: true
 })
 
 app.use(wsProxy)
-var server = app.listen(port)
+let server = app.listen(port)
 server.on('upgrade', wsProxy.upgrade)

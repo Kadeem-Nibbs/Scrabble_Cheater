@@ -17,13 +17,16 @@ TERMINAL = '$' # denotes the end of a word in trie
 TILE_ON_BOARD = "#" # denotes a tile on the board that was used to create a
                     # new word
 EMPTY_BOARD = [[None for x in range(BOARD_SIZE)] for y in range(BOARD_SIZE)]
-WORD_FILE = "ENABLE.txt" # Enhanced North American Benchmark Lexicon with
+WWF_WORD_FILE = "ENABLE.txt" # Enhanced North American Benchmark Lexicon with
                          # with a few hundred additions of more modern words
                          # and about 100 deletions of offensive words made by
                          # Zynga
+SCRABBLE_WORD_FILE = "ospd.txt" # Official Scrabble Player's Dictionary
 GUI_DIMENSIONS = '600x600'
-dictionary = {} # for checking if a word is in dictionary
-trie = {} # for seeing what words can be made on the board with rack
+wwf_dictionary = {} # for checking if a word is in dictionary
+scrabble_dictionary = {}
+wwf_trie = {} # for seeing what words can be made on the board with rack
+scrabble_trie = {}
 
 class Display(object):
 
@@ -125,6 +128,7 @@ class Display(object):
         self.board.read_board(self.input_board)
         print_board(self.board.board)
         rack = self.rack_entry.get().upper()
+        self.word_finder.set_game(self.game)
         self.word_finder.load_rack(rack)
         #self.word_finder.update_board(self.board)
         best_plays = self.word_finder.find_highest_scoring_words()
@@ -162,9 +166,11 @@ class Board(object):
         if game == SCRABBLE:
             self.letter_values = SCRABBLE_LETTER_VALUES
             self.bonus_tiles = SCRABBLE_BONUS_TILES
+            self.dictionary = scrabble_dictionary
         elif game == WORDS_WITH_FRIENDS:
             self.letter_values = WWF_LETTER_VALUES
             self.bonus_tiles = WWF_BONUS_TILES
+            self.dictionary = wwf_dictionary
         else:
             raise ValueError("%s is not a supported game" % game)
         self.read_board(self.input_board)
@@ -175,8 +181,12 @@ class Board(object):
     def set_game(self, game):
         if game == SCRABBLE:
             self.letter_values = SCRABBLE_LETTER_VALUES
+            self.bonus_tiles = SCRABBLE_BONUS_TILES
+            self.dictionary = scrabble_dictionary
         elif game == WORDS_WITH_FRIENDS:
             self.letter_values = WWF_LETTER_VALUES
+            self.bonus_tiles = WWF_BONUS_TILES
+            self.dictionary = wwf_dictionary
         else:
             raise ValueError("%s is not a supported game" % game)
         self.game = game
@@ -438,7 +448,7 @@ class Board(object):
             self.cross_checks[square] = set()
             for c in ALPHABET:
                 possible_word = check_string % c
-                if word_in_dict(possible_word):
+                if word_in_dict(self.dictionary, possible_word):
                     self.cross_checks[square] |= set(c)
 
     def can_play_letter(self, x, y, letter):
@@ -479,8 +489,10 @@ class WordFinder(object):
         self.game = self.board.game
         if self.game == SCRABBLE:
             self.full_rack_bonus = SCRABBLE_FULL_RACK_BONUS
+            self.trie = scrabble_trie
         elif self.game == WORDS_WITH_FRIENDS:
             self.full_rack_bonus = WWF_FULL_RACK_BONUS
+            self.trie = wwf_trie
         if rack:
             self.rack = rack
         else:
@@ -492,8 +504,10 @@ class WordFinder(object):
     def set_game(self, game):
         if game == SCRABBLE:
             self.full_rack_bonus = SCRABBLE_FULL_RACK_BONUS
+            self.trie = scrabble_trie
         elif game == WORDS_WITH_FRIENDS:
             self.full_rack_bonus = WWF_FULL_RACK_BONUS
+            self.trie = wwf_trie
         else:
             raise ValueError("%s is not a supported game" % game)
         self.game = game
@@ -527,7 +541,7 @@ class WordFinder(object):
         """
         self.prefixes = [[] for x in range(MAX_RACK_LENGTH+1)]
         rack = make_counter(self.rack)
-        self.get_all_prefixes_rec(trie, rack, "", ())
+        self.get_all_prefixes_rec(self.trie, rack, "", ())
 
     def get_all_prefixes_rec(self, node, remaining_tiles, pref, tiles_used):
         """
@@ -682,9 +696,6 @@ class WordFinder(object):
                               "bonus": bonus,
                               "letter": letter,}
             if bonus:
-                if board.part_of_vertical_word(row, column):
-                    cw_score = self.crossing_word_score(board_position)
-                    crossing_word_scores.append(cw_score)
                 if bonus[1] == 'L':
                     score += board.letter_values[letter] * int(bonus[0])
                 elif bonus[1] == 'W':
@@ -692,12 +703,12 @@ class WordFinder(object):
                     multiplier *= int(bonus[0])
             else:
                 score += board.letter_values[letter]
-                if board.part_of_vertical_word(row, column):
-                    cw_score = self.crossing_word_score(board_position)
-                    crossing_word_scores.append(cw_score)
-        score *= multiplier
-        score += sum(crossing_word_scores)
-        tiles_played = [tile for tile in tiles_used if len(tile) == 1]
+            if board.part_of_vertical_word(row, column):
+                cw_score = self.crossing_word_score(board_position)
+                crossing_word_scores.append(cw_score)
+        score = (score * multiplier) + sum(crossing_word_scores)
+        tiles_played = [tile for tile in tiles_used if ((len(tile) == 1) or \
+                        (len(tile) == 2 and tile[1] == BLANK_TILE))]
         if len(tiles_played) == 7:
             score += self.full_rack_bonus
         return score
@@ -710,8 +721,8 @@ class WordFinder(object):
         Parameters:
         -----------
         board_position: dictionary with the following key-value pairs
-            "board": Board
-                Either self.board or self.board_t
+            "board": 2-d list
+                The game board
             "position": 2-tuple of ints, (row, column)
             "letter": single-character string
                 Letter of the vertical word that intersects with the across word we
@@ -845,7 +856,8 @@ class WordFinder(object):
                                'anchor_square': anchor_square,}
         for letter in node.keys():
             if letter == TERMINAL:
-                tiles_played = [tile for tile in tiles_used if len(tile) == 1]
+                tiles_played = [tile for tile in tiles_used if ((len(tile) == 1) or \
+                                (len(tile) == 2 and tile[1] == BLANK_TILE))]
                 if tiles_played and (row, column) != anchor_square:
                     word = node[TERMINAL]
                     start, end = (row, column-len(word)), (row, column-1)
@@ -903,7 +915,9 @@ class WordFinder(object):
         board = board_position['board']
         tiles_used = rack_state['tiles_used']
         if TERMINAL in node.keys():
-            if tiles_used:
+            tiles_played = [tile for tile in tiles_used if ((len(tile) == 1) or \
+                            (len(tile) == 2 and tile[1] == BLANK_TILE))]
+            if tiles_played:
                 word = node[TERMINAL]
                 start, end = (row, column-len(word)), (row, column-1)
                 score = self.score_word(board, tiles_used, (start, end))
@@ -1017,34 +1031,53 @@ class WordFinder(object):
         all_words = list(set(across_words)) + list(set(down_words))
         return sorted(all_words, key=lambda w: w[3], reverse=True)
 
-def init_dictionary(f):
+def init_wwf_dictionary(f):
     """
     Initialize word_list with words from specified file.
 
     Parameters:
     -----------
     f: string
-        Name of file containing dictionary words.
+        Name of file containing legal Words with Friends words.
 
     """
     with open(f, 'r') as word_file:
         for line in word_file:
             word = line.strip()
             key = "".join(sorted(word))
-            if dictionary.get(key):
-                dictionary[key].append(word)
+            if wwf_dictionary.get(key):
+                wwf_dictionary[key].append(word)
             else:
-                dictionary[key] = [word]
+                wwf_dictionary[key] = [word]
 
-def init_trie(dictionary):
+def init_scrabble_dictionary(f):
+    """
+    Initialize word_list with words from specified file.
+
+    Parameters:
+    -----------
+    f: string
+        Name of file containing legal Scrabble words.
+
+    """
+    with open(f, 'r') as word_file:
+        for line in word_file:
+            word = line.strip()
+            key = "".join(sorted(word))
+            if scrabble_dictionary.get(key):
+                scrabble_dictionary[key].append(word)
+            else:
+                scrabble_dictionary[key] = [word]
+
+def init_wwf_trie():
     """
     Initializes the trie global variable as a dictionary-based trie.  Reads
     the dictionary global variable to construct the trie.
 
     """
-    for key in dictionary:
-        for word in dictionary[key]:
-            node = trie
+    for key in wwf_dictionary:
+        for word in wwf_dictionary[key]:
+            node = wwf_trie
             for c in word:
                 if node.get(c):
                     node = node[c]
@@ -1053,7 +1086,24 @@ def init_trie(dictionary):
                     node = node[c]
             node[TERMINAL] = word
 
-def word_in_dict(word):
+def init_scrabble_trie():
+    """
+    Initializes the trie global variable as a dictionary-based trie.  Reads
+    the dictionary global variable to construct the trie.
+
+    """
+    for key in scrabble_dictionary:
+        for word in scrabble_dictionary[key]:
+            node = scrabble_trie
+            for c in word:
+                if node.get(c):
+                    node = node[c]
+                else:
+                    node[c] = {}
+                    node = node[c]
+            node[TERMINAL] = word
+
+def word_in_dict(dictionary, word):
     """
     Looks up word in dictionary by using the word's sorted string form as a
     key.
@@ -1199,8 +1249,10 @@ def find_creatable_words(trie, rack):
     return words_from_rack(trie, rack)
 
 def main():
-    init_dictionary(WORD_FILE)
-    init_trie(dictionary)
+    init_wwf_dictionary(WWF_WORD_FILE)
+    init_scrabble_dictionary(SCRABBLE_WORD_FILE)
+    init_wwf_trie()
+    init_scrabble_trie()
     b = Board([[None for x in range(BOARD_SIZE)] for y in range(BOARD_SIZE)], WORDS_WITH_FRIENDS)
     wf = WordFinder(b)
     display = Display(b, wf)

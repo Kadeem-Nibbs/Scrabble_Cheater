@@ -1,3 +1,4 @@
+// Should get these passed up from the backend on `connected` to make sure no discrepency happens
 export const scores = {
   wwf: {
     trippleWordScore: [[3, 0], [11, 0], [0, 3], [14, 3], [0, 11], [14, 11], [3, 14], [11, 14]],
