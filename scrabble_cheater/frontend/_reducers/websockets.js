@@ -11,12 +11,12 @@ const defaultState = {
 
 const getWords = (state = defaultState, action) => {
   switch (action.type) {
-    case RESET_SUGGESTED_WORDS: 
+    case RESET_SUGGESTED_WORDS:
       return {
         ...state,
         suggestedWords: null
       }
-    case SENT_TABLE_DATA: 
+    case SENT_TABLE_DATA:
       return {
         ...state,
         loading: true

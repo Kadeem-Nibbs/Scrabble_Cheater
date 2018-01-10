@@ -13,7 +13,6 @@ const rack = (state = defaultState, action) => {
         letters: action.letters
       }
     case REMOVE_PLAYED_LETTERS_FROM_RACK:
-      // TODO: could refactor this to be nicer to read im sure
       const { wordPlayed, currentRack } = action
 
       // split rack into array 
@@ -22,10 +21,15 @@ const rack = (state = defaultState, action) => {
       let wordPlayedClone = wordPlayed.slice()
 
       for(let i = wordPlayedClone.length; i--;) {
-        if(wordPlayedClone[i].length === 2 && wordPlayedClone[i][1] !== '_') {
-          delete wordPlayedClone[i] // delete tiles that are already on board
+        if(wordPlayedClone[i].length === 2 && wordPlayedClone[i][1] === '#') {
+          // delete tiles that are already on board
+          delete wordPlayedClone[i]
+        } else if(wordPlayedClone[i].length === 2 && wordPlayedClone[i][1] === '_') {
+          // replace blank tiles letters `F_` with just the blank tile `_`
+          wordPlayedClone[i] = '_'
         }
       }
+
       // get rid of empty cells
       wordPlayedClone = wordPlayedClone.join('').split('').slice()
 

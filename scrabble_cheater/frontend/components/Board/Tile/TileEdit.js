@@ -74,8 +74,6 @@ class EditTile extends Component {
     }
   }
 
-
-
   render() {
     return (
       <Table.Cell>

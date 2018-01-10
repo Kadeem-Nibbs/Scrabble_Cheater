@@ -14,18 +14,12 @@ DONE) [UX bug wordlist] when you click undo, clear (or hide) the wordlist as its
 DONE) [Prod bug] websockets dont hit flask server on prod. (solution: proxy requests to websockets in express)
 DONE) [rack] make it so that you can enter no more than two blank tiles
 DONE) [board] note which tiles on the board (that style on the board) were played with blank tiles (so send back Z_, is this already stored in redux state?)
-
-- will have to change logic to here https://github.com/Kadeem-Nibbs/Scrabble_Cheater/pull/9/files#diff-228da414c318c6c651b9876adfad84b6R25
-to also include _ tiles since they are going to persist. 
-- add comment https://github.com/Kadeem-Nibbs/Scrabble_Cheater/pull/9/files#diff-d22a49afa2a09b24bf1dcf6815a93354 
-that says 'see undo buttons for pattern for disabling button - need to wrap in span - pull that behaviour out into component if commonly need hover + disabled state buttons'
-
 DONE) [board] make it so when you click on a tile you can press right or down arrow key
-16) Allow user to input '_' then the letter (when they are placing things on the board)
-17) [organize css] urg
-18) [basic code quality] add propTypes
-19) [test] add unit tests 
-20) ?? done 
+17) Allow user to input '_' then the letter (when they are placing things on the board)
+18) [organize css] urg
+19) [basic code quality] add propTypes
+20) [test] add unit tests 
+21) ?? done 
 
 API fixed needed:
 two blank tiels = no results? 
