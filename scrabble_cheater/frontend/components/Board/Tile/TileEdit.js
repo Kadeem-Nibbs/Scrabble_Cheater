@@ -10,8 +10,9 @@ class EditTile extends Component {
   constructor(props) {
     super(props)
 
-    let value = ''
+    let value = props.cellCharacter ? props.cellCharacter : ''
     let enteredBlankTile = false
+
     if(props.cellCharacter && props.cellCharacter[1] === '_') {
       value = props.cellCharacter[0]
       enteredBlankTile = true
@@ -63,9 +64,7 @@ class EditTile extends Component {
     if(value.length > 1 ) { return } 
 
     if(value === '_') {
-      this.setState({ 
-        enteredBlankTile: true
-      })
+      this.setState({ enteredBlankTile: true })
       return
     }
 
