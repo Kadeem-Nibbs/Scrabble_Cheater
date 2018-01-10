@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { ActionCreators as UndoActionCreators } from 'redux-undo'
 import classNames from 'classnames'
-import { isEqual, some } from 'lodash'
+import { some } from 'lodash'
 
 import { 
   setMoveDirection,

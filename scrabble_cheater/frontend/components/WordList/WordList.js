@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import classNames from 'classnames'
 
-import { times, isEqual } from 'lodash'
+import { times } from 'lodash'
 import { Menu } from 'semantic-ui-react'
 
 import Item from './Item'
