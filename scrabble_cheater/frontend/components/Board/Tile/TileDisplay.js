@@ -25,6 +25,8 @@ class TileDisplay extends Component {
   componentWillMount() {
     this.setSpecialScoreTiles()
     // If user has just entered a blank tile, style properly
+    // need to do in componentWillMount as well as componentWillReceiveProps
+    // as TileDisplay is re-created after TileEdit is submitted
     if(this.props.cellCharacter[1]  === '_') {
       this.setState({
         blankTile: true
