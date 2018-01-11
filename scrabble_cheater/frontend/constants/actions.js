@@ -20,3 +20,6 @@ export const RECEIVED_SUGGESTED_WORDS = 'RECEIVED_SUGGESTED_WORDS'
 
 // Gametype 
 export const TOGGLE_GAME_TYPE = 'TOGGLE_GAME_TYPE'
+
+// Reset board
+export const CLEAR_BOARD = 'CLEAR_BOARD'

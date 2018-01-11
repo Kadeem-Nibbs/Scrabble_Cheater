@@ -4,10 +4,12 @@ import { connect } from 'react-redux'
 import classNames from 'classnames'
 import { Button } from 'semantic-ui-react'
 
-import { BTN_UNDO, BTN_REDO } from '../../constants/board'
+import { clearBoard } from '../../_actions/tileBoard'
 
-import './UndoRedo.less'
-class UndoRedo extends Component {
+import { BTN_UNDO, BTN_REDO, BTN_CLEAR } from '../../constants/board'
+
+import './UndoRedoClear.less'
+class UndoRedoClear extends Component {
   render() {
     return(
       <p className="undo-redo">
@@ -29,19 +31,32 @@ class UndoRedo extends Component {
             Redo
           </Button>
         </span>
+        <span className={ classNames({ 'disabled': !this.props.canUndo  && !this.props.canRedo } ) }>
+          <Button 
+            className={ BTN_CLEAR }
+            disabled={ !this.props.canUndo  && !this.props.canRedo }
+            onClick={ this.props.clearBoard }
+          >
+            Clear All
+          </Button>
+        </span>
       </p>
     )
   }
 }
 
-const mapStateToProps = (state) => ({
-  canUndo: state.board.past.length > 0,
-  canRedo: state.board.future.length > 0
-})
+const mapStateToProps = (state) => {
+  return {
+    canUndo: state.board.past.length > 0,
+    canRedo: state.board.future.length > 0
+  }
+}
 
 const mapDispatchToProps = ({
   onUndo: UndoActionCreators.undo,
-  onRedo: UndoActionCreators.redo
+  onRedo: UndoActionCreators.redo,
+  clearBoard: clearBoard
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(UndoRedo)
+
+export default connect(mapStateToProps, mapDispatchToProps)(UndoRedoClear)

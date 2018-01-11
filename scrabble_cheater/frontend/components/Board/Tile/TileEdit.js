@@ -108,7 +108,7 @@ class EditTile extends Component {
                 onFocus={ this.highlightOnFocus }
                 value={ this.state.value } 
                 onChange={ this.changeTileValue } 
-                ref={ (ref) => { this.inputRef = ref }}
+                ref={ (ref) => { this.inputRef = ref } }
                 onKeyDown={ this.handleKeyDown }
               />
             ) : (

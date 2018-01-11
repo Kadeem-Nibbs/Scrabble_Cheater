@@ -10,7 +10,8 @@ import {
   NUMBER_OF_ROWS, 
   NUMBER_OF_COLS, 
   BTN_UNDO, 
-  BTN_REDO 
+  BTN_REDO,
+  BTN_CLEAR 
 } from '../../constants/board'
 
 class Board extends Component {
@@ -30,7 +31,8 @@ class Board extends Component {
 
   handleClickOutside = (e) => {
     // We dont want to trigger this if the user is clicking an 'undo' button
-    const undoButton = e.target.className === BTN_UNDO || e.target.className === BTN_REDO
+    const btnClass = e.target.className
+    const undoButton = btnClass === BTN_UNDO || btnClass === BTN_REDO || btnClass === BTN_CLEAR
 
     if (this.wrapperRef && !this.wrapperRef.contains(e.target) && !undoButton) {
       this.props.stopEditingTiles()

@@ -2,9 +2,13 @@ import {
   MAKE_TILE_EDITABLE, 
   TOGGLE_GAME_TYPE,
   SET_MOVE_DIRECTION,
-  CHANGE_COORDINATE_VALUE
+  CHANGE_COORDINATE_VALUE,
+  CLEAR_BOARD
 } from '../constants/actions'
 
+export const clearBoard = () => {
+  return { type: CLEAR_BOARD }
+}
 
 export const toggleGameType = () => {
   return { type: TOGGLE_GAME_TYPE }

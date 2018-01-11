@@ -24,3 +24,4 @@ export const TOTAL_TILES = NUMBER_OF_ROWS * NUMBER_OF_COLS
 // classNames
 export const BTN_UNDO = 'btn-undo'
 export const BTN_REDO = 'btn-redo'
+export const BTN_CLEAR = 'btn-clear'
