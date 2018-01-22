@@ -13,8 +13,15 @@
     "test:coverage": "jest --coverage"
   },
   "jest": {
-    "setupFiles": ["./test/jest-setup.js"],
-    "snapshotSerializers": ["enzyme-to-json/serializer"]
+    "setupFiles": [
+      "./test/jest-setup.js"
+    ],
+    "snapshotSerializers": [
+      "enzyme-to-json/serializer"
+    ],
+    "moduleNameMapper": {
+      "^.+\\.(less)$": "identity-obj-proxy"
+    }
   },
   "dependencies": {
     "classnames": "^2.2.5",
@@ -42,6 +49,7 @@
     "enzyme": "^3.3.0",
     "enzyme-adapter-react-16": "^1.1.1",
     "enzyme-to-json": "^3.3.0",
+    "identity-obj-proxy": "^3.0.0",
     "jest": "^22.1.4",
     "parcel-bundler": "^1.2.1",
     "react-addons-test-utils": "^15.6.2",
