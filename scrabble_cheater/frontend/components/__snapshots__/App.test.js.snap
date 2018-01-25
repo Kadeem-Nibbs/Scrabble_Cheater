@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`render App 1`] = `
+<Container
+  className="mt-50px"
+>
+  <Grid
+    className="scrabble-container centered"
+  >
+    <GridColumn
+      className="fixed-width-left-col"
+    >
+      <HeaderLeft />
+      <Connect(BoardContainer) />
+      <Connect(ToggleGameTypeContainer) />
+      <Connect(UndoRedoClear) />
+    </GridColumn>
+    <GridColumn
+      className="mt-34px fixed-width-right-col"
+    >
+      <HeaderRight />
+      <Connect(RackContainer) />
+      <Connect(WordListContainer) />
+    </GridColumn>
+  </Grid>
+</Container>
+`;

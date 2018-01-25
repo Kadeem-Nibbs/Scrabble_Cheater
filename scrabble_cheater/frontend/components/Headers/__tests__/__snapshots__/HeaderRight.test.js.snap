@@ -1,0 +1,28 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`render HeaderRight 1`] = `
+<Label
+  className="mb-15px"
+>
+  <Icon
+    as="i"
+    name="info"
+  />
+   Enter 
+  <span
+    className="big-underscore"
+  >
+    _
+  </span>
+   for blank tiles.
+  <div>
+    Blank tiles on the board will be above a 
+    <span
+      className="big-underscore"
+    >
+      _
+    </span>
+    .
+  </div>
+</Label>
+`;

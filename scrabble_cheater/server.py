@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, redirect
+from flask import Flask, request, redirect
 
 from flask_socketio import SocketIO, emit, send
 from scrabble_cheater import Board, WordFinder, init_wwf_dictionary, init_wwf_trie
@@ -14,13 +14,10 @@ socketio = SocketIO(app)
 
 board = Board(EMPTY_BOARD, 'wwf')
 wf = WordFinder(board)
-# @app.before_request
-# def before_request():
-#     pass
-#
-@app.route('/')
-def index():
-    return render_template("index.html")
+
+@socketio.on('connect')
+def print_connected_status():
+    print "Sockets Connected."
 
 @socketio.on('analyze_board')
 def display_highest_scoring_words(game_data_json):
@@ -40,4 +37,4 @@ if __name__ == "__main__":
     init_scrabble_dictionary(SCRABBLE_WORD_FILE)
     init_wwf_trie()
     init_scrabble_trie()
-    socketio.run(app)
+    socketio.run(app, port=4000)
