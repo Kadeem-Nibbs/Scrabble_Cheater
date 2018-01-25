@@ -1,4 +1,11 @@
+.DS_Store
+DO_THIS_FIRST.md
+node_modules
 *.pyc
 __pycache__/
 *.pickle
 venv*
+dist
+dev
+scrabble_cheater/frontend/dev/
+.cache

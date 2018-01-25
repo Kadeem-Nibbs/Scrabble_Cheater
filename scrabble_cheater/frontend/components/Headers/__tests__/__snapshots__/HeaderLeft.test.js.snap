@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`render HeaderLeft 1`] = `
+<Header
+  as="h2"
+>
+  Get solutions for board games!
+  <HeaderSubheader>
+    Generate answers for Words with friends or Scrabble!
+  </HeaderSubheader>
+  <HeaderSubheader
+    className="mt-10px mb-15px"
+  >
+    <h5>
+      Click on a tile below, select a direction, and enter a word.
+    </h5>
+  </HeaderSubheader>
+</Header>
+`;

@@ -1,0 +1,58 @@
+{
+  "name": "scrabble_cheater",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/Kadeem-Nibbs/Scrabble_Cheater",
+  "license": "MIT",
+  "scripts": {
+    "dev": "parcel index.html --out-dir dev --open",
+    "build": "parcel build index.html --out-dir dist",
+    "serve": "npm run build && node server.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+  },
+  "jest": {
+    "setupFiles": [
+      "./test/jest-setup.js"
+    ],
+    "snapshotSerializers": [
+      "enzyme-to-json/serializer"
+    ],
+    "moduleNameMapper": {
+      "^.+\\.(less)$": "identity-obj-proxy"
+    }
+  },
+  "dependencies": {
+    "classnames": "^2.2.5",
+    "express": "^4.16.2",
+    "http-proxy-middleware": "^0.17.4",
+    "less": "^2.7.3",
+    "lodash": "^4.17.4",
+    "prop-types": "^15.6.0",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "react-redux": "^5.0.6",
+    "redux": "^3.7.2",
+    "redux-thunk": "^2.2.0",
+    "redux-undo": "^0.6.1",
+    "semantic-ui-react": "^0.77.0",
+    "shortid": "^2.2.8",
+    "socket.io-client": "^2.0.4"
+  },
+  "devDependencies": {
+    "babel-jest": "^22.1.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "enzyme": "^3.3.0",
+    "enzyme-adapter-react-16": "^1.1.1",
+    "enzyme-to-json": "^3.3.0",
+    "identity-obj-proxy": "^3.0.0",
+    "jest": "^22.1.4",
+    "parcel-bundler": "^1.2.1",
+    "react-addons-test-utils": "^15.6.2",
+    "react-test-renderer": "^16.2.0"
+  }
+}

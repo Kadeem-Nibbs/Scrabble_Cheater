@@ -2,6 +2,7 @@ BOARD_SIZE = 15
 MAX_RACK_LENGTH = 7
 WWF_FULL_RACK_BONUS = 35
 SCRABBLE_FULL_RACK_BONUS = 50
+ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 SCRABBLE_LETTER_VALUES = {'A': 1,
                          'B': 3,
@@ -78,10 +79,10 @@ SCRABBLE_BONUS_TILES = {(0, 0): "3W",
                        (11, 3): "2W",
                        (14, 3): "2L",
                        (4, 4): "2W",
-                       (10, 4): "2L",
+                       (10, 4): "2W",
                        (1, 5): "3L",
                        (5, 5): "3L",
-                       (9, 5): "2L",
+                       (9, 5): "3L",
                        (13, 5): "3L",
                        (2, 6): "2L",
                        (6, 6): "2L",
@@ -152,7 +153,6 @@ WWF_BONUS_TILES = {(3, 0): "3W",
                    (10, 6): "2L",
                    (14, 6): "3L",
                    (3, 7): "2W",
-                   (7, 7): "2W",
                    (11, 7): "2W",
                    (0, 8): "3L",
                    (4, 8): "2L",
