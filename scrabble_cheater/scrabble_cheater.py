@@ -6,7 +6,6 @@ from scrabble_constants import WWF_FULL_RACK_BONUS, MAX_RACK_LENGTH, BOARD_SIZE
 from copy import deepcopy
 
 # To Do:
-# - Allow toggling between Scrabble and Words with Friends
 # - Experiment with OpenCV for reading board states
 
 SCRABBLE = "scrabble"
@@ -29,7 +28,8 @@ wwf_trie = {} # for seeing what words can be made on the board with rack
 scrabble_trie = {}
 
 class Display(object):
-
+    """To run scrabble_cheater through terminal."""
+    
     def __init__(self, board, word_finder):
         """
         Initializes a Display object with associations to a Board and a
