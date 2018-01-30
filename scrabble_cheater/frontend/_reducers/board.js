@@ -24,13 +24,15 @@ const board = (state = defaultState, action) => {
     case CHANGE_COORDINATE_VALUE:
       const  { x, y } = action.coordinates
     
-      newTiles[y][x] = action.value
+      // If the user has set the input to blank (which react likes to use '' for)
+      // set it to null in the `state` as the backend expects a null value
+      newTiles[y][x] = action.value === "" ? null : action.value
 
       return {
         ...state,
         tiles: newTiles
       }
-    case PLAY_WORD: 
+    case PLAY_WORD:
       const { wordInfo } = action
       const firstY = wordInfo[1][0][0]
       const secondY = wordInfo[1][1][0]
