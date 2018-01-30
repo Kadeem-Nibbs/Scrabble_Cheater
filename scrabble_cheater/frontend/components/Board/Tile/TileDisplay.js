@@ -25,7 +25,7 @@ class TileDisplay extends Component {
   componentWillMount() {
     this.setSpecialScoreTiles()
     // If user has just entered a blank tile, style properly.
-    if(this.props.cellCharacter[1]  === '_') {
+    if(this.props.cellCharacter && this.props.cellCharacter[1]  === '_') {
       this.setState({
         blankTile: true
       })
@@ -54,7 +54,7 @@ class TileDisplay extends Component {
 
     // If the tile has been previously played, and the tile played is blank, 
     // display it with underline
-    if(nextProps.cellCharacter[1]  === '_') {
+    if(nextProps.cellCharacter && nextProps.cellCharacter[1]  === '_') {
       this.setState({
         blankTile: true
       })
