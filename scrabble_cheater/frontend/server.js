@@ -9,7 +9,7 @@ let port
 let sslPath
 let options
 
-// To test  from terminal: 
+// To test  from terminal:
 // To test the production build locally run:
 //  `NODE_ENV=local_production_test npm run serve`
 //  Must have ran `yarn build` first.
