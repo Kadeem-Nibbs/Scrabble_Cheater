@@ -2,13 +2,13 @@
 
 exports[`render HeaderLeft 1`] = `
 <Header
-  as="h2"
+  as="h3"
 >
-  Get answers for Words with Friends!
+  Get answers for Words with Friends or Scrabble!
   <HeaderSubheader>
-    <h3>
+    <h4>
       Click on a tile below, select a direction, and enter a word.
-    </h3>
+    </h4>
   </HeaderSubheader>
 </Header>
 `;
