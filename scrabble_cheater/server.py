@@ -26,7 +26,6 @@ def print_connected_status():
     print "Sockets Connected."
 
 @socketio.on('analyze_board')
-@profile(immediate=True)
 def display_highest_scoring_words(game_data_json):
     game_data = json.loads(game_data_json)
     game_board = game_data['board']
