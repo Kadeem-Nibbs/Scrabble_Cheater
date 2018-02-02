@@ -4,16 +4,11 @@ exports[`render HeaderLeft 1`] = `
 <Header
   as="h2"
 >
-  Get solutions for board games!
+  Get answers for Words with Friends!
   <HeaderSubheader>
-    Generate answers for Words with friends or Scrabble!
-  </HeaderSubheader>
-  <HeaderSubheader
-    className="mt-10px mb-15px"
-  >
-    <h5>
+    <h3>
       Click on a tile below, select a direction, and enter a word.
-    </h5>
+    </h3>
   </HeaderSubheader>
 </Header>
 `;

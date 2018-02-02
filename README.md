@@ -23,3 +23,10 @@ Navigate to `scrabble_cheater/frontend/` to install dependencies and run server:
 npm run install
 npm run dev
 ```
+
+Run frontend tests: 
+
+`npm run test`
+
+If you make changes to existing components, update the components snapshot by running:
+`npm run jest --updateSnapshot`
