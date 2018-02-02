@@ -6,7 +6,6 @@ from scrabble_cheater import init_scrabble_dictionary, init_scrabble_trie
 from scrabble_cheater import WWF_WORD_FILE, SCRABBLE_WORD_FILE, wwf_dictionary
 from scrabble_cheater import scrabble_dictionary, wwf_trie, scrabble_trie, EMPTY_BOARD
 from scrabble_cheater import print_board
-from profilehooks import profile
 
 import json
 
