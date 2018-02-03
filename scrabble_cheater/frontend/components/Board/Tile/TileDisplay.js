@@ -44,10 +44,7 @@ class TileDisplay extends Component {
     } 
 
     const clearHighlightCell = nextProps.letterToHighlight === '' && this.state.highlightCell
-    // This is specifically for Clear Board - could hook this up to redux action instead of doing this check
-    const tileCleared = this.props.cellCharacter && !nextProps.cellCharacter
-
-    if(clearHighlightCell || tileCleared) {
+    if(clearHighlightCell) {
       // Reset highlight state
       this.setState({
         onBoard: false,
@@ -56,11 +53,16 @@ class TileDisplay extends Component {
       })
     }
 
-    // If the tile has been previously played, and the tile played is blank, 
+    // If the tile has been played, and the tile played is blank, 
     // display it with underline
     if(nextProps.cellCharacter && nextProps.cellCharacter[1]  === '_') {
       this.setState({
         blankTile: true
+      })
+    } else if(!nextProps.cellCharacter && this.state.blankTile) {
+      // Reset this.state.blankTile if tile is cleared and it was blank
+      this.setState({
+        blankTile: false
       })
     }
   }
