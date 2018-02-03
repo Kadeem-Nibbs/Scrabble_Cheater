@@ -30,11 +30,7 @@ class Board extends Component {
   }
 
   handleClickOutside = (e) => {
-    // We dont want to trigger this if the user is clicking an 'undo' button
-    const btnClass = e.target.className
-    const undoButton = btnClass === BTN_UNDO || btnClass === BTN_REDO || btnClass === BTN_CLEAR
-
-    if (this.wrapperRef && !this.wrapperRef.contains(e.target) && !undoButton) {
+    if (this.wrapperRef && !this.wrapperRef.contains(e.target)) {
       this.props.stopEditingTiles()
     }
   }
