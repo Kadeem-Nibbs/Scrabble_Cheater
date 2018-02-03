@@ -41,9 +41,13 @@ class TileDisplay extends Component {
   componentWillReceiveProps(nextProps) {
     if(nextProps.letterToHighlight !== '') {
       this.setHighlightStyles(nextProps.letterToHighlight)
-    }
+    } 
 
-    if(nextProps.letterToHighlight === '' && this.state.highlightCell) {
+    const clearHighlightCell = nextProps.letterToHighlight === '' && this.state.highlightCell
+    // This is specifically for Clear Board - could hook this up to redux action instead of doing this check
+    const tileCleared = this.props.cellCharacter && !nextProps.cellCharacter
+
+    if(clearHighlightCell || tileCleared) {
       // Reset highlight state
       this.setState({
         onBoard: false,
