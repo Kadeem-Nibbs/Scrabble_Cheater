@@ -1,14 +1,90 @@
+@import '../../../global-styles/variables';
+
+// Default styles
+// *************
+.tile-bg-color {
+  background: @tile-bg-color;
+}
+
+td:hover:not(.played-tile) {
+  box-shadow: inset 0 -1px 1px #737373;
+  border-radius: 2px;
+}
+
+&.played-tile {
+  background: @played-tile-bg-color;
+  &:hover {
+    background: @played-tile-bg-color!important;
+  }
+}
+
+.blank-tile {
+  border-bottom: 2px solid black;
+  width: 20px;
+  margin: 0 auto;
+  display: block;
+}
+
+// Word Score Tiles
+// ****************
+
+// Triple word
+.tw:not(.played-tile):not(.highlight-word-location) {
+  background-color: @triple-word;
+}
+.tw div:empty:before {
+  content: 'TW';
+  color: #fff;
+}
+
+// Double letter
+.dw:not(.played-tile):not(.highlight-word-location) {
+  background-color: @double-word;
+}
+.dw div:empty:before {
+  content: 'DW';
+  color: #fff;
+}
+
+// Triple letter
+.tl:not(.played-tile):not(.highlight-word-location) {
+  background-color: @triple-letter;
+}
+.tl div:empty:before {
+  content: 'TL';
+  color: #fff;
+}
+
+// Double letter
+.dl:not(.played-tile):not(.highlight-word-location) {
+  background-color: @double-letter;
+}
+.dl div:empty:before {
+  content: 'DL';
+  color: #fff;
+}
+
+// When use is hovering over possible answers, style the tiles thusly
+// ******************************************************************
+td.highlight-word-location span {
+    border-radius: 4px;
+    border: 1px solid #85b7d9;
+    box-shadow: inset 0px 0px 10px #e4e4e4;
+    display: block;
+    padding: 3px 0;
+    transition: color .1s ease, border-color .1s ease;
+}
+
+td.played-tile.highlight-word-location.on-board span {
+  border: none;
+  box-shadow: none;
+  height: none;
+}
+
 // Pre-load the arrows so when the user first clicks a tile we dont get a second of FOUT
 // https://css-tricks.com/fout-foit-foft/
 .hidden-preload-arrows {
   width: 0px;
   height: 0px;
   overflow: hidden;
-}
-
-.ui.table td.selectable:hover {
-  // border: 1px solid #737373;
-  // border-bottom: 2px solid #737373;
-  box-shadow: inset 0 -1px 1px #737373;
-  border-radius: 2px;
 }

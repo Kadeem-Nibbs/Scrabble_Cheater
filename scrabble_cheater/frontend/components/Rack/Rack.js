@@ -1,3 +1,5 @@
+import './Rack.less'
+
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Grid, Input, Button, Loader } from 'semantic-ui-react'

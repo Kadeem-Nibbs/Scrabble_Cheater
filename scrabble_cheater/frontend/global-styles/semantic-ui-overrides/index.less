@@ -1,0 +1,23 @@
+// Note: We are importing semnatic-ui styles from a CDN in index.html, and overriding the styles here. 
+// Use the lowest level of specificity needed to overrwrite semnatic-ui's base styles.
+
+// Not using !important is important because all global styles are imported here, 
+//  but individual components may also have their own less file.
+
+// This makes using new CSS classes in components to change styles (instead of !important) crucial, 
+//  and _never_ using !important in global styles. 
+
+// less allows us to do the following for chaining new classes, so it works nicely for specificity
+
+//   .some-class {
+//     &.some-chained-class {   // (added via state changes or whatever)
+//       //
+//     }  
+//   }
+
+// Colours based on this lovely pallete 
+// http://www.colourlovers.com/palette/2571794/Words_with_Friends
+
+@import "buttons";
+@import "inputs";
+@import "table";

@@ -1,3 +1,5 @@
+import './global-styles/index'
+
 import React from 'react'
 import ReactDOM from 'react-dom'
 
@@ -7,7 +9,6 @@ import thunk from 'redux-thunk'
 
 import reducers from './_reducers'
 
-import './global-styles/all'
 
 import App from './components/App.js'
 

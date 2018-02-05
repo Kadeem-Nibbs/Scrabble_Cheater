@@ -1,3 +1,5 @@
+import './TileDisplay.less'
+
 import React, { Component } from 'react'
 import { Table } from 'semantic-ui-react'
 import classNames from 'classnames'
@@ -5,8 +7,6 @@ import { connect } from 'react-redux'
 import { some } from 'lodash'
 
 import { scores } from  '../../../constants/board'
-
-import './TileDisplay.less'
 
 class TileDisplay extends Component {
   constructor(props) {
@@ -39,6 +39,10 @@ class TileDisplay extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
+
+    if(nextProps.cellCharacter) {
+      console.log('nextProps.cellCharacter', nextProps.cellCharacter);
+    }
     if(nextProps.letterToHighlight !== '') {
       this.setHighlightStyles(nextProps.letterToHighlight)
     } 
@@ -116,7 +120,6 @@ class TileDisplay extends Component {
     let playedTile = this.props.cellCharacter ? true : false
     return (
       <Table.Cell
-        selectable
         textAlign='center'
         className={ classNames('tile-bg-color', { 
           'tw': this.state.tw,

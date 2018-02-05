@@ -1,7 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`render HeaderRight 1`] = `
-<Label>
+<Label
+  className="header-right"
+>
   <Icon
     as="i"
     name="info"

@@ -10,7 +10,7 @@ import {
   NUMBER_OF_ROWS, 
   NUMBER_OF_COLS, 
   BTN_UNDO, 
-  BTN_REDO,
+  BTN_REDO, 
   BTN_CLEAR 
 } from '../../constants/board'
 
