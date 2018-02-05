@@ -13,7 +13,6 @@ class TileDisplay extends Component {
     super(props)
     this.state = {
       highlightCell: false,
-      onBoard: false,
       blankTile: false,
       tl: false,
       dw: false,
@@ -39,10 +38,6 @@ class TileDisplay extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-
-    if(nextProps.cellCharacter) {
-      console.log('nextProps.cellCharacter', nextProps.cellCharacter);
-    }
     if(nextProps.letterToHighlight !== '') {
       this.setHighlightStyles(nextProps.letterToHighlight)
     } 
@@ -51,7 +46,6 @@ class TileDisplay extends Component {
     if(clearHighlightCell) {
       // Reset highlight state
       this.setState({
-        onBoard: false,
         blankTile: false,
         highlightCell: false
       })
@@ -72,20 +66,16 @@ class TileDisplay extends Component {
   }
 
   setHighlightStyles = (letterToHighlight) => {
-    let onBoard = false
     let blankTile = false
     const highlightCell = true
 
     const letter = letterToHighlight
 
-    if(letter[1] === '#') {
-      onBoard = true 
-    } else if (letter[1] === '_') {
+    if (letter[1] === '_') {
       blankTile = true
     }
 
     this.setState({
-      onBoard,
       blankTile,
       highlightCell
     })
@@ -127,8 +117,7 @@ class TileDisplay extends Component {
           'tl': this.state.tl,
           'dl': this.state.dl,
           'played-tile': playedTile,
-          'highlight-word-location': this.state.highlightCell,
-          'on-board': this.state.onBoard
+          'highlight-word-location': this.state.highlightCell
         }) }
         onClick={ this.props.handleMakeTileEditable }
       >

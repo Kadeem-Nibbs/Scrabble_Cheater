@@ -66,19 +66,13 @@ td:hover:not(.played-tile) {
 
 // When use is hovering over possible answers, style the tiles thusly
 // ******************************************************************
-td.highlight-word-location span {
+td:not(.played-tile).highlight-word-location span {
     border-radius: 4px;
     border: 1px solid #85b7d9;
     box-shadow: inset 0px 0px 10px #e4e4e4;
     display: block;
     padding: 3px 0;
     transition: color .1s ease, border-color .1s ease;
-}
-
-td.played-tile.highlight-word-location.on-board span {
-  border: none;
-  box-shadow: none;
-  height: none;
 }
 
 // Pre-load the arrows so when the user first clicks a tile we dont get a second of FOUT
