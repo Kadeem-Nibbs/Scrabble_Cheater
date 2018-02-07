@@ -29,4 +29,5 @@ Run frontend tests:
 `npm run test`
 
 If you make changes to existing components, update the components snapshot by running:
+
 `npm run jest --updateSnapshot`
