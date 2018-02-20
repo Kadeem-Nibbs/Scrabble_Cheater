@@ -1,12 +1,9 @@
 from flask import Flask, request, redirect
 
 from flask_socketio import SocketIO, emit, send
-from scrabble_cheater import Board, WordFinder, init_wwf_dictionary, init_wwf_trie
-from scrabble_cheater import init_scrabble_dictionary, init_scrabble_trie
-from scrabble_cheater import WWF_WORD_FILE, SCRABBLE_WORD_FILE, wwf_dictionary
-from scrabble_cheater import scrabble_dictionary, wwf_trie, scrabble_trie, EMPTY_BOARD
-from scrabble_cheater import print_board
-
+from scrabble_cheater import Board, WordFinder, init_wwf_trie, init_scrabble_trie
+from scrabble_cheater import WWF_WORD_FILE, SCRABBLE_WORD_FILE
+from scrabble_cheater import wwf_trie, scrabble_trie, EMPTY_BOARD
 import json
 
 app = Flask(__name__)
@@ -36,11 +33,10 @@ def display_highest_scoring_words(game_data_json):
     board.read_board(game_board)
     configure_wordfinder(wf, board, game_type, rack)
 
-    emit('play', json.dumps(wf.find_highest_scoring_words()[:100]))
+    plays = json.dumps(wf.find_highest_scoring_words()[:100])
+    emit('play', plays)
 
 if __name__ == "__main__":
-    init_wwf_dictionary(WWF_WORD_FILE)
-    init_scrabble_dictionary(SCRABBLE_WORD_FILE)
-    init_wwf_trie()
-    init_scrabble_trie()
+    init_wwf_trie(WWF_WORD_FILE)
+    init_scrabble_trie(SCRABBLE_WORD_FILE)
     socketio.run(app, port=4000)
