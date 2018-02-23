@@ -7,6 +7,7 @@ from copy import deepcopy
 
 # To Do:
 # - Experiment with OpenCV for reading board states
+# - Add support for more languages, starting with French and Spanish
 
 SCRABBLE = "scrabble"
 WORDS_WITH_FRIENDS = "wwf"
@@ -22,18 +23,21 @@ WWF_WORD_FILE = "ENABLE.txt" # Enhanced North American Benchmark Lexicon with
                          # Zynga
 SCRABBLE_WORD_FILE = "ospd.txt" # Official Scrabble Player's Dictionary
 GUI_DIMENSIONS = '600x600'
-wwf_dictionary = {} # for checking if a word is in dictionary
-scrabble_dictionary = {}
-wwf_trie = {} # for seeing what words can be made on the board with rack
+wwf_trie = {} # for dictionary lookups and finding playable words
 scrabble_trie = {}
 
+
 class Display(object):
-    """To run scrabble_cheater through terminal."""
+    """
+    To run scrabble_cheater through terminal using original, ugly but
+    charming, GUI.
+
+    """
 
     def __init__(self, board, word_finder):
         """
-        Initializes a Display object with associations to a Board and a
-        WordFinder.
+        Initializes a Display object with with a Board for storing input and a
+        WordFinder for computing playable words.
 
         Parameters:
         -----------
@@ -54,13 +58,11 @@ class Display(object):
 
     def initialize_GUI(self):
         """
-        Create a board widget with entries corresponding to each square on the
-        board to accept board state input from users.  Color each entry
-        appropriately based on the bonus attached to the corresponding
-        square on Words with Friends board. Create rack entry and attach to
-        the GUI.  Create and attach Analyze button that, when pressed,
-        triggers the computation and display of the highest scoring words that
-        can be played.
+        Create a board widget with entries corresponding to squares on the
+        board.  Color each entry appropriately based on the bonus attached to
+        the corresponding square on the game board. Create an entry for users
+        enter their racks.  Create an Analyze button that, when pressed,
+        triggers the computation and display of the highest scoring plays.
 
         """
         self.board_entry = tk.Frame(self.GUI)
@@ -97,6 +99,11 @@ class Display(object):
         self.recolor_board()
 
     def recolor_board(self):
+        """
+        Colors the entries in the board_entry widget to match the game's bonus
+        tile arrangement.
+
+        """
         for child in self.board_entry.children.values():
             r = int(child.grid_info()['row'])
             c = int(child.grid_info()['column'])
@@ -111,7 +118,7 @@ class Display(object):
 
     def update_board_and_display_words(self):
         """
-        Loads all letters in the board entry widgets into the input_board
+        Loads the letters in the board entry widgets into the input_board
         variable.  Updates the board and word_finder variables with the new
         input_board.  Calls word_finder's find_highest_scoring_words method
         and prints the results.  Clears input_board before method terminates.
@@ -158,7 +165,7 @@ class Board(object):
         -----------
         board: 2-d list
             Representation of game board.  Squares holding letters played with
-            blank tiles hold the value "[letter]*" to denote that they should
+            blank tiles hold the value "[letter]_" to denote that they should
             have no value.
 
         """
@@ -166,11 +173,11 @@ class Board(object):
         if game == SCRABBLE:
             self.letter_values = SCRABBLE_LETTER_VALUES
             self.bonus_tiles = SCRABBLE_BONUS_TILES
-            self.dictionary = scrabble_dictionary
+            self.trie = scrabble_trie
         elif game == WORDS_WITH_FRIENDS:
             self.letter_values = WWF_LETTER_VALUES
             self.bonus_tiles = WWF_BONUS_TILES
-            self.dictionary = wwf_dictionary
+            self.trie = wwf_trie
         else:
             raise ValueError("%s is not a supported game" % game)
         self.read_board(self.input_board)
@@ -182,17 +189,22 @@ class Board(object):
         if game == SCRABBLE:
             self.letter_values = SCRABBLE_LETTER_VALUES
             self.bonus_tiles = SCRABBLE_BONUS_TILES
-            self.dictionary = scrabble_dictionary
+            self.trie = scrabble_trie
         elif game == WORDS_WITH_FRIENDS:
             self.letter_values = WWF_LETTER_VALUES
             self.bonus_tiles = WWF_BONUS_TILES
-            self.dictionary = wwf_dictionary
+            self.trie = wwf_trie
         else:
             raise ValueError("%s is not a supported game" % game)
         self.game = game
         self.recompute_score_board()
 
     def recompute_score_board(self):
+        """
+        Recomputes the point value of each letter on the board to match the
+        current game type.
+
+        """
         for i, j in self.occupied_squares:
             letter = self.board[i][j]
             if self.score_board[i][j]: # Letter not played with blank tile
@@ -200,8 +212,8 @@ class Board(object):
 
     def read_board(self, board):
         """
-        Update self.board and self.score_board to reflect the board state
-        represented by board.  Maintain a copy of board as self.input_board.
+        Update self.board and self.score_board to reflect the board's state.
+        Maintain a copy of board as self.input_board.
         Find the anchor squares and compute the cross checks of the new board.
 
         Parameters:
@@ -236,7 +248,7 @@ class Board(object):
         self.find_anchor_squares()
         self.compute_cross_checks()
 
-    def find_bonus(self, square):
+    def get_bonus(self, square):
         """
         Returns a string detailing the bonus attached to a square on the game
         board. Returns None if the square does not have a bonus.
@@ -254,17 +266,14 @@ class Board(object):
         Returns a list of all of the anchor squares on the board.
 
         """
-        self.anchor_squares = []
+        self.anchor_squares = set()
         for square in self.occupied_squares:
             adjacent_anchor_squares = self.find_anchor_squares_near(*square)
-            self.anchor_squares.extend(adjacent_anchor_squares)
-        # prune redundant squares
-        self.anchor_squares = set(self.anchor_squares)
+            self.anchor_squares.update(adjacent_anchor_squares)
         for square in self.occupied_squares:
             row, column = square
             if square in self.anchor_squares and (row, column-1) in self.anchor_squares:
                 self.anchor_squares.discard((row, column-1))
-        self.anchor_squares = list(self.anchor_squares)
 
     def find_anchor_squares_near(self, row, column):
         """
@@ -299,8 +308,8 @@ class Board(object):
     def empty_and_not_preceded_by_letter(self, row, column):
         """
         Returns True if board[row][column] contains None (a letter has not been
-        played there) and is not preceded by a square, board[row][column-1], which
-        holds a letter.  Returns False otherwise.
+        played there) and the square in previous column does not contain a
+        letter.  Returns False otherwise.
 
         """
         if not on_board(row, column):
@@ -313,16 +322,6 @@ class Board(object):
             return True
         else:
             return False
-
-    def get_anchor_squares(self):
-        """
-        Returns a list of all of the anchor squares on the board.
-
-        """
-        self.anchor_squares = []
-        for square in occupied_squares:
-            adjacent_anchor_squares = find_anchor_squares_near(*square)
-            self.anchor_squares.extend(adjacent_anchor_squares)
 
     def place_word(self, word, start_square, direction=None):
         """
@@ -340,46 +339,49 @@ class Board(object):
 
         """
         row, column = start_square
+        word_info = (word, direction, start_square)
+        squares_used = []
         if direction == 'across':
             if column + len(word) - 1 >= BOARD_SIZE: # word can't fit on board
-                print "word", start_square, len(word)
-                print "Word can't fit"
-                return
+                raise ValueError("%s can't be played %s at %s" % word_info)
             for c in word:
                 if not self.board[row][column]:
                     self.board[row][column] = c
                     self.input_board[row][column] = c
                     self.occupied_squares.append((row, column))
                     self.score_board[row][column] = self.letter_values[c]
+                    squares_used.append((row, column))
                     column += 1
                     continue
-                if self.board[row][column] != c:
-                    print "Word can't fit"
-                    return
+                elif self.board[row][column] == c:
+                        column += 1
                 else:
-                    column += 1
+                    self.clear_squares(squares_used)
+                    raise ValueError("%s can't be played %s at %s" % word_info)
 
         elif direction == 'down':
             if row + len(word) - 1 >= BOARD_SIZE: # word can't fit on board
-                print word, start_square, len(word)
-                print "Word can't fit, too long"
-                return
+                raise ValueError("%s can't be played %s at %s" % word_info)
             for c in word:
                 if not self.board[row][column]:
                     self.board[row][column] = c
                     self.input_board[row][column] = c
                     self.occupied_squares.append((row, column))
                     self.score_board[row][column] = self.letter_values[c]
+                    squares_used.append((row, column))
                     row += 1
                     continue
-                if self.board[row][column] != c:
-                    print word, self.board[row][column], c, (row, column)
-                    print "Word can't fit, mismatched letter"
-                    return
-                else:
+                elif self.board[row][column] == c:
                     row += 1
+                else:
+                    self.clear_squares(squares_used)
+                    raise ValueError("%s can't be played %s at %s" % word_info)
         self.find_anchor_squares()
         self.compute_cross_checks()
+
+    def clear_squares(self, squares):
+        for row, column in squares:
+            self.board[row][column] = None
 
     def square_has_no_vertical_neighbors(self, x, y):
         """
@@ -388,14 +390,11 @@ class Board(object):
 
         """
         if not on_board(x-1, y):
-            if not self.board[x+1][y]:
-                return True
+            return not self.board[x+1][y]
         elif not on_board(x+1, y):
-            if not self.board[x-1][y]:
-                return True
+            return not self.board[x-1][y]
         else:
-            if not (self.board[x+1][y] or self.board[x-1][y]):
-                return True
+            return not (self.board[x+1][y] or self.board[x-1][y])
 
     def get_adjacent_empty_squares(self, row, column):
         """Returns all empty squares adjacent to board[row][column] in a list."""
@@ -432,7 +431,7 @@ class Board(object):
         """
         self.cross_checks = {}
         cross_check_squares = []
-
+        alphabet_set = set(ALPHABET)
         for square in self.occupied_squares:
             cross_check_squares.extend(self.get_adjacent_empty_squares(*square))
         cross_check_squares = list(set(cross_check_squares))
@@ -452,15 +451,19 @@ class Board(object):
                 continue
             check_string = upper_part + "%s" + lower_part
             self.cross_checks[square] = set()
+            if check_string == "%s":
+                self.cross_checks[square] = alphabet_set
+                continue
             for c in ALPHABET:
                 possible_word = check_string % c
-                if word_in_dict(self.dictionary, possible_word):
+                if word_in_dict(self.trie, possible_word):
                     self.cross_checks[square].add(c)
+
         for row in range(BOARD_SIZE):
             for column in range(BOARD_SIZE):
                 square = (row, column)
                 if square not in self.cross_checks:
-                    self.cross_checks[square] = set(ALPHABET)
+                    self.cross_checks[square] = alphabet_set
 
 
     def can_play_letter(self, x, y, letter):
@@ -507,7 +510,7 @@ class WordFinder(object):
             self.rack = ""
 
         self.prefixes = [[] for x in range(MAX_RACK_LENGTH+1)]
-        self.get_all_prefixes()
+        self.iterative_get_prefixes()
 
     def set_game(self, game):
         if game == SCRABBLE:
@@ -529,18 +532,18 @@ class WordFinder(object):
 
         """
         self.rack = rack
-        self.get_all_prefixes()
+        self.iterative_get_prefixes()
 
     def update_board(self, board):
         """
-        Replace self.board with a new Board object, calculate and store
+        Replace self.board with a new Board object, compute and store
         its transpose.
 
         """
         self.board = board
         self.board_t = Board(self.board.transposed_input_board(), self.board.game)
 
-    def get_all_prefixes(self):
+    def get_prefixes(self):
         """
         Resets self.prefixes to empty nested lists.  Find and store all
         prefixes that can be made using the letters in the rack, separate by
@@ -549,19 +552,20 @@ class WordFinder(object):
         """
         self.prefixes = [[] for x in range(MAX_RACK_LENGTH+1)]
         rack = make_counter(self.rack)
-        self.get_all_prefixes_rec(self.trie, rack, "", ())
+        self.get_prefixes_rec(self.trie, rack, "", ())
 
-    def get_all_prefixes_rec(self, node, remaining_tiles, pref, tiles_used):
+    def get_prefixes_rec(self, node, remaining_tiles, pref, tiles_used):
         """
         A prefix in this application is a valid beginning to a word that can be
         played in the squares to the left of an anchor square.
-        populates the prefixes, instance variable with dictionaries containing
-        information on the prefixes that can be made with the letters in the
-        rack.  Each dictionary has the key-value pairs: "prefix", the string
-        form of the prefix; "node", the node on the global trie corresponding
-        to the prefix; "remaining_tiles", a dictionary containing counts of
-        the letters remaining in the rack; "tiles_used", a tuple containing
-        the tiles to put on the board, in order, to construct the prefix.
+        This method populates the prefixes instance variable with dictionaries
+        containing information on the prefixes that can be made with the
+        letters in the rack.  Each dictionary has the key-value pairs:
+        "prefix", the string form of the prefix; "node", the node on the
+        trie corresponding to the prefix; "remaining_tiles", a dictionary
+        containing counts of the letters remaining in the rack; "tiles_used",
+        a tuple containing the tiles to put on the board, in order, to
+        construct the prefix.
 
         Parameters:
         -----------
@@ -571,8 +575,8 @@ class WordFinder(object):
             be played after l to continue the prefix further.
         remaining_tiles: dictionary used as makeshift counter for letters remaining in rack
         pref: string
-            The letters in the prefix already, in order played.
-        tiles_used: list of strings
+            The letters in the prefix, in order played.
+        tiles_used: tuple of strings
             The tiles put down to construct the prefix, in order played.
 
         """
@@ -592,11 +596,54 @@ class WordFinder(object):
             if l in remaining_tiles:
                 next_node = node[l]
                 new_remaining_tiles = decrement_counter(remaining_tiles, l)
-                self.get_all_prefixes_rec(next_node, new_remaining_tiles, pref+l, tiles_used+tuple(l))
+                self.get_prefixes_rec(next_node, new_remaining_tiles, pref+l, tiles_used+(l,))
             if BLANK_TILE in remaining_tiles:
                 next_node = node[l]
                 new_remaining_tiles = decrement_counter(remaining_tiles, BLANK_TILE)
-                self.get_all_prefixes_rec(next_node, new_remaining_tiles, pref+l, tiles_used+(l+BLANK_TILE,))
+                self.get_prefixes_rec(next_node, new_remaining_tiles, pref+l, tiles_used+(l+BLANK_TILE,))
+        return
+
+    def iterative_get_prefixes(self):
+        """
+        Resets self.prefixes to empty nested lists.  Find and store all
+        prefixes that can be made using the letters in the rack, separate by
+        length.
+
+        """
+        self.prefixes = [[] for x in range(MAX_RACK_LENGTH+1)]
+        rack = make_counter(self.rack)
+        first_prefix_info = {"prefix": "",
+                             "node": self.trie,
+                             "remaining_tiles": rack,
+                             "tiles_used": (),}
+        prefixes_to_add = [first_prefix_info]
+        while prefixes_to_add:
+            prefix_info = prefixes_to_add.pop()
+            node = prefix_info["node"]
+            remaining_tiles = prefix_info["remaining_tiles"]
+            tiles_used = prefix_info["tiles_used"]
+            prefix = prefix_info["prefix"]
+            prefix_length = len(prefix)
+            self.prefixes[prefix_length].append(prefix_info)
+            if not remaining_tiles:
+                continue
+            for l in node:
+                if l == TERMINAL: # We can't always use complete words as prefixes, if
+                                  # the corresponding anchor square is empty,they may
+                                  # not touch a letter already on the board.
+                    continue
+                if l in remaining_tiles:
+                    new_prefix_info = {"node": node[l],
+                                       "remaining_tiles": decrement_counter(remaining_tiles, l),
+                                       "prefix": prefix+l,
+                                       "tiles_used": tiles_used+(l,),}
+                    prefixes_to_add.append(new_prefix_info)
+                if BLANK_TILE in remaining_tiles:
+                    new_prefix_info = {"node": node[l],
+                                       "remaining_tiles": decrement_counter(remaining_tiles, BLANK_TILE),
+                                       "prefix": prefix+l,
+                                       "tiles_used": tiles_used+(l+BLANK_TILE,),}
+                    prefixes_to_add.append(new_prefix_info)
         return
 
     def find_legal_prefixes(self, board, row, column):
@@ -634,9 +681,9 @@ class WordFinder(object):
         free_spaces_to_left = min(free_spaces_to_left, rack_length)
         prefixes = []
         for num_letters in range(free_spaces_to_left + 1):
-            valid_prefixes = [p for p in self.prefixes[num_letters] \
-                              if self.prefix_can_fit(board, p, row, column)]
-            prefixes.extend(valid_prefixes)
+            for p in self.prefixes[num_letters]:
+                if self.prefix_can_fit(board, p, row, column):
+                    prefixes.append(p)
         return prefixes
 
     def prefix_can_fit(self, board, prefix_info, row, column):
@@ -656,7 +703,7 @@ class WordFinder(object):
         """
         if board.board[row][column]: # ensure prefix fits letter at board position
             letter = board.board[row][column]
-            legal_next_letters = prefix_info["node"].keys()
+            legal_next_letters = prefix_info["node"]
             if letter not in legal_next_letters:
                 return False
         prefix = prefix_info["prefix"]
@@ -697,7 +744,7 @@ class WordFinder(object):
             if len(letter) == 2 and letter[1] == BLANK_TILE:
                 letter = letter[1]
             tiles_used_index += 1
-            bonus = self.board.find_bonus((row, column))
+            bonus = self.board.get_bonus((row, column))
             board_position = {"board": board.board,
                               "score_board": board.score_board,
                               "position": (row, column),
@@ -805,7 +852,7 @@ class WordFinder(object):
         (word, (start_square, end_square), tiles_used, score)
 
         """
-        words = []
+        words = set()
         row, column = board_position['position']
         board = board_position["board"]
         remaining_tiles = rack_state["remaining_tiles"]
@@ -818,7 +865,7 @@ class WordFinder(object):
             next_node = node[letter]
             new_rack_state = {'remaining_tiles': remaining_tiles,
                               'tiles_used': tiles_used+(letter+TILE_ON_BOARD,),}
-            words.extend(self.build_words(next_node, next_board_position, new_rack_state))
+            words.update(self.build_words(next_node, next_board_position, new_rack_state))
         return words
 
     def build_words_through_empty_square(self, node, board_position, rack_state):
@@ -853,7 +900,7 @@ class WordFinder(object):
         (word, (start_square, end_square), tiles_used, score)
 
         """
-        words = []
+        words = set()
         row, column = board_position['position']
         tiles_used = rack_state['tiles_used']
         remaining_tiles = rack_state['remaining_tiles']
@@ -870,7 +917,7 @@ class WordFinder(object):
                     word = node[TERMINAL]
                     start, end = (row, column-len(word)), (row, column-1)
                     score = self.score_word(board, tiles_used, (start, end))
-                    words.append((word, (start, end), tiles_used, score))
+                    words.add((word, (start, end), tiles_used, score))
                 continue
             if not board.can_play_letter(row, column, letter):
                 continue
@@ -878,12 +925,12 @@ class WordFinder(object):
                 next_node = node[letter]
                 new_rack_state = {'remaining_tiles': decrement_counter(remaining_tiles, letter),
                                   'tiles_used': tiles_used+tuple(letter),}
-                words.extend(self.build_words(next_node, next_board_position, new_rack_state))
+                words.update(self.build_words(next_node, next_board_position, new_rack_state))
             if BLANK_TILE in remaining_tiles:
                 next_node = node[letter]
                 new_rack_state = {'remaining_tiles': decrement_counter(remaining_tiles, BLANK_TILE),
                                   'tiles_used': tiles_used+(letter+BLANK_TILE,),}
-                words.extend(self.build_words(next_node, next_board_position, new_rack_state))
+                words.update(self.build_words(next_node, next_board_position, new_rack_state))
         return words
 
     def finish_word_on_board_edge(self, node, board_position, rack_state):
@@ -918,7 +965,7 @@ class WordFinder(object):
         (word, (start_square, end_square), tiles_used, score).
 
         """
-        words = []
+        words = set()
         row, column = board_position['position']
         board = board_position['board']
         tiles_used = rack_state['tiles_used']
@@ -929,12 +976,12 @@ class WordFinder(object):
                 word = node[TERMINAL]
                 start, end = (row, column-len(word)), (row, column-1)
                 score = self.score_word(board, tiles_used, (start, end))
-                words.append((word, (start, end), tiles_used, score))
+                words.add((word, (start, end), tiles_used, score))
         return words
 
     def build_words(self, node, board_position, rack_state):
         """
-        Finds words that be built through board[row][column].
+        Finds words that can be built through board[row][column].
 
         Parameters:
         -----------
@@ -974,6 +1021,104 @@ class WordFinder(object):
             words = self.build_words_through_empty_square(node, board_position, rack_state)
         return words
 
+    # Made to test performance differences between iterative and recursive
+    # algorithms in Python, this function performs ~25% faster than
+    # build_words.  The difference is amplified significantly when using
+    # PyPy.
+    def iterative_build_words(self, node, board_position, rack_state):
+        """
+        Finds words that can be built through board[row][column].
+
+        Parameters:
+        -----------
+        node: dictionary
+            Represents current node in the trie
+        board_position: a dictionary with the following key-value pairs
+            "position": 2-tuple of ints, (row, column) on board
+            "board": Board
+                Either self.board or self.board_t
+            "anchor_square": 2-tuple of ints, (row, column) of the square
+                             from which we continued building a word from
+                             a prefix
+        rack_state: a dictionary with the following key-value pairs
+            "tiles_used": tuple of single-character strings
+                The strings represent the tiles put down on the board to reach
+                the current node in the trie, and are ordered from first to
+                last
+            "remaining_tiles": dictionary with string keys and int values
+                The keys are the letters remaining in the rack and the
+                corresponding values are the counts of that letter
+
+        Returns:
+        --------
+        List of tuples describing words that can be formed through
+        board[row][column]. Each tuple has the form
+        (word, (start_square, end_square), tiles_used, score).
+
+        """
+        board = board_position["board"]
+        anchor_square = board_position["anchor_square"]
+        words = []
+        first_node_to_visit = {"node":node,
+                               "position": board_position["position"],
+                               "tiles_used": rack_state["tiles_used"],
+                               "remaining_tiles": rack_state["remaining_tiles"]}
+        nodes_to_visit = [first_node_to_visit]
+
+        while nodes_to_visit:
+            node_info = nodes_to_visit.pop()
+            node = node_info["node"]
+            row, column = node_info["position"]
+            tiles_used = node_info["tiles_used"]
+            remaining_tiles = node_info["remaining_tiles"]
+            # Finish word on the edge of the board
+            if not on_board(row, column):
+                if TERMINAL in node:
+                    tiles_played = [tile for tile in tiles_used if ((len(tile) == 1) or \
+                                    (len(tile) == 2 and tile[1] == BLANK_TILE))]
+                    if tiles_played:
+                        word = node[TERMINAL]
+                        start, end = (row, column-len(word)), (row, column-1)
+                        score = self.score_word(board, tiles_used, (start, end))
+                        words.append((word, (start, end), tiles_used, score))
+                continue
+            # Build words around letter already on board
+            _letter = board.board[row][column]
+            if _letter:
+                if _letter in node:
+                    next_node_info = {"node": node[_letter],
+                                      "position": (row, column+1),
+                                      "tiles_used": tiles_used+(_letter+TILE_ON_BOARD,),
+                                      "remaining_tiles": remaining_tiles}
+                    nodes_to_visit.append(next_node_info)
+                continue
+            # Build words through empty square
+            for letter in node:
+                if letter == TERMINAL:
+                    tiles_played = [tile for tile in tiles_used if ((len(tile) == 1) or \
+                                    (len(tile) == 2 and tile[1] == BLANK_TILE))]
+                    if tiles_played and (row, column) != anchor_square:
+                        word = node[TERMINAL]
+                        start, end = (row, column-len(word)), (row, column-1)
+                        score = self.score_word(board, tiles_used, (start, end))
+                        words.append((word, (start, end), tiles_used, score))
+                    continue
+                if not board.can_play_letter(row, column, letter):
+                    continue
+                if letter in remaining_tiles:
+                    next_node_info = {"node": node[letter],
+                                      "position": (row, column+1),
+                                      "tiles_used": tiles_used+(letter,),
+                                      "remaining_tiles": decrement_counter(remaining_tiles, letter)}
+                    nodes_to_visit.append(next_node_info)
+                if BLANK_TILE in remaining_tiles:
+                    next_node_info = {"node": node[letter],
+                                      "position": (row, column+1),
+                                      "tiles_used": tiles_used+(letter+BLANK_TILE,),
+                                      "remaining_tiles": decrement_counter(remaining_tiles, BLANK_TILE)}
+                    nodes_to_visit.append(next_node_info)
+        return words
+
     def find_across_words(self):
         """
         Returns a list of tuples representing all of the words that can be
@@ -982,7 +1127,7 @@ class WordFinder(object):
         (word, (start_square, end_square), tiles_remaining_in_rack, score).
 
         """
-        words = []
+        words = set()
         for sq in self.board.anchor_squares:
             row, column = sq
             prefixes = self.find_legal_prefixes(self.board, row, column)
@@ -993,9 +1138,9 @@ class WordFinder(object):
                                   'anchor_square': sq,}
                 rack_state = {'remaining_tiles': p['remaining_tiles'],
                               'tiles_used': p['tiles_used'],}
-                words_from_prefix = self.build_words(node, board_position, rack_state)
-                words.extend(words_from_prefix)
-        return words
+                words_from_prefix = self.iterative_build_words(node, board_position, rack_state)
+                words.update(words_from_prefix)
+        return list(words)
 
     def find_down_words(self):
         """
@@ -1005,7 +1150,7 @@ class WordFinder(object):
         (word, (start_square, end_square), tiles_remaining_in_rack, score).
 
         """
-        words = []
+        words = set()
         for row, column in self.board_t.anchor_squares:
             prefixes = self.find_legal_prefixes(self.board_t, row, column)
             for p in prefixes: # try to extend prefixes into full words
@@ -1015,8 +1160,8 @@ class WordFinder(object):
                                   'anchor_square': (row, column),}
                 rack_state = {'remaining_tiles': p['remaining_tiles'],
                               'tiles_used': p['tiles_used'],}
-                words_from_prefix = self.build_words(node, board_position, rack_state)
-                words.extend(words_from_prefix)
+                words_from_prefix = self.iterative_build_words(node, board_position, rack_state)
+                words.update(words_from_prefix)
         words = [transpose_word(word) for word in words]
         return words
 
@@ -1032,57 +1177,19 @@ class WordFinder(object):
         if self.board.board == EMPTY_BOARD:
             self.board.anchor_squares = [(7, 7)]
             self.board_t.anchor_squares = [(7, 7)]
-        across_words = self.find_across_words()
-        down_words = self.find_down_words()
-        all_words = list(set(across_words)) + list(set(down_words))
+        all_words = self.find_across_words() + self.find_down_words()
         return sorted(all_words, key=lambda w: w[3], reverse=True)
 
-def init_wwf_dictionary(f):
-    """
-    Initialize word_list with words from specified file.
 
-    Parameters:
-    -----------
-    f: string
-        Name of file containing legal Words with Friends words.
+def init_wwf_trie(f):
+    """
+    Initializes the wwf_trie global variable as a dictionary-based trie.
+    Reads through text file containing dictionary words to populate the trie.
 
     """
     with open(f, 'r') as word_file:
         for line in word_file:
             word = line.strip()
-            key = "".join(sorted(word))
-            if wwf_dictionary.get(key):
-                wwf_dictionary[key].append(word)
-            else:
-                wwf_dictionary[key] = [word]
-
-def init_scrabble_dictionary(f):
-    """
-    Initialize word_list with words from specified file.
-
-    Parameters:
-    -----------
-    f: string
-        Name of file containing legal Scrabble words.
-
-    """
-    with open(f, 'r') as word_file:
-        for line in word_file:
-            word = line.strip()
-            key = "".join(sorted(word))
-            if scrabble_dictionary.get(key):
-                scrabble_dictionary[key].append(word)
-            else:
-                scrabble_dictionary[key] = [word]
-
-def init_wwf_trie():
-    """
-    Initializes the trie global variable as a dictionary-based trie.  Reads
-    the dictionary global variable to construct the trie.
-
-    """
-    for key in wwf_dictionary:
-        for word in wwf_dictionary[key]:
             node = wwf_trie
             for c in word:
                 if node.get(c):
@@ -1092,14 +1199,15 @@ def init_wwf_trie():
                     node = node[c]
             node[TERMINAL] = word
 
-def init_scrabble_trie():
+def init_scrabble_trie(f):
     """
-    Initializes the trie global variable as a dictionary-based trie.  Reads
-    the dictionary global variable to construct the trie.
+    Initializes the scrabble_trie global variable as a dictionary-based trie.
+    Reads through text file containing dictionary words to populate the trie.
 
     """
-    for key in scrabble_dictionary:
-        for word in scrabble_dictionary[key]:
+    with open(f, 'r') as word_file:
+        for line in word_file:
+            word = line.strip()
             node = scrabble_trie
             for c in word:
                 if node.get(c):
@@ -1109,10 +1217,9 @@ def init_scrabble_trie():
                     node = node[c]
             node[TERMINAL] = word
 
-def word_in_dict(dictionary, word):
+def word_in_dict(trie, word):
     """
-    Looks up word in dictionary by using the word's sorted string form as a
-    key.
+    Looks up word in dictionary by searching through trie.
 
     Parameters:
     -----------
@@ -1120,17 +1227,20 @@ def word_in_dict(dictionary, word):
         A sequence of letters that may be a dictionary word.
 
     """
-    key = "".join(sorted(word))
-    if dictionary.get(key):
-        words = dictionary[key]
-        return word in words
-    else:
-        return False
+    node = trie
+    for c in word:
+        if c in node:
+            node = node[c]
+        else:
+            return False
+    return TERMINAL in node
+
 
 def print_board(board):
     for index, row in enumerate(board):
         print index, row
     print
+
 
 def on_board(x, y):
     """
@@ -1139,6 +1249,7 @@ def on_board(x, y):
 
     """
     return (0 <= x < BOARD_SIZE) and (0 <= y < BOARD_SIZE)
+
 
 def get_squares_in_range(start, end):
     """
@@ -1172,6 +1283,7 @@ def get_squares_in_range(start, end):
         return None
     return squares
 
+
 def make_counter(rack):
     """
     Parameters:
@@ -1193,6 +1305,7 @@ def make_counter(rack):
         else:
             counter[c] = 1
     return counter
+
 
 def decrement_counter(counter, l):
     """
@@ -1217,6 +1330,7 @@ def decrement_counter(counter, l):
         c.pop(l, None)
     return c
 
+
 def transpose_word(word_info):
     """
     Returns word_info with the position changed to what it would be if the
@@ -1238,27 +1352,13 @@ def transpose_word(word_info):
     end = (end_row, end_column)
     return (word, (start, end), tiles_used, score)
 
-def find_creatable_words(trie, rack):
-    """
-    Returns a list of all of the words that can be made only using the letters
-    in the rack.
 
-    Parameters:
-    -----------
-    trie: dictionary
-        Represents a trie made from all of the words in the dictionary
-    rack: Counter
-        The letters in the rack
-
-    """
-    rack = Counter(rack)
-    return words_from_rack(trie, rack)
-
+# For better experience running locally, do 'npm run dev' from
+# scrabble_cheater/frontend and 'python sever.py' from scrabble_cheater in
+# separate terminal windows
 def main():
-    init_wwf_dictionary(WWF_WORD_FILE)
-    init_scrabble_dictionary(SCRABBLE_WORD_FILE)
-    init_wwf_trie()
-    init_scrabble_trie()
+    init_wwf_trie(WWF_WORD_FILE)
+    init_scrabble_trie(SCRABBLE_WORD_FILE)
     b = Board([[None for x in range(BOARD_SIZE)] for y in range(BOARD_SIZE)], WORDS_WITH_FRIENDS)
     wf = WordFinder(b)
     display = Display(b, wf)
