@@ -1,3 +1,5 @@
+![](https://imgur.com/a/vxCI0)
+
 # Scrabble Cheater
 
 Scrabble Cheater serves up an algorithm that calculates the best words you can play for to get the highest scores in Scrabble and Words With Friends. Here we have a Flask API connected to a React frontend via websockets.
