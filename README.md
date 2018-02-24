@@ -1,4 +1,4 @@
-![](https://imgur.com/a/vxCI0)
+![](https://imgur.com/a/vxCI0?raw=true)
 
 # Scrabble Cheater
 
