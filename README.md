@@ -24,20 +24,20 @@ npm run install
 
 To use PyPy:
   Create a virtualenv to use with PyPy:
-    'virtualenv -p /path/to/pypy venv'
+    `virtualenv -p /path/to/pypy venv`
   Activate the virtualenv and install the requirements:
-    'venv/bin/activate' on Linux OR 'venv/Scripts/activate' on Windows
-    'pip install -r requirements.txt'
+    `pip install -r requirements.txt`
   Run server:
-    'pypy server.py'
+    `pypy server.py`
    
 To use CPython:
-  'pip install -r requirements.txt' (from within a virtualenv)
-  'python server.py'
+  ```
+  pip install -r requirements.txt
+  python server.py
+  ```
 
 After doing one of the above, nativate to `scrabble_cheater/frontend/` to run the development server:
 ```
-
 npm run dev
 ```
 The application will be running on localhost:1234
